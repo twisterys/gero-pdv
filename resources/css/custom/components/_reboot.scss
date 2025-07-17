@@ -1,0 +1,61 @@
+/* =============
+   General
+============= */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+// .h1,.h2,.h3,.h4,.h5,.h6,
+// h1,h2,h3,h4,h5,h6 {
+// }
+
+a {
+  text-decoration: none !important;
+}
+
+label {
+  font-weight: 500;
+  font-size: 13px;
+  color: $gray-600;
+}
+
+// blockquote
+
+.blockquote {
+  padding: 10px 20px;
+  border-left: 4px solid $gray-300;
+  margin-bottom: 0px;
+}
+
+.blockquote-reverse {
+  border-left: 0;
+  border-right: 4px solid $gray-300;
+  text-align: right;
+}
+
+// srollbar
+
+// Scroll Size
+[data-simplebar-lg] {
+  .simplebar-scrollbar {
+    right: 1px;
+    width: 10px;
+  }
+}
+
+@each $color, $value in $theme-colors {
+  [data-simplebar-#{$color}] {
+    .simplebar-scrollbar {
+      &:before {
+        background: $value;
+      }
+    }
+  }
+}
+
+// Row
+.row > * {
+  position: relative;
+}

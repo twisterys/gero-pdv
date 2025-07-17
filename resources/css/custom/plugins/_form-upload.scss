@@ -1,0 +1,33 @@
+
+//
+// Form-Upload.scss
+//
+
+/* Dropzone */
+.dropzone {
+  min-height: 230px;
+  border: 2px dashed $gray-400;
+  background: $card-bg;
+  border-radius: 6px;
+
+  .dz-message {
+    font-size: 24px;
+  }
+}
+
+// dropify
+
+.dropify-wrapper {
+  border: 2px solid $gray-300;
+  background: $card-bg;
+  border-radius: 6px;
+  color: $body-color;
+
+  &:hover{
+      background-image: linear-gradient(-45deg, rgba($gray-300, 0.4) 25%,transparent 25%,transparent 50%,rgba($gray-300, 0.4) 50%, rgba($gray-300, 0.4) 75%,transparent 75%,transparent);
+  }
+
+  .dropify-preview{
+      background-color: $gray-300;
+  }
+}

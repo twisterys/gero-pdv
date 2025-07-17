@@ -1,0 +1,25 @@
+//
+// tour.scss
+//
+
+
+.shepherd-text{
+  font-size: 14px;
+}
+
+.shepherd-button{
+  margin-right: .5rem;
+}
+
+@each $color,
+$value in $theme-colors {
+
+  .shepherd-button{
+    &.btn-#{$color} {
+      &:not(:disabled):hover{
+        background-color: darken($value, 2.5%);
+      }
+    }
+  }
+}
+

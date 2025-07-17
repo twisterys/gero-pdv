@@ -1,0 +1,35 @@
+
+//
+// Rating.scss
+//
+
+
+.br-wrapper{
+  display: inline-block;
+}
+
+.br-theme-bars-1to10 .br-widget .br-current-rating{
+  line-height: inherit;
+}
+
+.br-theme-fontawesome-stars, .br-theme-fontawesome-stars-o {
+  .br-widget {
+    a{
+      font-family: 'Font Awesome 5 Free'
+    }
+  }
+}
+
+.br-theme-fontawesome-stars-o {
+  .br-widget a{
+    &.br-selected, &.br-active, &.br-fractional{
+      &:after{
+        font-weight: 900;
+      }
+    }
+
+    &.br-fractional:after, &:after{
+      content: '\f005';
+    }
+  }
+}

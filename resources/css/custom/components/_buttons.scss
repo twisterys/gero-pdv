@@ -1,0 +1,101 @@
+//
+// _buttons.scss
+//
+
+button,a {
+  outline: none !important;
+}
+
+
+// Rounded Buttons
+.btn-rounded {
+  border-radius: 30px;
+}
+
+.btn-dark, .btn-secondary{
+  color: $gray-200 !important;
+}
+
+.btn-outline-light{
+  color: $gray-800 !important;
+}
+
+@each $color,
+$value in $theme-colors {
+    .btn-soft-#{$color} {
+        &.disabled , &:active , &:focus-visible{
+            color: $value !important ;
+            border-color: $value !important ;
+        }
+        color: $value;
+        background-color: rgba(($value), 0.25);
+        &:hover{
+          color: $white;
+          background-color: ($value);
+        }
+    }
+
+}
+
+// social buttons
+
+
+/* Social Buttons */
+
+.btn-social-icon .btn{
+  width: 36px;
+  height: 36px;
+  padding-left: 10px;
+}
+.btn-facebook {
+  color: $white !important;
+  background-color: #3b5998;
+}
+.btn-twitter {
+  color: $white !important;
+  background-color: #00aced;
+}
+.btn-linkedin {
+  color: $white !important;
+  background-color: #007bb6;
+}
+.btn-dribbble {
+  color: $white !important;
+  background-color: #ea4c89;
+}
+.btn-googleplus {
+  color: $white !important;
+  background-color: #dd4b39;
+}
+.btn-instagram {
+  color: $white !important;
+  background-color: #517fa4;
+}
+.btn-pinterest {
+  color: $white !important;
+  background-color: #cb2027;
+}
+.btn-dropbox {
+  color: $white !important;
+  background-color: #007ee5;
+}
+.btn-flickr {
+  color: $white !important;
+  background-color: #ff0084;
+}
+.btn-tumblr {
+  color: $white !important;
+  background-color: #32506d;
+}
+.btn-skype {
+  color: $white !important;
+  background-color: #00aff0;
+}
+.btn-youtube {
+  color: $white !important;
+  background-color: #bb0000;
+}
+.btn-github {
+  color: $white !important;
+  background-color: #171515;
+}

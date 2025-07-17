@@ -1,0 +1,53 @@
+
+<script>
+    $('#compte-input,#method-input').select2({
+        minimumResultsForSearch: -1,
+    })
+    $('#method-input').on('change', function () {
+        check()
+    })
+    check()
+    function check() {
+        let methods = ['cheque', 'lcn'];
+        if (methods.indexOf($('#method-input').find('option:selected').val()) !== -1) {
+            $('.__variable').removeClass('d-none').find('input').attr('required','')
+        }else {
+            $('.__variable').addClass('d-none').find('input').removeAttr('required')
+        }
+    }
+    $('.datupickeru').datepicker({
+        language:'fr',
+        defaultViewDate: {year: '{{\Carbon\Carbon::createFromFormat('d/m/Y',$o_vente->date_emission)->format('Y')}}',month:'{{\Carbon\Carbon::createFromFormat('d/m/Y',$o_vente->date_emission)->format('m')}}'}
+    })
+    var submit_paiement = !1;
+    $('#paiement_form').submit(function (e) {
+        e.preventDefault();
+        if(!submit_paiement){
+            let spinner = $(__spinner_element);
+            let  btn =$('#paiement_form').find('.btn-info');
+            btn.attr('disabled','').prepend(spinner)
+            submit_paiement = !0;
+            $.ajax({
+                url:$('#paiement_form').attr('action'),
+                method:'POST',
+                data: $(this).serialize(),
+                headers:{
+                    'X-CSRF-Token':__csrf_token
+                },
+                success: function (response) {
+                    btn.removeAttr('disabled');
+                    submit_paiement = 0;
+                    spinner.remove();
+                    toastr.success(response);
+                    location.reload()
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    btn.removeAttr('disabled');
+                    submit_paiement = !1;
+                    spinner.remove();
+                    toastr.error(xhr.responseText);
+                }
+            })
+        }
+    })
+</script>

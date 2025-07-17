@@ -1,0 +1,35 @@
+
+// 
+// breadcrumb.scss
+//
+
+
+// Breadcrumb item arrow
+.breadcrumb-item {
+    > a {
+        color: $text-muted;
+    }
+    +.breadcrumb-item {
+        &::before {
+            color:  rgba($dark, 0.5);
+            content: "\F0142";
+            font-family: 'Material Design Icons';
+            font-weight: 700;
+        }
+    }
+}
+  
+
+// RTL
+
+[dir="ltr"] {
+    .breadcrumb-item {
+    
+      + .breadcrumb-item {
+        &::before {
+          content: "\f0141" !important;
+          font-family: "Material Design Icons";
+        }
+      }
+    }
+  }

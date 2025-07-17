@@ -1,0 +1,14 @@
+//
+// highlights.scss
+//
+
+/* Prism editor */
+:not(pre) > code[class*="language-"], pre[class*="language-"] {
+  background: $body-bg;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: $gray-600;
+	text-shadow: none;
+}

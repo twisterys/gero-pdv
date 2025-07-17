@@ -1,0 +1,43 @@
+
+//
+// Range slider.scss
+//
+
+.irs--flat{
+  .irs-bar, .irs-to, .irs-from, .irs-single {
+    background: $primary !important;
+    font-size: 11px;
+  }
+  .irs-to, .irs-from, .irs-single{
+    &:before{
+      border-top-color: $primary;
+    }
+  }
+
+  .irs-line{
+    background: $gray-300;
+    border-color: $gray-300;
+    height: 12px;
+  }
+  .irs-grid-text{
+    font-size: 11px;
+    color: $gray-400;
+  }
+  .irs-min, .irs-max{
+    color: $gray-500;
+    background: $gray-300;
+    font-size: 11px;
+  }
+
+  .irs-handle{
+    width: 10px;
+    height: 20px;
+    top: 21px;
+    i{
+      &:first-child{
+        background-color: $primary !important;
+      }
+      
+    }
+  }  
+}
