@@ -41,7 +41,7 @@
                                     <label for="magasin_id" class="form-label required">
                                         Magasin
                                     </label>
-                                    <select name="magasin_id" readonly
+                                    <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null}}
                                         class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
                                         id="magasin-select">
                                         @foreach ($o_magasins as $o_magasin)

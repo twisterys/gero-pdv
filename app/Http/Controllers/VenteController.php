@@ -2,58 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\VenteStoreRequest;
+use App\Http\Requests\VenteUpdateRequest;
+use App\Models\Client;
+use App\Models\Commercial;
+use App\Models\Compte;
+use App\Models\DocumentsParametre;
 use App\Models\GlobalSetting;
-use App\Models\InformationEntreprise;
+use App\Models\Magasin;
+use App\Models\MethodesPaiement;
 use App\Models\PieceJointe;
 use App\Models\Promesse;
 use App\Models\RelanceSettings;
-use App\Models\Template;
-use App\Services\SmtpService;
-use Exception;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\Models\Activity;
-use function auth;
 use App\Models\Tag;
 use App\Models\Taxe;
+use App\Models\Template;
 use App\Models\Unite;
 use App\Models\Vente;
-use App\Models\Client;
-use App\Models\Compte;
-use App\Models\Magasin;
-use App\Models\Commercial;
 use App\Models\VenteLigne;
-use App\Services\LogService;
-use Illuminate\Http\Request;
-use App\Services\FileService;
-use Illuminate\Http\Response;
-use App\Services\StockService;
 use App\Services\GlobalService;
+use App\Services\LogService;
 use App\Services\ModuleService;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Validation\Rule;
-use App\Models\MethodesPaiement;
-use SebastianBergmann\Diff\Diff;
-use Yajra\DataTables\DataTables;
 use App\Services\PaiementService;
-use Illuminate\Http\JsonResponse;
-use App\Models\DocumentsParametre;
 use App\Services\ReferenceService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\RedirectResponse;
+use App\Services\SmtpService;
+use App\Services\StockService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\VenteStoreRequest;
-use App\Http\Requests\VenteUpdateRequest;
 use Illuminate\Support\Facades\Validator;
-use Psr\Container\NotFoundExceptionInterface;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Psr\Container\ContainerExceptionInterface;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Psr\Container\NotFoundExceptionInterface;
+use Spatie\Activitylog\Models\Activity;
+use Yajra\DataTables\DataTables;
+use function auth;
 
 class VenteController extends Controller
 {
@@ -261,9 +257,11 @@ class VenteController extends Controller
         $prix_revient = $globals->prix_revient;
         $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
         $templates = Template::all();
+        $magasins_count = Magasin::where('active', '=', '1')->count();
 
 
-        return view('ventes.ajouter', compact('o_commercils', 'type', "o_unites", "o_taxes", "prix_revient", 'o_magasins', 'globals','templates'));
+
+        return view('ventes.ajouter', compact('magasins_count','o_commercils', 'type', "o_unites", "o_taxes", "prix_revient", 'o_magasins', 'globals','templates'));
     }
 
 
@@ -312,10 +310,10 @@ class VenteController extends Controller
 
             // ------------------- ### Magasin ### -------------------
             $magasin_id = $request->get('magasin_id') ?? Magasin::first()->id;
-//            if (!$request->user()->accessibleTo($magasin_id)){
-//                session()->flash('warning',"Magasin n'est pas accessible");
-//                return  redirect()->back()->withInput($request->input());
-//            }
+            if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+                session()->flash('warning', "Magasin n'est pas accessible");
+                return redirect()->back()->withInput($request->input());
+            }
             // ------------------- ### End of Magasin ### -------------------
             $data = [
                 'created_by' => auth()->id(),
@@ -453,12 +451,10 @@ class VenteController extends Controller
         $modifier_reference = $o_vente->reference && $globals->modifier_reference;
         $prix_revient = $globals->prix_revient;
         $o_magasins = \request()->user()->magasins()->get(['magasin_id as id','nom as text']);
-//        // Charger les templates disponibles
-//        $templates = Template::all();
-
+        $magasins_count = Magasin::where('active', '=', '1')->count();
         $globals = GlobalService::get_all_globals();
         $templates = Template::all();
-        return view('ventes.modifer', compact('o_commercils', 'type', "o_unites", "o_taxes", 'o_vente', 'modifier_reference', 'prix_revient', 'o_magasins','globals','templates'));
+        return view('ventes.modifer', compact('magasins_count','o_commercils', 'type', "o_unites", "o_taxes", 'o_vente', 'modifier_reference', 'prix_revient', 'o_magasins','globals','templates'));
     }
 
     /**
@@ -506,6 +502,11 @@ class VenteController extends Controller
         try {
             // ------------------- ### Magasin ### ----------------
             $magasin_id = $request->get('magasin_id') ?? $o_vente->magasin_id ?? Magasin::first()->id;
+
+            if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+                session()->flash('warning', "Magasin n'est pas accessible");
+                return redirect()->back()->withInput($request->input());
+            }
             // ----------------------------------------------------
             $data = [
                 'client_id' => $request->get('client_id'),

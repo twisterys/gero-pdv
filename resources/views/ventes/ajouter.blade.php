@@ -107,11 +107,11 @@
                         <!-- ####--Inputs--#### -->
                         <div class="row px-3 align-items-start ">
                             <div class="row col-md-12 ">
-                                <div class="col-12 col-lg-3 col-md-4 mb-3 @if (count($o_magasins)  <= 1) d-none @endif">
+                                <div class="col-12 col-lg-3 col-md-4 mb-3 @if ($magasins_count  <= 1) d-none @endif">
                                     <label for="magasin_id" class="form-label required">
                                         Magasin
                                     </label>
-                                    <select name="magasin_id"
+                                    <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null }}
                                         class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
                                         id="magasin-select">
                                         @foreach ($o_magasins as $o_magasin)
