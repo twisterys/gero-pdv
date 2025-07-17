@@ -230,7 +230,6 @@ class RapportController extends Controller
 
         $rapport = DB::table('achat_lignes')
             ->where('achats.magasin_id', $magasin_id)->where('date_emission', '=', Carbon::today()->format('Y-m-d'))
-            ->whereNotNull('pos_session_id')
             ->join('achats', 'achats.id', '=', 'achat_lignes.achat_id')
             ->join('articles', 'articles.id', '=', 'achat_lignes.article_id')
             ->join('fournisseurs', 'fournisseurs.id', '=', 'achats.fournisseur_id')
