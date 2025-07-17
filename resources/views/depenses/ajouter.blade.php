@@ -41,6 +41,23 @@
                                     <h5 class="text-muted">Détails de dépense</h5>
                                     <hr class="border border-success">
                                 </div>
+                                <div class="col-12 mb-3 @if ($magasins_count  <= 1) d-none @endif">
+                                    <label for="magasin_id" class="form-label required">
+                                        Magasin
+                                    </label>
+                                    <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null }}
+                                        class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
+                                        id="magasin-select">
+                                        @foreach ($o_magasins as $o_magasin)
+                                            <option value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('magasin_id')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                                 <div class=" col-sm-6 col-12 mb-3">
                                     <label for="categorie_select" class="form-label required">Catégorie</label>
                                     <div class="input-group d-grid" style="grid-template-columns:9fr 1fr ">
@@ -294,7 +311,7 @@
             check()
         })
         check()
-        $('#compte-input , #method-input, #tax-input').select2({
+        $('#compte-input , #method-input, #tax-input, #magasin-select').select2({
             minimumResultsForSearch: -1
         });
         $(document).on('change', '#regle-checkbox', function () {

@@ -78,7 +78,7 @@ class PaiementService
         }
     }
 
-    public static function payer_depense(int $id, array $data)
+    public static function payer_depense(int $id, array $data, int $magasin_id = null)
     {
         $o_depense = Depense::findOrFail($id);
         $payment_data = [
@@ -89,6 +89,7 @@ class PaiementService
             'methode_paiement_key' => $data['i_method_key'],
             'decaisser' => $data['i_montant'],
             'note'=>$data['i_note'],
+            'magasin_id' => $magasin_id,
             'created_by' => auth()->user()->id,
         ];
 

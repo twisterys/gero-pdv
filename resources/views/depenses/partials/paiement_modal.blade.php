@@ -6,7 +6,17 @@
 <form method="post" id="paiement_form" action="{{route('depenses.payer',$o_depense->id)}}" autocomplete="off">
     @csrf
     <div class="modal-body">
-
+        <div class="col-12 mt-3 @if ($magasins_count  <= 1) d-none @endif">
+            <label for="magasin_id" class="form-label required">
+                Magasin
+            </label>
+            <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null }}
+                class="form-control" id="magasin-select">
+                @foreach ($o_magasins as $o_magasin)
+                    <option value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="col-12 mt-3">
             <label for="date_paiement" class="form-label required">Date de paiement</label>
             <div class="input-group">
@@ -62,7 +72,52 @@
         <button class="btn btn-info">Payer</button>
     </div>
 </form>
-
-
-
-
+<script>
+    $('#compte-input,#method-input,#magasin-select').select2({
+        minimumResultsForSearch: -1,
+        width: '100%'
+    })
+    $('#method-input').on('change', function () {
+        check()
+    })
+    check()
+    function check() {
+        let methods = ['cheque', 'lcn'];
+        if (methods.indexOf($('#method-input').find('option:selected').val()) !== -1) {
+            $('.__variable').removeClass('d-none').find('input').attr('required','')
+        }else {
+            $('.__variable').addClass('d-none').find('input').removeAttr('required')
+        }
+    }
+    var submit_paiement = !1;
+    $('#paiement_form').submit(function (e) {
+        e.preventDefault();
+        if(!submit_paiement){
+            let spinner = $(__spinner_element);
+            let  btn =$('#paiement_form').find('.btn-info');
+            btn.attr('disabled','').prepend(spinner)
+            submit_paiement = !0;
+            $.ajax({
+                url:$('#paiement_form').attr('action'),
+                method:'POST',
+                data: $(this).serialize(),
+                headers:{
+                    'X-CSRF-Token':__csrf_token
+                },
+                success: function (response) {
+                    btn.removeAttr('disabled');
+                    submit_paiement = 0;
+                    spinner.remove();
+                    toastr.success(response);
+                    location.reload()
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    btn.removeAttr('disabled');
+                    submit_paiement = !1;
+                    spinner.remove();
+                    toastr.error(xhr.responseText);
+                }
+            })
+        }
+    })
+</script>

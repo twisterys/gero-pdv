@@ -20,6 +20,17 @@
 {{--                        <th>{{$o_vente->solde}} MAD</th>--}}
 {{--                    </tr>--}}
 {{--                </table>--}}
+        <div class="col-12 mt-3 @if ($magasins_count  <= 1) d-none @endif">
+            <label for="magasin_id" class="form-label required d-block">
+                Magasin
+            </label>
+            <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null }}
+                class="form-control w-100" id="magasin-select">
+                @foreach ($o_magasins as $o_magasin)
+                    <option value="{{ $o_magasin->id }}" @if($o_vente->magasin_id == $o_magasin->id) selected @endif>{{ $o_magasin->text }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="col-12 mt-3">
             <label for="date_paiement" class="form-label required">Date de paiement</label>
             <div class="input-group">
@@ -76,8 +87,9 @@
     </div>
 </form>
 <script>
-    $('#compte-input,#method-input').select2({
+    $('#compte-input,#method-input,#magasin-select').select2({
         minimumResultsForSearch: -1,
+        width: '100%'
     })
     $('#method-input').on('change', function () {
         check()

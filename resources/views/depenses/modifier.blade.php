@@ -33,6 +33,23 @@
 
                             <!-- First Row -->
                             <div class="col-12 row mx-0">
+                                <div class="col-md-4 mb-3 @if ($magasins_count  <= 1) d-none @endif">
+                                    <label for="magasin_id" class="form-label required">
+                                        Magasin
+                                    </label>
+                                    <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null }}
+                                        class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
+                                        id="magasin-select">
+                                        @foreach ($o_magasins as $o_magasin)
+                                            <option value="{{ $o_magasin->id }}" @if($o_depense->magasin_id == $o_magasin->id) selected @endif>{{ $o_magasin->text }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('magasin_id')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="categorie_select" class="form-label required">Catégorie</label>
                                     <div class="input-group d-grid" style="grid-template-columns:9fr 1fr ">
@@ -197,6 +214,11 @@
                     };
                 },
             }
+        });
+
+        $('#magasin-select').select2({
+            minimumResultsForSearch: -1,
+            width: '100%'
         });
 
         @if(old('i_categorie'))

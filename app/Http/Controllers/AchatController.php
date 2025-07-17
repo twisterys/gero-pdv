@@ -770,7 +770,9 @@ class AchatController extends Controller
         }
         $comptes = Compte::all();
         $methodes = MethodesPaiement::where('actif', '=', '1')->get();
-        return view('achats.partials.paiement_modal', compact('o_achat', 'type', 'comptes', 'methodes'));
+        $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
+        $magasins_count = Magasin::where('active', '=', '1')->count();
+        return view('achats.partials.paiement_modal', compact('o_achat', 'type', 'comptes', 'methodes', 'o_magasins', 'magasins_count'));
     }
 
     /**
@@ -790,6 +792,11 @@ class AchatController extends Controller
         if (!$o_achat) {
             return response(__('achats.' . $type . " n'existe pas !"), 404);
         }
+        $magasin_id = $request->get('magasin_id');
+        if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+            session()->flash('warning', "Magasin n'est pas accessible");
+            return redirect()->back()->withInput($request->input());
+        }
         $attributes = [
             'i_compte_id' => "compte",
             'i_montant' => 'montant de paiement',
@@ -799,6 +806,7 @@ class AchatController extends Controller
             'i_note' => 'note',
             'i_comptable' => 'comptable',
             'i_date_paiement' => 'date de paiement',
+            'magasin_id' => 'magasin'
         ];
         $validation = Validator::make($request->all(), [
             'i_compte_id' => 'required|exists:comptes,id',
@@ -807,7 +815,8 @@ class AchatController extends Controller
             'i_date' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'date_format:d/m/Y', 'nullable'],
             'i_date_paiement' => ['required', 'date_format:d/m/Y'],
             'i_reference' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'max:255'],
-            'i_comptable' => ['nullable', Rule::in('1', '0')]
+            'i_comptable' => ['nullable', Rule::in('1', '0')],
+            'magasin_id' => ['required', 'exists:magasins,id']
         ], [], $attributes);
         if ($validation->fails()) {
             $messaget = '';
@@ -818,7 +827,7 @@ class AchatController extends Controller
         }
         DB::beginTransaction();
         try {
-            PaiementService::add_paiement(Achat::class, $o_achat->id, $request->all(), $o_achat->magasin_id);
+            PaiementService::add_paiement(Achat::class, $o_achat->id, $request->all(), $request->get('magasin_id'));
             DB::commit();
             activity()
                 ->causedBy(Auth::user())

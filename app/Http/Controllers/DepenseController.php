@@ -131,7 +131,9 @@ class DepenseController extends Controller
         $categories = CategorieDepense::where('active', '1')->get();
         $comptes = Compte::all();
         $methodes = MethodesPaiement::where('actif',1)->get();
-        return view('depenses.ajouter', compact('taxes', 'categories', 'referenceDepanse','comptes','methodes'));
+        $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
+        $magasins_count = Magasin::where('active', '=', '1')->count();
+        return view('depenses.ajouter', compact('taxes', 'categories', 'referenceDepanse','comptes','methodes', 'o_magasins', 'magasins_count'));
     }
 
     public function sauvegarder(Request $request)
@@ -153,7 +155,13 @@ class DepenseController extends Controller
             'i_tax'=>'required|exists:taxes,valeur',
             'i_date' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'date_format:d/m/Y', 'nullable'],
             'i_reference_paiement' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'max:255'],
+            'magasin_id' => ['required', 'exists:magasins,id'],
         ]);
+        $magasin_id = $request->get('magasin_id');
+        if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+            session()->flash('warning', "Magasin n'est pas accessible");
+            return redirect()->back()->withInput($request->input());
+        }
         DB::beginTransaction();
         try {
             $o_depense = new Depense();
@@ -167,6 +175,7 @@ class DepenseController extends Controller
             $o_depense->solde = $request->get('i_montant');
             $o_depense->statut_paiement = 'non_paye';
             $o_depense->taxe = $request->input('i_tax');
+            $o_depense->magasin_id = $request->get('magasin_id');
             $o_depense->save();
             if ($request->input('regle')){
                 PaiementService::payer_depense($o_depense->id,[
@@ -177,7 +186,7 @@ class DepenseController extends Controller
                     'i_date'=>$request->input('i_date'),
                     'i_montant'=>$o_depense->montant,
                     'i_reference'=>$request->input('i_reference_paiement'),
-                ]);
+                ], $request->get('magasin_id'));
             }
             DB::commit();
             ReferenceService::incrementCompteur('dpa');
@@ -215,7 +224,9 @@ class DepenseController extends Controller
         }
         $taxes = Taxe::all();
         $modifier_reference =  GlobalService::get_modifier_reference();
-        return view('depenses.modifier', compact('o_depense', 'categories','modifier_reference','taxes'));
+        $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
+        $magasins_count = Magasin::where('active', '=', '1')->count();
+        return view('depenses.modifier', compact('o_depense', 'categories','modifier_reference','taxes', 'o_magasins', 'magasins_count'));
     }
 
     public function mettre_a_jour(Request $request, int $id)
@@ -237,7 +248,7 @@ class DepenseController extends Controller
             'i_description' => 'nullable|string',
             'i_montant' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,2})?$/', 'required'],
             'i_tax'=>'required|exists:taxes,valeur',
-
+            'magasin_id' => ['required', 'exists:magasins,id'],
         ]);
 
         try {
@@ -252,6 +263,7 @@ class DepenseController extends Controller
             $o_depense->taxe = $request->integer('i_tax');
             $o_depense->solde = $o_depense->montant - $o_depense->encaisser;
             $o_depense->statut_paiement = PaiementService::get_payable_statut($o_depense->montant,$o_depense->encaisser,$o_depense->solde);
+            $o_depense->magasin_id = $request->get('magasin_id');
 
 
             $o_depense->save();
@@ -295,8 +307,10 @@ class DepenseController extends Controller
         }
         $comptes = Compte::all();
         $methodes = MethodesPaiement::where('actif','=','1')->get();
+        $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
+        $magasins_count = Magasin::where('active', '=', '1')->count();
 
-        return view('depenses.partials.paiement_modal', compact('o_depense', 'comptes', 'methodes'));
+        return view('depenses.partials.paiement_modal', compact('o_depense', 'comptes', 'methodes', 'o_magasins', 'magasins_count'));
     }
 
     public function payer(Request $request, $id)
@@ -307,7 +321,11 @@ class DepenseController extends Controller
         if (!$o_depense) {
             return response(__("Dépense n'existe pas !!"), 404);
         }
-
+        $magasin_id = $request->get('magasin_id');
+        if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+            session()->flash('warning', "Magasin n'est pas accessible");
+            return redirect()->back()->withInput($request->input());
+        }
         $attributes = [
             'i_compte_id' => "compte",
             'i_montant' => 'montant de paiement',
@@ -317,6 +335,7 @@ class DepenseController extends Controller
             'i_note' => 'note',
             'i_comptable' => 'comptable',
             'i_date_paiement' => 'date de paiement',
+            'magasin_id' => 'magasin'
         ];
         $validation = Validator::make($request->all(), [
             'i_compte_id' => 'required|exists:comptes,id',
@@ -325,7 +344,8 @@ class DepenseController extends Controller
             'i_date' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'date_format:d/m/Y', 'nullable'],
             'i_date_paiement' => ['required', 'date_format:d/m/Y'],
             'i_reference' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'max:255'],
-            'i_comptable' => ['nullable', Rule::in('1', '0')]
+            'i_comptable' => ['nullable', Rule::in('1', '0')],
+            'magasin_id' => ['required', 'exists:magasins,id']
         ], [], $attributes);
 
         if ($validation->fails()) {
@@ -338,7 +358,7 @@ class DepenseController extends Controller
 
         try {
             DB::beginTransaction();
-            PaiementService::payer_depense( $o_depense->id, $request->all());
+            PaiementService::payer_depense( $o_depense->id, $request->all(), $request->get('magasin_id'));
             DB::commit();
             return response('Paiement réussi', 200);
         } catch (Exception $e) {

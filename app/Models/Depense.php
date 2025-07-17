@@ -29,7 +29,8 @@ class Depense extends Model
         'statut_paiement',
         'pos_session_id',
         'taxe',
-        'affaire_id'
+        'affaire_id',
+        'magasin_id'
     ];
 
     public function categorie()
