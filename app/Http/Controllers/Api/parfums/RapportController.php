@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\parfums;
+namespace App\Http\Controllers\Api\classic;
 
 use App\Http\Controllers\Controller;
 use App\Models\PosSession;
+use App\Models\Vente;
 use App\Models\VenteLigne;
 use App\Services\PosService;
 use Carbon\Carbon;
@@ -85,7 +86,7 @@ class RapportController extends Controller
         })
             ->join('articles', 'articles.id', '=', 'vente_lignes.article_id')
             ->join('ventes', 'ventes.id', '=', 'vente_lignes.vente_id')
-            ->join('paiements', function($join) {
+            ->leftJoin('paiements', function($join) {
                 $join->on('paiements.payable_id', '=', 'ventes.id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
             })
@@ -97,7 +98,7 @@ class RapportController extends Controller
                 'article_id',
                 DB::raw('SUM(vente_lignes.quantite) as quantite'),
                 DB::raw('SUM(vente_lignes.total_ttc) as total_ttc'),
-                DB::raw('SUM(paiements.encaisser) as montant')
+                DB::raw('COALESCE(SUM(paiements.encaisser), 0) as montant')
             )
             ->groupBy('clients.id', 'clients.nom', 'article_id', 'articles.designation')
             ->get();
@@ -105,13 +106,19 @@ class RapportController extends Controller
         $clients = [];
         $articles = [];
         $matrixData = [];
+        $clientTotals = [];
 
         foreach ($rapport as $item) {
             $clientName = $item['nom'];
+            $clientId = $item['client_id'];
             $articleRef = $item['designation'];
 
             if (!isset($clients[$clientName])) {
                 $clients[$clientName] = true;
+                $clientTotals[$clientName] = [
+                    'total_ttc' => 0,
+                    'total_paye' => 0
+                ];
             }
             if (!isset($articles[$articleRef])) {
                 $articles[$articleRef] = true;
@@ -122,6 +129,33 @@ class RapportController extends Controller
                 'quantite' => floor($item['quantite']) == $item['quantite'] ? (int)$item['quantite'] : $item['quantite'],
                 'total_ttc' => $item['total_ttc']
             ];
+
+            // Add to client totals
+            $clientTotals[$clientName]['total_ttc'] += $item['total_ttc'];
+        }
+
+        // Calculate total paid amount for each client (avoiding double counting)
+        $clientPayments = DB::table('ventes')
+            ->join('clients', 'clients.id', '=', 'ventes.client_id')
+            ->leftJoin('paiements', function($join) {
+                $join->on('paiements.payable_id', '=', 'ventes.id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('ventes.magasin_id', $o_pos_session->magasin_id)
+            ->where('ventes.date_document', '=', Carbon::today()->format('Y-m-d'))
+            ->where('ventes.type_document', PosService::getValue('type_vente') ?? 'bc')
+            ->whereNotNull('ventes.pos_session_id')
+            ->select(
+                'clients.nom',
+                DB::raw('COALESCE(SUM(paiements.encaisser), 0) as total_paye')
+            )
+            ->groupBy('clients.id', 'clients.nom')
+            ->get();
+
+        foreach ($clientPayments as $payment) {
+            if (isset($clientTotals[$payment->nom])) {
+                $clientTotals[$payment->nom]['total_paye'] = $payment->total_paye;
+            }
         }
 
         $clientNames = array_keys($clients);
@@ -141,7 +175,8 @@ class RapportController extends Controller
         return response()->json([
             'clients' => $clientNames,
             'articles' => $articleRefs,
-            'data' => $matrixData
+            'data' => $matrixData,
+            'client_totals' => $clientTotals
         ]);
     }
 

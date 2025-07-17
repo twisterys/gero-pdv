@@ -2,55 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GlobalSetting;
-use App\Models\PieceJointe;
-use App\Models\Template;
-use App\Models\Vente;
-use App\Models\VenteLigne;
-use Exception;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\Models\Activity;
-use Symfony\Component\VarDumper\Caster\AmqpCaster;
-use function auth;
-use App\Models\Taxe;
-use App\Models\Achat;
-use App\Models\Unite;
-use App\Models\Compte;
-use App\Models\Magasin;
-use App\Models\Paiement;
-use App\Models\AchatLigne;
-use App\Models\Commercial;
-use App\Models\Fournisseur;
-use App\Services\LogService;
-use Illuminate\Http\Request;
-use App\Services\FileService;
-use Illuminate\Http\Response;
-use App\Services\StockService;
-use App\Services\GlobalService;
-use App\Services\ModuleService;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Validation\Rule;
-use App\Models\MethodesPaiement;
-use Yajra\DataTables\DataTables;
-use App\Services\PaiementService;
-use Illuminate\Http\JsonResponse;
-use App\Models\DocumentsParametre;
-use App\Services\ReferenceService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\AchatStoreRequest;
 use App\Http\Requests\AchatUpdateRequest;
-use Illuminate\Support\Facades\Validator;
-use Psr\Container\NotFoundExceptionInterface;
-use Psr\Container\ContainerExceptionInterface;
+use App\Models\Achat;
+use App\Models\AchatLigne;
+use App\Models\Commercial;
+use App\Models\Compte;
+use App\Models\DocumentsParametre;
+use App\Models\Fournisseur;
+use App\Models\GlobalSetting;
+use App\Models\Magasin;
+use App\Models\MethodesPaiement;
+use App\Models\PieceJointe;
+use App\Models\Taxe;
+use App\Models\Template;
+use App\Models\Unite;
+use App\Services\FileService;
+use App\Services\GlobalService;
+use App\Services\LogService;
+use App\Services\ModuleService;
+use App\Services\PaiementService;
+use App\Services\ReferenceService;
+use App\Services\StockService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Spatie\Activitylog\Models\Activity;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Yajra\DataTables\DataTables;
+use function auth;
 
 /**
  *
@@ -92,7 +88,7 @@ class AchatController extends Controller
             }
             if ($request->get('date_emission')) {
                 $start = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[0]))->toDateString();
-                $end =  Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[1]))->toDateString();
+                $end = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[1]))->toDateString();
                 if ($start === $end) {
                     $o_achat->where(function ($query) use ($start) {
                         $query->whereDate('date_emission', $start)->orWhereNull('date_emission');
@@ -104,7 +100,7 @@ class AchatController extends Controller
             }
             if ($request->get('date_expiration')) {
                 $start = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_expiration'))[0]))->toDateString();
-                $end =  Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_expiration'))[1]))->toDateString();
+                $end = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_expiration'))[1]))->toDateString();
                 if ($start === $end) {
                     $o_achat->where(function ($query) use ($start) {
                         $query->whereDate('date_expiration', $start)->orWhereNull('date_expiration');
@@ -122,16 +118,16 @@ class AchatController extends Controller
                 $ids = DB::table('taggables')->where('taggable_type', Achat::class)->whereIn('tag_id', $balises)->pluck('taggable_id');
                 $o_achat->whereIn('id', $ids);
             }
-            if ($request->get('order') && $request->get('columns') ){
+            if ($request->get('order') && $request->get('columns')) {
                 $orders = $request->get('order');
                 $columns = $request->get('columns');
-                foreach ($orders as $order){
-                    $o_achat->orderByRaw(''.$columns[$order['column']]['data'].' '.$order['dir']);
+                foreach ($orders as $order) {
+                    $o_achat->orderByRaw('' . $columns[$order['column']]['data'] . ' ' . $order['dir']);
                 }
             }
             // ------------------- ### End of filters ### -------------------
 //            $o_achat = $o_achat->get();
-            $table = DataTables::of($o_achat)->order(function ($e){
+            $table = DataTables::of($o_achat)->order(function ($e) {
 
             });
             // ------------------- ### Columns formatting ### -------------------
@@ -162,8 +158,8 @@ class AchatController extends Controller
                     $action .= '<button id="clone-btn" data-href="' . route('achats.clone_modal', [$type, $row->id]) . '" class="btn  btn-sm btn-soft-info mx-1">
                 <i class="fa fa-clone"></i>
              </button>';
-                    return  $action;
-                }else {
+                    return $action;
+                } else {
                     $action = view(
                         'partials.__datatable-action',
                         compact(
@@ -175,7 +171,7 @@ class AchatController extends Controller
                     $action .= '<button id="clone-btn" data-href="' . route('achats.clone_modal', [$type, $row->id]) . '" class="btn  btn-sm btn-soft-info mx-1">
                 <i class="fa fa-clone"></i>
              </button>';
-                    return  $action;
+                    return $action;
                 }
             })->editColumn('reference', function ($row) {
                 return $row->reference;
@@ -190,7 +186,8 @@ class AchatController extends Controller
                 if ($row->statut == "validé") {
                     $color = 'success';
                 }
-                return '<div class="badge w-100 bg-soft-' . $color . '" >' .ucfirst($row->statut) . '</div>';})->addColumn(
+                return '<div class="badge w-100 bg-soft-' . $color . '" >' . ucfirst($row->statut) . '</div>';
+            })->addColumn(
                 'selectable_td',
                 function ($contact) {
                     $id = $contact->id;
@@ -217,7 +214,7 @@ class AchatController extends Controller
             })->editColumn('reference_interne', function ($row) {
                 return $row->reference_interne ?? 'Brouillon';
             });
-            $table->rawColumns(['actions', 'selectable_td', 'objet', 'statut_paiement','statut']);
+            $table->rawColumns(['actions', 'selectable_td', 'objet', 'statut_paiement', 'statut']);
             // ------------------- ### End of columns formatting ### -------------------
             return $table->make();
 
@@ -240,12 +237,13 @@ class AchatController extends Controller
         $o_commercils = Commercial::get(['id', 'nom as text', "commission_par_defaut"]);
         $o_unites = Unite::get(['id', "nom"]);
         $o_taxes = Taxe::where('active', '1')->get(["valeur", "nom"]);
-        $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
+        $o_magasins = \request()->user()->magasins()->where('active', '=', '1')->get(['magasin_id as id', 'nom as text']);
+        $magasins_count = Magasin::where('active', '=', '1')->count();
         $globals = GlobalService::get_all_globals();
         $templates = Template::all();
 
 
-        return view('achats.ajouter', compact('o_commercils', 'type', "o_unites", "o_taxes", "o_magasins", 'globals','templates'));
+        return view('achats.ajouter', compact('o_commercils', 'type', "o_unites", "o_taxes", "o_magasins", 'globals', 'templates', 'magasins_count'));
     }
 
     /**
@@ -261,10 +259,10 @@ class AchatController extends Controller
         try {
             // ------------------- ### Magasin ### -------------------
             $magasin_id = $request->get('magasin_id') ?? Magasin::first()->id;
-//            if (!$request->user()->accessibleTo($magasin_id)){
-//                session()->flash('warning',"Magasin n'est pas accessible");
-//                return  redirect()->back()->withInput($request->input());
-//            }
+            if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+                session()->flash('warning', "Magasin n'est pas accessible");
+                return redirect()->back()->withInput($request->input());
+            }
             // ------------------- ### Data of document defining ### -------------------
             $data = [
                 'created_by' => auth()->id(),
@@ -279,7 +277,7 @@ class AchatController extends Controller
                 'statut_paiement' => 'non_paye',
                 'note' => $request->get('i_note'),
                 'magasin_id' => $magasin_id,
-                'template_id' => $request->get('template_id') ,
+                'template_id' => $request->get('template_id'),
             ];
             // ------------------- ### Check if date d'expiration is required ### -------------------
             if (in_array($type, ['dva', 'faa', 'bca'])) {
@@ -340,9 +338,9 @@ class AchatController extends Controller
                     'subject_id' => $o_achat->id,
                     'subject_reference' => $o_achat->reference_interne,
                 ])
-                ->log('Création de '. __('achats.' . $type).' ' . $o_achat->reference_interne ?? '-');
+                ->log('Création de ' . __('achats.' . $type) . ' ' . $o_achat->reference_interne ?? '-');
             session()->flash('success', __('achats.' . $type) . " ajouté avec succès");
-            return redirect()->route('achats.afficher', ['id' => $o_achat->id,'type' => $type]);
+            return redirect()->route('achats.afficher', ['id' => $o_achat->id, 'type' => $type]);
         } catch (Exception $exception) {
             LogService::logException($exception);
             DB::rollBack();
@@ -371,13 +369,14 @@ class AchatController extends Controller
         $o_unites = Unite::get(['id', "nom"]);
         $o_taxes = Taxe::where('active', '1')->get(["valeur", "nom"]);
         $modifier_reference = $o_achat->reference && GlobalService::get_modifier_reference();
-        $o_magasins = \request()->user()->magasins()->get(['magasin_id as id','nom as text']);
+        $o_magasins = \request()->user()->magasins()->get(['magasin_id as id', 'nom as text']);
         $globals = GlobalService::get_all_globals();
         $templates = Template::all();
 //        $templates = Template::where('nom', '!=', 'marchandise')->get();
+        $magasins_count = Magasin::where('active', '=', '1')->count();
 
 
-        return view('achats.modifer', compact('o_commercils', 'type', "o_unites", "o_taxes", 'o_achat', 'modifier_reference', 'o_magasins','globals','templates'));
+        return view('achats.modifer', compact('o_commercils', 'magasins_count', 'type', "o_unites", "o_taxes", 'o_achat', 'modifier_reference', 'o_magasins', 'globals', 'templates'));
     }
 
     /**
@@ -393,9 +392,9 @@ class AchatController extends Controller
             return redirect()->route('achats.liste', $type)->with('error', __('achats.' . $type) . " n'existe pas");
         }
         $payabale_types = ModuleService::getPayabaleTypes();
-        $is_controled=GlobalSetting::first()->controle;
+        $is_controled = GlobalSetting::first()->controle;
         $globals = GlobalService::get_all_globals();
-        return view('achats.afficher', compact('o_achat', 'type', 'payabale_types','is_controled', 'globals'));
+        return view('achats.afficher', compact('o_achat', 'type', 'payabale_types', 'is_controled', 'globals'));
     }
 
     /**
@@ -406,7 +405,7 @@ class AchatController extends Controller
      */
     public function mettre_a_jour(AchatUpdateRequest $request, $type, $id)
     {
-        $this->guard_custom([ 'achat.metter_a_jour']);
+        $this->guard_custom(['achat.metter_a_jour']);
         $o_achat = Achat::find($id);
         if (!$o_achat) {
             abort(404);
@@ -419,10 +418,10 @@ class AchatController extends Controller
         try {
             // ------------------- ### Magasin ### -------------------
             $magasin_id = $request->get('magasin_id') ?? $o_achat->magasin_id ?? Magasin::first()->id;
-//            if (!$request->user()->accessibleTo($magasin_id)){
-//                session()->flash('warning',"Magasin n'est pas accessible");
-//                return  redirect()->back()->withInput($request->input());
-//            }
+            if (!$request->user()->magasins()->where('magasin_id', $magasin_id)->exists()) {
+                session()->flash('warning', "Magasin n'est pas accessible");
+                return redirect()->back()->withInput($request->input());
+            }
             // ------------------- ### Define data of document ### -------------------
             $data = [
                 'reference' => $request->get('reference'),
@@ -517,7 +516,7 @@ class AchatController extends Controller
                 ])
                 ->log('Modification de ' . __('achats.' . $type) . ' ' . ($o_achat->reference_interne ?? '-'));
             session()->flash('success', __('achats.' . $type) . " modifié avec succès");
-            return redirect()->route('achats.afficher', ['id'=> $o_achat->id ,'type' => $type]);
+            return redirect()->route('achats.afficher', ['id' => $o_achat->id, 'type' => $type]);
         } catch (Exception $exception) {
             DB::rollBack();
             LogService::logException($exception);
@@ -527,19 +526,21 @@ class AchatController extends Controller
     }
 
 
-    public function history_modal(string $type, int $id) {
+    public function history_modal(string $type, int $id)
+    {
         $this->guard_custom(['achat.historique']);
         $o_achat = Achat::find($id);
         if (!$o_achat) {
             return response(__('achats.' . $type) . " n'exist pas !", 404);
         }
-            $activities = Activity::whereJsonContains('properties->subject_id', $id)
-                ->where('properties->subject_type', Achat::class)
-                ->orderBy('created_at', 'desc')
-                ->get();
+        $activities = Activity::whereJsonContains('properties->subject_id', $id)
+            ->where('properties->subject_type', Achat::class)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('achats.partials.historique_modal', compact('activities'));
     }
+
     /**
      * @param $type
      * @param $id
@@ -561,7 +562,7 @@ class AchatController extends Controller
                         'subject_id' => $o_achat->id,
                         'subject_reference' => $o_achat->reference_interne,
                     ])
-                    ->log('Suppression de '. __('achats.' . $type).' ' . $o_achat->reference_interne ?? '-' );
+                    ->log('Suppression de ' . __('achats.' . $type) . ' ' . $o_achat->reference_interne ?? '-');
                 return response('Document supprimé  avec succès', 200);
             } else {
                 return response('Erreur', 404);
@@ -588,20 +589,16 @@ class AchatController extends Controller
             'image_en_tete' => $o_template->image_en_tete ? $this->base64_img($o_template->image_en_tete) : null,
             'image_en_bas' => $o_template->image_en_bas ? $this->base64_img($o_template->image_en_bas) : null,
             'image_arriere_plan' => $o_template->image_arriere_plan ? $this->base64_img($o_template->image_arriere_plan) : null,
-            'cachet'=> $o_template->cachet? $this->base64_img($o_template->cachet):null,
-            'logo'=>$o_template->logo ? $this->base64_img($o_template->logo) : null
+            'cachet' => $o_template->cachet ? $this->base64_img($o_template->cachet) : null,
+            'logo' => $o_template->logo ? $this->base64_img($o_template->logo) : null
 
         ];
 //        $o_document_parametres = DocumentsParametre::get()->first();
 //        $o_template = $o_document_parametres->template;
 
 
-
         $pdf = Pdf::loadView($template, compact('type', 'o_achat', 'o_template', 'images'))->setOptions(['defaultFont' => 'Rubik'])->set_option("isPhpEnabled", true);
         return $pdf->stream($o_achat->fournisseur->nom . ' ' . $o_achat->date_emission . ' ' . $o_achat->reference . '.pdf');
-
-
-
 
 
     }
@@ -622,7 +619,7 @@ class AchatController extends Controller
             return response(__('achats.' . $type) . '  est déjà validé', 403);
         }
         if (!$o_achat->reference_interne) {
-            $reference = ReferenceService::generateReference($type, Carbon::createFromFormat('d/m/Y',$o_achat->date_emission));
+            $reference = ReferenceService::generateReference($type, Carbon::createFromFormat('d/m/Y', $o_achat->date_emission));
         } else {
             $reference = $o_achat->reference_interne;
         }
@@ -673,7 +670,7 @@ class AchatController extends Controller
                 'statut' => 'validé'
             ]);
             DB::commit();
-            if (\request()->user()->can(['stock.*'])){
+            if (\request()->user()->can(['stock.*'])) {
                 $this->stock($id);
             }
             activity()
@@ -684,7 +681,7 @@ class AchatController extends Controller
                     'subject_id' => $o_achat->id,
                     'subject_reference' => $o_achat->reference_interne,
                 ])
-                ->log('Validation de '. __('achats.' . $type).' ' . $o_achat->reference_interne ?? '-' );
+                ->log('Validation de ' . __('achats.' . $type) . ' ' . $o_achat->reference_interne ?? '-');
             session()->flash('success', __('achats.' . $type) . '  validé !');
             return redirect()->route('achats.afficher', [$type, $o_achat->id]);
         } catch (Exception $exception) {
@@ -727,7 +724,7 @@ class AchatController extends Controller
                     'subject_id' => $o_achat->id,
                     'subject_reference' => $o_achat->reference_interne,
                 ])
-                ->log('Dévalidation de '. __('achats.' . $type).' ' . $o_achat->reference_interne ?? '-' );
+                ->log('Dévalidation de ' . __('achats.' . $type) . ' ' . $o_achat->reference_interne ?? '-');
             session()->flash('success', __('achats.' . $type) . '  dévalidé !');
             return redirect()->route('achats.afficher', [$type, $o_achat->id]);
         } catch (Exception $exception) {
@@ -772,7 +769,7 @@ class AchatController extends Controller
             return response(__('achats.' . $type) . " est déja payé !", 403);
         }
         $comptes = Compte::all();
-        $methodes = MethodesPaiement::where('actif','=','1')->get();
+        $methodes = MethodesPaiement::where('actif', '=', '1')->get();
         return view('achats.partials.paiement_modal', compact('o_achat', 'type', 'comptes', 'methodes'));
     }
 
@@ -821,7 +818,7 @@ class AchatController extends Controller
         }
         DB::beginTransaction();
         try {
-            PaiementService::add_paiement(Achat::class, $o_achat->id, $request->all(),$o_achat->magasin_id);
+            PaiementService::add_paiement(Achat::class, $o_achat->id, $request->all(), $o_achat->magasin_id);
             DB::commit();
             activity()
                 ->causedBy(Auth::user())
@@ -831,7 +828,7 @@ class AchatController extends Controller
                     'subject_id' => $o_achat->id,
                     'subject_reference' => $o_achat->reference_interne,
                 ])
-                ->log('Paiement du montant '.$request->get('i_montant').' DH' );
+                ->log('Paiement du montant ' . $request->get('i_montant') . ' DH');
             return response('Paiement réussi', 200);
         } catch (Exception $exception) {
             DB::rollBack();
@@ -849,10 +846,11 @@ class AchatController extends Controller
         if (!$o_achat) {
             return response(__('achats.' . $type) . " n'exist pas !", 404);
         }
-        return view('achats.partials.clone_modal', compact( 'o_achat'));
+        return view('achats.partials.clone_modal', compact('o_achat'));
     }
 
-    public function cloner(string $type,int $id, Request $request){
+    public function cloner(string $type, int $id, Request $request)
+    {
 
         $this->guard_custom(['achat.cloner']);
         $rules = [
@@ -875,8 +873,8 @@ class AchatController extends Controller
         DB::beginTransaction();
         try {
             $cloned = Achat::create([
-                'statut'=>'brouillon',
-                'objet'=> $o_achat->objet,
+                'statut' => 'brouillon',
+                'objet' => $o_achat->objet,
                 'date_emission' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
                 'date_expiration' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
                 'fournisseur_id' => $o_achat->fournisseur_id,
@@ -884,10 +882,10 @@ class AchatController extends Controller
                 'total_tva' => $o_achat->total_tva,
                 'total_reduction' => $o_achat->total_reduction,
                 'total_ttc' => $o_achat->total_ttc,
-                'type_document' => $o_achat->type_document ,
+                'type_document' => $o_achat->type_document,
                 'fichier_document' => null,
                 'debit' => $o_achat->total_ttc,
-                'credit'=> 0 ,
+                'credit' => 0,
                 "created_by" => auth()->id(),
                 'note' => $o_achat->note,
                 'statut_paiement' => 'non_paye',
@@ -896,7 +894,7 @@ class AchatController extends Controller
                 'magasin_id' => $o_achat->magasin_id
             ]);
 
-            foreach ($o_achat->lignes as $ligne ){
+            foreach ($o_achat->lignes as $ligne) {
                 AchatLigne::create([
                     'achat_id' => $cloned->id,
                     'article_id' => $ligne->article_id,
@@ -921,11 +919,11 @@ class AchatController extends Controller
                     'subject_id' => $o_achat->id,
                     'subject_reference' => $o_achat->reference,
                 ])
-                ->log('Clonage de '. __('achats.' . $type).' ' . $o_achat->reference ?? '-' );
+                ->log('Clonage de ' . __('achats.' . $type) . ' ' . $o_achat->reference ?? '-');
             DB::commit();
             session()->flash('success', 'Document cloné !');
-            return redirect()->route('achats.afficher',[$type, $cloned->id]);
-        }catch (Exception $exception){
+            return redirect()->route('achats.afficher', [$type, $cloned->id]);
+        } catch (Exception $exception) {
             DB::rollBack();
             session()->flash('error', $exception->getMessage());
             LogService::logException($exception);
@@ -1087,7 +1085,7 @@ class AchatController extends Controller
                     'subject_id' => $o_achat->id,
                     'subject_reference' => $o_achat->reference ?? '',
                 ])
-                ->log('Pièce jointe ' . ' ' . $piece_jointe->title . ' attachée au document' );
+                ->log('Pièce jointe ' . ' ' . $piece_jointe->title . ' attachée au document');
             session()->flash('success', "Pièce jointe attachée avec succès");
             return response('Pièce jointe attaché', 200);
         } catch (Exception $e) {
@@ -1098,7 +1096,8 @@ class AchatController extends Controller
     }
 
 
-    public function supprimer_piece_jointe($type, $id){
+    public function supprimer_piece_jointe($type, $id)
+    {
         $o_piece_jointe = PieceJointe::findOrFail($id);
         if (!$o_piece_jointe) {
             abort(404);
@@ -1113,7 +1112,7 @@ class AchatController extends Controller
                 'subject_id' => $o_achat->id,
                 'subject_reference' => $o_achat->reference,
             ])
-            ->log('Pièce jointe ' . ' ' . $o_piece_jointe->title . ' supprimée du document' );
+            ->log('Pièce jointe ' . ' ' . $o_piece_jointe->title . ' supprimée du document');
         session()->flash('success', "Pièce jointe supprimée avec succès");
         return redirect()->route('achats.afficher', [$type, $o_piece_jointe->document_id]);
     }
@@ -1130,8 +1129,8 @@ class AchatController extends Controller
             return response(__('achats.' . $type) . " n'est pas validé!", 402);
         }
         $active_modules = ModuleService::getActiveModules();
-        $types = array_filter(Achat::TYPES,function ($type) use($active_modules){
-            return in_array($type,$active_modules);
+        $types = array_filter(Achat::TYPES, function ($type) use ($active_modules) {
+            return in_array($type, $active_modules);
         });
 
         return view('achats.partials.conversion_modal', compact('types', 'o_achat'));
@@ -1163,8 +1162,6 @@ class AchatController extends Controller
         }
 
 
-
-
         DB::beginTransaction();
         try {
             $data = [
@@ -1185,8 +1182,8 @@ class AchatController extends Controller
                 'total_reduction' => $o_achat->total_reduction,
                 'total_ttc' => $o_achat->total_ttc,
                 'magasin_id' => $o_achat->magasin_id,
-                'credit' =>0,
-                'debit' =>$o_achat->total_ttc
+                'credit' => 0,
+                'debit' => $o_achat->total_ttc
             ];
 
             $o_converted_achat = Achat::create($data);

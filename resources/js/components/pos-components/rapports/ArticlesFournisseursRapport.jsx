@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo} from "react";
 import ArticlesClientsTable from "./tables/ArticlesClientsTable.jsx";
+import ArticlesFournisseursTable from "./tables/ArticlesFournisseursTable.jsx";
 
 const ArticlesFournisseursRapport = ({
     data,
@@ -29,7 +30,7 @@ const ArticlesFournisseursRapport = ({
                         </div>
                     </div>
                 ) : (
-                   <ArticlesClientsTable data={afData}/>
+                   <ArticlesFournisseursTable data={afData}/>
                 )}
             </div>
         </div>
