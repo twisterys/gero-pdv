@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\classic;
 
 use App\Http\Controllers\Controller;
+use App\Models\Paiement;
 use App\Models\PosSession;
-use App\Models\Vente;
 use App\Models\VenteLigne;
 use App\Services\PosService;
 use Carbon\Carbon;
@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 
 class RapportController extends Controller
 {
-    public function stock(Request $request){
+    public function stock(Request $request)
+    {
         // ------------------ ### Definir la session ### ------------------
         $o_pos_session = PosSession::find($request->get('session_id'));
 
@@ -23,7 +24,7 @@ class RapportController extends Controller
         }
 
         $stock = DB::table('articles as a')
-            ->leftJoin('transaction_stocks as ts', function($join) use ($o_pos_session) {
+            ->leftJoin('transaction_stocks as ts', function ($join) use ($o_pos_session) {
                 $join->on('a.id', '=', 'ts.article_id')
                     ->where('ts.magasin_id', $o_pos_session->magasin_id);
             })
@@ -35,7 +36,7 @@ class RapportController extends Controller
             )
             ->groupBy('a.id');
 
-        return  response($stock->get(), 200);
+        return response($stock->get(), 200);
     }
 
     /**
@@ -80,13 +81,13 @@ class RapportController extends Controller
         if (!$o_pos_session->ouverte) {
             return response('Cette session n\'est pas ouverte ! ', 500);
         }
-        $rapport = VenteLigne::whereHas('vente', function ($query) use ($request,$o_pos_session) {
-            $query->where('magasin_id', $o_pos_session->magasin_id)->where('date_document','=',Carbon::today()->format('Y-m-d'))
+        $rapport = VenteLigne::whereHas('vente', function ($query) use ($request, $o_pos_session) {
+            $query->where('magasin_id', $o_pos_session->magasin_id)->where('date_document', '=', Carbon::today()->format('Y-m-d'))
                 ->where('type_document', PosService::getValue('type_vente') ?? 'bc')->whereNotNull('pos_session_id');
         })
             ->join('articles', 'articles.id', '=', 'vente_lignes.article_id')
             ->join('ventes', 'ventes.id', '=', 'vente_lignes.vente_id')
-            ->leftJoin('paiements', function($join) {
+            ->leftJoin('paiements', function ($join) {
                 $join->on('paiements.payable_id', '=', 'ventes.id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
             })
@@ -137,7 +138,7 @@ class RapportController extends Controller
         // Calculate total paid amount for each client (avoiding double counting)
         $clientPayments = DB::table('ventes')
             ->join('clients', 'clients.id', '=', 'ventes.client_id')
-            ->leftJoin('paiements', function($join) {
+            ->leftJoin('paiements', function ($join) {
                 $join->on('paiements.payable_id', '=', 'ventes.id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
             })
@@ -228,12 +229,12 @@ class RapportController extends Controller
         $magasin_id = $o_pos_session->magasin_id;
 
         $rapport = DB::table('achat_lignes')
-            ->where('achats.magasin_id', $magasin_id)->where('date_emission','=',Carbon::today()->format('Y-m-d'))
+            ->where('achats.magasin_id', $magasin_id)->where('date_emission', '=', Carbon::today()->format('Y-m-d'))
             ->whereNotNull('pos_session_id')
             ->join('achats', 'achats.id', '=', 'achat_lignes.achat_id')
             ->join('articles', 'articles.id', '=', 'achat_lignes.article_id')
             ->join('fournisseurs', 'fournisseurs.id', '=', 'achats.fournisseur_id')
-            ->leftJoin('paiements', function($join) {
+            ->leftJoin('paiements', function ($join) {
                 $join->on('paiements.payable_id', '=', 'achats.id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Achat');
             })
@@ -333,41 +334,28 @@ class RapportController extends Controller
 
         $magasin_id = $o_pos_session->magasin_id;
 
-        // Get the latest payment for each vente
-        $latestPayments = DB::table('paiements')
-            ->select(
-                'payable_id',
-                'methode_paiement_key',
-                'date_paiement',
-                'cheque_lcn_reference',
-                DB::raw('ROW_NUMBER() OVER (PARTITION BY payable_id ORDER BY created_at DESC) as rn')
-            )
-            ->where('payable_type', 'App\\Models\\Vente')
-            ->whereNotNull('payable_id');
+        // Main query to get ventes with payments made today for sales before today
 
-        // Main query to get ventes with unpaid status
-        $creances = DB::table('ventes')
-            ->join('clients', 'clients.id', '=', 'ventes.client_id')
-            ->leftJoinSub($latestPayments, 'latest_payments', function ($join) {
-                $join->on('ventes.id', '=', 'latest_payments.payable_id')
-                    ->where('latest_payments.rn', 1);
-            })
-            ->leftJoin('methodes_paiement', 'methodes_paiement.key', '=', 'latest_payments.methode_paiement_key')
-            ->where('ventes.magasin_id', $magasin_id)->where('ventes.date_document','=',Carbon::today()->format('Y-m-d'))
-            ->whereNotNull('ventes.pos_session_id')
-            ->select(
+        $creances = Paiement::where('date_paiement', '=', Carbon::today()->format('Y-m-d'))
+            ->where('paiements.magasin_id', $magasin_id)->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })->join('clients', 'ventes.client_id', '=', 'clients.id')
+            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
+            ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
+            ->whereNotNull('ventes.pos_session_id')->select(
                 'ventes.reference',
                 'clients.nom as client_name',
                 'methodes_paiement.nom as last_payment_method',
-                'latest_payments.date_paiement as last_payment_date',
-                'latest_payments.cheque_lcn_reference',
+                'paiements.date_paiement as last_payment_date',
+                'paiements.cheque_lcn_reference',
                 'ventes.date_emission as sale_date',
                 'ventes.is_controled',
                 'ventes.total_ttc',
                 'ventes.statut_paiement',
                 DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            )
-            ->get();
+            )->get();
+
 
         // Convert the creances to an array for easier manipulation
         $creancesArray = json_decode(json_encode($creances), true);
@@ -428,34 +416,34 @@ class RapportController extends Controller
 
         // Get total sales for the session
         $total_vente = DB::table('ventes')
-            ->where('magasin_id', $o_pos_session->magasin_id)->where('date_document','=',Carbon::today()->format('Y-m-d'))
+            ->where('magasin_id', $o_pos_session->magasin_id)->where('date_document', '=', Carbon::today()->format('Y-m-d'))
             ->whereNotNull('pos_session_id')
             ->sum('total_ttc');
 
         // Get total cash payments for the session
         $total_espece = DB::table('paiements')
-            ->where('date_paiement','=',Carbon::today()->format('Y-m-d'))->where('magasin_id',$o_pos_session->magasin_id)
+            ->where('date_paiement', '=', Carbon::today()->format('Y-m-d'))->where('magasin_id', $o_pos_session->magasin_id)
             ->whereNotNull('pos_session_id')
             ->where('methode_paiement_key', 'especes')
             ->sum('encaisser');
 
         // Get total check payments for the session
         $total_cheque = DB::table('paiements')
-            ->where('date_paiement','=',Carbon::today()->format('Y-m-d'))->where('magasin_id',$o_pos_session->magasin_id)
+            ->where('date_paiement', '=', Carbon::today()->format('Y-m-d'))->where('magasin_id', $o_pos_session->magasin_id)
             ->whereNotNull('pos_session_id')
             ->where('methode_paiement_key', 'cheque')
             ->sum('encaisser');
 
         // Get total LCN payments for the session
         $total_lcn = DB::table('paiements')
-            ->where('date_paiement','=',Carbon::today()->format('Y-m-d'))->where('magasin_id',$o_pos_session->magasin_id)
+            ->where('date_paiement', '=', Carbon::today()->format('Y-m-d'))->where('magasin_id', $o_pos_session->magasin_id)
             ->whereNotNull('pos_session_id')
             ->where('methode_paiement_key', 'lcn')
             ->sum('encaisser');
 
         // Get total expenses for the session
         $total_depenses = DB::table('depenses')
-            ->where('date_operation','=',Carbon::today()->format('Y-m-d'))
+            ->where('date_operation', '=', Carbon::today()->format('Y-m-d'))
             ->whereNotNull('pos_session_id')
             ->sum('montant');
 

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\classic;
+namespace App\Http\Controllers\Api\parfums;
 
 use App\Http\Controllers\Controller;
+use App\Models\Paiement;
 use App\Models\PosSession;
 use App\Models\Vente;
 use App\Models\VenteLigne;
@@ -333,41 +334,28 @@ class RapportController extends Controller
 
         $magasin_id = $o_pos_session->magasin_id;
 
-        // Get the latest payment for each vente
-        $latestPayments = DB::table('paiements')
-            ->select(
-                'payable_id',
-                'methode_paiement_key',
-                'date_paiement',
-                'cheque_lcn_reference',
-                DB::raw('ROW_NUMBER() OVER (PARTITION BY payable_id ORDER BY created_at DESC) as rn')
-            )
-            ->where('payable_type', 'App\\Models\\Vente')
-            ->whereNotNull('payable_id');
+        // Main query to get ventes with payments made today for sales before today
 
-        // Main query to get ventes with unpaid status
-        $creances = DB::table('ventes')
-            ->join('clients', 'clients.id', '=', 'ventes.client_id')
-            ->leftJoinSub($latestPayments, 'latest_payments', function ($join) {
-                $join->on('ventes.id', '=', 'latest_payments.payable_id')
-                    ->where('latest_payments.rn', 1);
-            })
-            ->leftJoin('methodes_paiement', 'methodes_paiement.key', '=', 'latest_payments.methode_paiement_key')
-            ->where('ventes.magasin_id', $magasin_id)->where('ventes.date_document','=',Carbon::today()->format('Y-m-d'))
-            ->whereNotNull('ventes.pos_session_id')
-            ->select(
+        $creances = Paiement::where('date_paiement', '=', Carbon::today()->format('Y-m-d'))
+            ->where('paiements.magasin_id', $magasin_id)->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })->join('clients', 'ventes.client_id', '=', 'clients.id')
+            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
+            ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
+            ->whereNotNull('ventes.pos_session_id')->select(
                 'ventes.reference',
                 'clients.nom as client_name',
                 'methodes_paiement.nom as last_payment_method',
-                'latest_payments.date_paiement as last_payment_date',
-                'latest_payments.cheque_lcn_reference',
+                'paiements.date_paiement as last_payment_date',
+                'paiements.cheque_lcn_reference',
                 'ventes.date_emission as sale_date',
                 'ventes.is_controled',
                 'ventes.total_ttc',
                 'ventes.statut_paiement',
                 DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            )
-            ->get();
+            )->get();
+
 
         // Convert the creances to an array for easier manipulation
         $creancesArray = json_decode(json_encode($creances), true);
