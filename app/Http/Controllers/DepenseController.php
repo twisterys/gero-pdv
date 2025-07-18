@@ -139,6 +139,7 @@ class DepenseController extends Controller
     public function sauvegarder(Request $request)
     {
         $this->guard_custom(['depense.sauvegarder']);
+        $date_permission = !$request->user()->can('depense.date');
         $request->validate([
 
             'i_reference'=>'required |max:255|unique:depenses,reference' ,
@@ -179,7 +180,7 @@ class DepenseController extends Controller
             $o_depense->save();
             if ($request->input('regle')){
                 PaiementService::payer_depense($o_depense->id,[
-                    'i_date_paiement' => Carbon::make($request->input('i_date_operation'))->format('d/m/Y'),
+                    'i_date_paiement' => $date_permission ?Carbon::today()->format('d/m/Y'):  Carbon::make($request->input('i_date_operation'))->format('d/m/Y'),
                     'i_compte_id' => $request->input('i_compte_id'),
                     'i_method_key' =>  $request->input('i_method_key'),
                     'i_note' => $request->input('i_note') ?? null,
@@ -232,7 +233,7 @@ class DepenseController extends Controller
     public function mettre_a_jour(Request $request, int $id)
     {
         $this->guard_custom(['depense.mettre_a_jour']);
-
+        $date_permission = !$request->user()->can('depense.date');
         $o_depense = Depense::find($id);
         if (!$o_depense) {
             abort(404);
@@ -257,7 +258,7 @@ class DepenseController extends Controller
             $o_depense->nom_depense = $request->get('i_nom_depense');
             $o_depense->categorie_depense_id = $request->get('i_categorie');
             $o_depense->pour = $request->get('i_pour');
-            $o_depense->date_operation = $request->get('i_date_operation');
+            $o_depense->date_operation = $date_permission ? Carbon::today()->format('d/m/Y') :  $request->get('i_date_operation');
             $o_depense->description = $request->get('i_description');
             $o_depense->montant = $request->get('i_montant');
             $o_depense->taxe = $request->integer('i_tax');

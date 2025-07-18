@@ -128,7 +128,11 @@
 
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label required" for="i_date_operation">Date de dépense</label>
-                                    <input required type="date" class="form-control {{$errors->has('i_date_operation') ? 'is-invalid' : ''}}" id="i_date_operation" name="i_date_operation" value="{{$o_depense->date_operation}}">
+                                    <input required type="date"
+                                           @cannot('depense.date')
+                                               readonly
+                                           @endcannot
+                                           class="form-control {{$errors->has('i_date_operation') ? 'is-invalid' : ''}}" id="i_date_operation" name="i_date_operation" value="{{$o_depense->date_operation}}">
                                     <div class="invalid-feedback">
                                         @if($errors->has('i_date_operation'))
                                             {{ $errors->first('i_date_operation') }}
