@@ -216,6 +216,22 @@
                                     </div>
                                 </div>
                                 <div class="col-12 col-lg-6 mb-3 ">
+                                    <label class="form-label " for="limite_ventes_impayees-input">Limite de ventes impayées
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" step="1" min="0"
+                                               class="form-control @error('limite_ventes_impayees') is-invalid @enderror"
+                                               id="limite_ventes_impayees" name="limite_ventes_impayees"
+                                               value="{{old('limite_ventes_impayees',$o_client->limite_ventes_impayees) }}">
+                                            <span class="input-group-text" id="basic-addon1">ventes</span>
+                                        @error('limite_ventes_impayees')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6 mb-3 ">
                                     <label class="form-label " for="remise_par_defaut-input">Remise par défaut
                                     </label>
                                     <div class="input-group">

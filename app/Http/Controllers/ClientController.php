@@ -104,6 +104,7 @@ class ClientController extends Controller
                 'telephone'=>$request->get('telephone')??null,
                 'note'=>$request->get('note')??null,
                 'limite_de_credit'=>$request->get('limite_de_credit')??null,
+                'limite_ventes_impayees'=>$request->get('limite_ventes_impayees')??0,
                 'adresse'=>$request->get('adresse')??null,
                 'ville'=> $request->get('ville')??null,
                 'remise_par_defaut' => $request->get('remise_par_defaut')??0,
@@ -210,6 +211,7 @@ class ClientController extends Controller
                 'telephone'=>$request->get('telephone'),
                 'note'=>$request->get('note'),
                 'limite_de_credit'=>$request->get('limite_de_credit'),
+                'limite_ventes_impayees'=>$request->get('limite_ventes_impayees')??0,
                 'adresse'=>$request->get('adresse'),
                 'ville'=> $request->get('ville')??null,
             ];

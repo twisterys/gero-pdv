@@ -33,7 +33,8 @@ class ClientStoreRequest extends FormRequest
             'telephone' => ["nullable", "string", "regex:/^(((00|\+)212)|(0))(6|7|8|5)[0-9]{8}$/"],
             'note' => 'nullable|string|max:900',
             'adresse' => 'nullable|string|max:255',
-            'limite_de_credit' => 'nullable|numeric|min:0|max:9999999.99'
+            'limite_de_credit' => 'nullable|numeric|min:0|max:9999999.99',
+            'limite_ventes_impayees' => 'nullable|integer|min:0'
         ];
     }
 
@@ -48,6 +49,7 @@ class ClientStoreRequest extends FormRequest
             'telephone' => 'téléphone',
             'note' => 'note',
             'limite_de_credit' => 'limite de credit',
+            'limite_ventes_impayees' => 'limite de ventes impayées',
             'adresse' => 'adresse',
         ];
         return $attributes;

@@ -20,6 +20,7 @@ class Client extends Model
         'telephone',
         'note',
         'limite_de_credit',
+        'limite_ventes_impayees',
         'adresse',
         'forme_juridique_id',
         'ville',

@@ -251,6 +251,20 @@ function PosClassic() {
                 .catch((error) => {
                     setIsLoading(false);
                     if (error.response && error.response.status == 422) {
+
+                        if (error.response.data && error.response.data.error) {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "Attention !",
+                                html: error.response.data.error,
+                                confirmButtonText: "Ok !",
+                                buttonsStyling: false,
+                                customClass: {
+                                    confirmButton: "btn btn-lg btn-soft-danger mx-2",
+                                },
+                            });
+                            return;
+                        }
                         let errors = error.response.data.errors;
                         let errorsHtml = "";
                         for (let key in errors) {
@@ -368,6 +382,19 @@ function PosClassic() {
                 .catch((error) => {
                     setIsLoading(false);
                     if (error.response && error.response.status == 422) {
+                        if (error.response.data && error.response.data.error) {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "Attention !",
+                                html: error.response.data.error,
+                                confirmButtonText: "Ok !",
+                                buttonsStyling: false,
+                                customClass: {
+                                    confirmButton: "btn btn-lg btn-soft-danger mx-2",
+                                },
+                            });
+                            return;
+                        }
                         let errors = error.response.data.errors;
                         let errorsHtml = "";
                         for (let key in errors) {
