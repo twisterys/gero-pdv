@@ -15,12 +15,13 @@ class PaiementService
     public static function add_paiement(string $payable, int $payable_id, array $data, int $magasin_id = null, int $pos_session_id = null)
     {
         $o_payable = $payable::find($payable_id);
+        $date_permission = !request()->user()->can('paiement.date');
         $encaissement_types = ModuleService::getEncaissementTypes();
         $decaissment_types = ModuleService::getDecaissementTypes();
         $payment_data = [
             'payable_type' => $payable,
             'payable_id' => $payable_id,
-            'date_paiement' => Carbon::createFromFormat('d/m/Y', $data['i_date_paiement'])->toDateString(),
+            'date_paiement' => $date_permission ? Carbon::today()->toDateString() :  Carbon::createFromFormat('d/m/Y', $data['i_date_paiement'])->toDateString(),
             'compte_id' => $data['i_compte_id'],
             'methode_paiement_key' => $data['i_method_key'],
             'note' => $data['i_note'] ?? null,
@@ -81,10 +82,11 @@ class PaiementService
     public static function payer_depense(int $id, array $data, int $magasin_id = null)
     {
         $o_depense = Depense::findOrFail($id);
+        $date_permission = !request()->user()->can('paiement.date');
         $payment_data = [
             'payable_type' => Depense::class,
             'payable_id' => $id,
-            'date_paiement' => Carbon::createFromFormat('d/m/Y', $data['i_date_paiement'])->toDateString(),
+            'date_paiement' => $date_permission ? Carbon::today()->toDateString() : Carbon::createFromFormat('d/m/Y', $data['i_date_paiement'])->toDateString(),
             'compte_id' => $data['i_compte_id'],
             'methode_paiement_key' => $data['i_method_key'],
             'decaisser' => $data['i_montant'],

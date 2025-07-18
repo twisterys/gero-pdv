@@ -20,7 +20,13 @@
         <div class="col-12 mt-3">
             <label for="date_paiement" class="form-label required">Date de paiement</label>
             <div class="input-group">
-                <input required class="form-control datupickeru" data-provide="datepicker" data-date-autoclose="true" type="text"
+                @cannot('paiement.date')
+                    <input type="text" class="form-control"
+                           readonly
+                           value="{{\Carbon\Carbon::now()->format('d/m/Y')}}"
+                    >
+                @endcannot
+                <input required class="form-control datupickeru @cannot('paiement.date') d-none @endcannot " data-provide="datepicker" data-date-autoclose="true" type="text"
                        name="i_date_paiement" id="date_paiement" value="{{\Carbon\Carbon::now()->format('d/m/Y')}}">
                 <span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>
             </div>
