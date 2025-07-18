@@ -104,11 +104,24 @@ class VenteController extends Controller
                     }
                 }
                 if (
-                    $client->limite_de_credit > 0 && $request->get('credit') &&
+                    $request->get('credit') &&
                     in_array($typeCourant, $creditInfo['encaissement_types']) &&
-                    ($creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit'])
+                    (
+                        // Vérification de la limite de crédit par montant
+                        ($client->limite_de_credit > 0 &&
+                        $creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit']) ||
+
+                        // Vérification de la limite de crédit par nombre de ventes
+                        ($client->limite_ventes_impayees > 0 &&
+                        $creditInfo['total_ventes_impayees'] + 1 > $creditInfo['limite_ventes_impayees'])
+                    )
                 ){
-                    return response()->json(['error' => "Limite de crédit dépassée pour ce client."], 422);
+                    $message = ($client->limite_de_credit > 0 &&
+                               $creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit'])
+                               ? "Limite de crédit (montant) dépassée pour ce client."
+                               : "Limite du nombre de ventes impayées dépassée pour ce client.";
+
+                    return response()->json(['error' => $message], 422);
                 }
             }
             // --- Fin vérification crédit ---
@@ -257,6 +270,57 @@ class VenteController extends Controller
             if (in_array($type, ['dv', 'fa', 'fp', 'bc'])) {
                 $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'))->toDateString();
             }
+
+            // Calcul préliminaire du montant total pour vérification de crédit
+            $lignes = $request->get('lignes', []);
+            $totalTtcCourant = 0;
+            if (count($lignes) > 0) {
+                foreach ($lignes as $ligne) {
+                    $ht = $ligne['prix'] ?? 0;
+                    $reduction = round($ht * (($request->get('total_red') ?? 0) / 100), 2);
+                    $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
+                    $quantite = $ligne['quantity'] ?? 0;
+                    $htReduit = $ht - $reduction;
+                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                    $totalTtcCourant += $ttc;
+                }
+            }
+
+            // Vérification des limites de crédit si le paiement est partiel
+            $paiement = $request->get('paiement');
+            $montantPaiement = $paiement['i_montant'] ?? 0;
+
+            if ($montantPaiement < $totalTtcCourant) {
+                $client = Client::find($request->get('client'));
+                if ($client) {
+                    $creditInfo = $this->checkEncaissementCredit($client);
+                    $typeCourant = $type;
+
+                    // Montant qui restera impayé
+                    $montantImpaye = $totalTtcCourant - $montantPaiement;
+
+                    if (
+                        in_array($typeCourant, $creditInfo['encaissement_types']) &&
+                        (
+                            // Vérification de la limite de crédit par montant
+                            ($client->limite_de_credit > 0 &&
+                            $creditInfo['total_non_paye'] + $montantImpaye > $creditInfo['limite_credit']) ||
+
+                            // Vérification de la limite de crédit par nombre de ventes
+                            ($client->limite_ventes_impayees > 0 &&
+                            $creditInfo['total_ventes_impayees'] + 1 > $creditInfo['limite_ventes_impayees'])
+                        )
+                    ){
+                        $message = ($client->limite_de_credit > 0 &&
+                                   $creditInfo['total_non_paye'] + $montantImpaye > $creditInfo['limite_credit'])
+                                   ? "Limite de crédit (montant) dépassée pour ce client."
+                                   : "Limite du nombre de ventes impayées dépassée pour ce client.";
+
+                        return response()->json(['error' => $message], 422);
+                    }
+                }
+            }
+
             $o_vente = Vente::create($data);
             $lignes = $request->get('lignes', []);
             $vente_ht = 0;
@@ -452,6 +516,9 @@ class VenteController extends Controller
     {
         $encaissementTypes = \App\Services\ModuleService::getEncaissementTypes();
         $limiteCredit = $client->limite_de_credit ?? 0;
+        $limiteVentesImpayees = $client->limite_ventes_impayees ?? 0;
+
+        // Calcul du montant total non payé
         $totalNonPaye = \App\Models\Vente::where('client_id', $client->id)
             ->whereIn('type_document', $encaissementTypes)
             ->where('statut_paiement', 'non_paye')
@@ -460,9 +527,23 @@ class VenteController extends Controller
             ->whereIn('type_document', $encaissementTypes)
             ->where('statut_paiement', 'partiellement_paye')
             ->sum('solde');
+
+        // Comptage du nombre de ventes non payées ou partiellement payées
+        $countNonPaye = \App\Models\Vente::where('client_id', $client->id)
+            ->whereIn('type_document', $encaissementTypes)
+            ->where('statut_paiement', 'non_paye')
+            ->count();
+        $countPartielPaye = \App\Models\Vente::where('client_id', $client->id)
+            ->whereIn('type_document', $encaissementTypes)
+            ->where('statut_paiement', 'partiellement_paye')
+            ->count();
+        $totalVentesImpayees = $countNonPaye + $countPartielPaye;
+
         return [
             'limite_credit' => $limiteCredit,
-            'total_non_paye' => $totalNonPaye+$totalSoldePartiel,
+            'total_non_paye' => $totalNonPaye + $totalSoldePartiel,
+            'limite_ventes_impayees' => $limiteVentesImpayees,
+            'total_ventes_impayees' => $totalVentesImpayees,
             'encaissement_types' => $encaissementTypes
         ];
     }
