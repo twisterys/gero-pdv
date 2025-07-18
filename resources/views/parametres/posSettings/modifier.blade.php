@@ -1,36 +1,112 @@
 @extends('layouts.main')
 @section('document-title','Paramètres de point de vente ')
 @push('styles')
+<style>
+    .nav-tabs .nav-link {
+        border-radius: 0.5rem 0.5rem 0 0;
+        padding: 0.75rem 1.25rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #f8f9fa;
+        border-bottom-color: #f8f9fa;
+        box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    }
+    .nav-tabs .nav-link:hover:not(.active) {
+        background-color: rgba(0,0,0,0.03);
+    }
+    .settings-table th {
+        background-color: #f8f9fa;
+    }
+    .settings-table td {
+        vertical-align: middle;
+    }
+    .floating-save-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 1.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+        color: #495057;
+    }
+    .template-editor-container {
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        background-color: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        margin-top: 1.5rem;
+    }
+    .template-instructions {
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .template-instructions h5 {
+        font-weight: 600;
+    }
+    .template-instructions code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-size: 0.9rem;
+    }
+    .template-instructions table {
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+</style>
 @endpush
 @section('page')
     <link href="{{ asset('libs/summernote/summernote.min.css') }}" rel="stylesheet">
     <div class="col-12">
-        <div class="card">
+        <div class="card shadow-sm">
             <div class="card-body">
                 <form method="POST" enctype="multipart/form-data"
                       action="{{route('pos-settings.sauvegarder')}}" class="needs-validation"
                       novalidate autocomplete="off">
                     <!-- #####--Card Title--##### -->
-                    <div class="card-title">
+                    <div class="card-title mb-4">
                         <div id="__fixed" class="d-flex switch-filter justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <a href="{{route('parametres.liste')}}"><i class="fa fa-arrow-left text-success me-2"></i></a>
-                                <h5 class="m-0">Paramètres de point de vente</h5>
+                                <a href="{{route('parametres.liste')}}" class="btn btn-sm btn-outline-secondary me-2"><i class="fa fa-arrow-left text-success me-1"></i> Retour</a>
+                                <h4 class="m-0">Paramètres de point de vente</h4>
                             </div>
                             <div class="pull-right">
-                                <button id="save-btn" class="btn btn-soft-info"><i class="fa fa-save"></i> Sauvegarder</button>
+                                <button id="save-btn" class="btn btn-primary"><i class="fa fa-save me-1"></i> Sauvegarder</button>
                             </div>
                         </div>
                         <hr class="border">
                     </div>
                     @csrf
+                    <!-- Floating Save Button -->
+                    <button type="submit" class="btn btn-primary floating-save-btn" title="Sauvegarder">
+                        <i class="fa fa-save"></i>
+                    </button>
+
                     <!-- Tabs Navigation -->
-                    <ul class="nav nav-tabs" id="posSettingsTabs" role="tablist">
+                    <ul class="nav nav-tabs mb-3" id="posSettingsTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">Général</button>
+                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
+                                <i class="fa fa-cog me-1"></i> Général
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="rapports-tab" data-bs-toggle="tab" data-bs-target="#rapports" type="button" role="tab" aria-controls="rapports" aria-selected="false">Rapports</button>
+                            <button class="nav-link" id="rapports-tab" data-bs-toggle="tab" data-bs-target="#rapports" type="button" role="tab" aria-controls="rapports" aria-selected="false">
+                                <i class="fa fa-file-alt me-1"></i> Rapports
+                            </button>
                         </li>
                     </ul>
 
@@ -40,11 +116,14 @@
                         <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
                             <div class="row col-12 mx-0">
                                 <div class="col-12">
-                                    <table class="table table-bordered table-striped mt-3 rounded overflow-hidden">
-                                        <tr>
-                                            <th>Option</th>
-                                            <th>Valeur</th>
-                                        </tr>
+                                    <table class="table table-bordered table-hover settings-table mt-3 rounded overflow-hidden">
+                                        <thead>
+                                            <tr>
+                                                <th class="bg-light" style="width: 40%">Option</th>
+                                                <th class="bg-light">Valeur</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                         <tr>
                                             <td>{{$pos_settings->where('key','type_vente')->first()?->label}}</td>
                                             <td>
@@ -134,11 +213,103 @@
                                                 <label for="double_ticket_template" data-on-label="Oui" data-off-label="Non"></label>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </table>
                                 </div>
-                                <div class="col-12 d-flex justify-content-center align-items-center">
-                                    <div style="max-width: 500px" >
-                                        <textarea name="ticket_template" class="summernote" >{!! $pos_settings->where('key','ticket_template')->first()?->value !!}</textarea>
+
+                                <!-- Ticket Template Section -->
+                                <div class="settings-section">
+                                    <h4 class="section-title">
+                                        <i class="fa fa-receipt me-2 text-success "></i>Modèle de Ticket
+                                    </h4>
+
+                                    <div class="row">
+                                        <!-- Template Reference -->
+                                        <div class="col-md-5">
+                                            <div class="card border h-100">
+                                                <div class="card-header bg-light">
+                                                    <h6 class="m-0 font-weight-bold">Référence du modèle</h6>
+                                                    <small class="text-muted">Variables disponibles pour le modèle</small>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm table-bordered table-reference table-striped "
+                                                               style="border-collapse: collapse !important;">
+                                                            <thead>
+                                                            <tr>
+                                                                <th class="text-white bg-primary">Clé</th>
+                                                                <th class="text-white bg-primary">Signification</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td><code>[Client]</code></td>
+                                                                <td>Nom de client</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Date_et_heure]</code></td>
+                                                                <td>Date et heure d'impression</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Tableau]</code></td>
+                                                                <td>Tableau des articles</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Reference]</code></td>
+                                                                <td>Référence du document de vente</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Magasin_adresse]</code></td>
+                                                                <td>Adresse de magasin</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Magasin]</code></td>
+                                                                <td>Nom de magasin</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Total_HT]</code></td>
+                                                                <td>Le total HT de vente</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Total_TVA]</code></td>
+                                                                <td>Le total TVA de vente</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Total_TTC]</code></td>
+                                                                <td>Le total TTC de vente</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Montant_Paye]</code></td>
+                                                                <td>Le montant payé</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Montant_Restant]</code></td>
+                                                                <td>Le montant resté à payer</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Nom_Revendeur]</code></td>
+                                                                <td>Nom du revendeur (utilisateur authentifié)</td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Template Editor -->
+                                        <div class="col-md-7">
+                                            <div class="card border h-100">
+                                                <div class="card-header bg-light">
+                                                    <h6 class="m-0 font-weight-bold">Éditeur de modèle</h6>
+                                                    <small class="text-muted">Personnalisez le format de votre ticket</small>
+                                                </div>
+                                                <div class="card-body">
+                                                    <textarea name="ticket_template"
+                                                              class="summernote">{!! $pos_settings->where('key','ticket_template')->first()?->value !!}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -148,22 +319,31 @@
                         <div class="tab-pane fade" id="rapports" role="tabpanel" aria-labelledby="rapports-tab">
                             <div class="row col-12 mx-0">
                                 <div class="col-12">
-                                    <table class="table table-bordered table-striped mt-3 rounded overflow-hidden">
-                                        <tr>
-                                            <th>Rapport</th>
-                                            <th>Activer/Désactiver</th>
-                                        </tr>
-                                        @foreach($rapports as $rapport)
-                                        <tr>
-                                            <td>{{ $rapport->nom }}</td>
-                                            <td>
-                                                <input name="rapport_{{ $rapport->cle }}" value="1" type="checkbox" id="rapport_{{ $rapport->cle }}"
-                                                       switch="bool" @checked($rapport->actif) >
-                                                <label for="rapport_{{ $rapport->cle }}" data-on-label="Oui" data-off-label="Non"></label>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </table>
+                                    <h5 class="section-title"><i class="fa fa-chart-bar me-2"></i>Configuration des Rapports</h5>
+                                    <div class="card shadow-sm">
+                                        <div class="card-body p-0">
+                                            <table class="table table-bordered table-hover settings-table mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="bg-light" style="width: 60%">Rapport</th>
+                                                        <th class="bg-light">Activer/Désactiver</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($rapports as $rapport)
+                                                    <tr>
+                                                        <td>{{ $rapport->nom }}</td>
+                                                        <td>
+                                                            <input name="rapport_{{ $rapport->cle }}" value="1" type="checkbox" id="rapport_{{ $rapport->cle }}"
+                                                                switch="bool" @checked($rapport->actif) >
+                                                            <label for="rapport_{{ $rapport->cle }}" data-on-label="Oui" data-off-label="Non"></label>
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

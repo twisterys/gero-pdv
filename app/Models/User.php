@@ -19,6 +19,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, AuthenticationLoggable, HasMagasinPermission, HasRoles, Notifiable;
 
 
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new QueuedResetPasswordNotification($token));
