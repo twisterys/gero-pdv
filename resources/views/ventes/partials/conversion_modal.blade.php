@@ -1,8 +1,10 @@
 <div class="modal-header">
-    <h5 class="modal-title align-self-center" id="edit-cat-modal-title">Convertir @lang('ventes.'.$o_vente->type_document) {{$o_vente->reference}}</h5>
+    <h5 class="modal-title align-self-center" id="edit-cat-modal-title">
+        Convertir @lang('ventes.'.$o_vente->type_document) {{$o_vente->reference}}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form method="post" class="needs-validation" enctype="multipart/form-data" action="{{route('ventes.convertir',[$o_vente->type_document,$o_vente->id])}}" novalidate>
+<form method="post" class="needs-validation" enctype="multipart/form-data"
+      action="{{route('ventes.convertir',[$o_vente->type_document,$o_vente->id])}}" novalidate>
     @csrf
     <div class="modal-body">
         <!-- Champ "Convertir en" -->
@@ -19,11 +21,20 @@
 
         <!-- Champ "Date d'émission" -->
 
-
         <div class="col-12 mt-3">
             <label for="date_emission" class="form-label required">Date d'émission</label>
             <div class="input-group">
-                <input class="form-control datupickeru @error('date_emission') is-invalid @enderror"
+                @cannot('vente.date')
+                    <input readonly class="form-control
+                 @error('date_emission') is-invalid @enderror"
+                           value="{{ old('date_emission', now()->format('d/m/Y')) }}"
+                    >
+                @endcannot
+                <input class="form-control datupickeru
+                @cannot('vente.date')
+                d-none
+                @endcannot
+                 @error('date_emission') is-invalid @enderror"
                        data-provide="datepicker"
                        data-date-autoclose="true"
                        type="text"
@@ -47,5 +58,5 @@
 </form>
 <script>
 
-    $('.datupickeru').datepicker({    language:'fr',  })
+    $('.datupickeru').datepicker({language: 'fr',})
 </script>

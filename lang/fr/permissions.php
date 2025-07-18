@@ -45,6 +45,7 @@ return [
     'vente.telecharger'=>'Telechargement',
     'vente.historique'=>'Historique',
     'vente.relancer'=>'Relancer',
+    'vente.date'=>'Saisie des dates',
     /**
      * Permissions de model achat
      */
@@ -61,6 +62,7 @@ return [
     'achat.cloner'=>'Clonage',
     'achat.telecharger'=>'Telechargement',
     'achat.historique'=>'Historique',
+    'achat.date'=>'Saisie des dates',
     /**
      * Permissions de model depense
      */
@@ -70,6 +72,7 @@ return [
     'depense.sauvegarder' => 'Ajout',
     'depense.mettre_a_jour' => 'Mettre à jour',
     'depense.supprimer' => 'Suppression',
+    'depense.date'=>'Saisie des dates',
     /**
      * Permissions de model stock
      */
@@ -96,6 +99,7 @@ return [
     'paiement.depense'=>'Payer depense',
     'paiement.achat'=>'Payer achat',
     'paiement.vente'=>'Payer vente',
+    'paiement.date'=>'Saisie des dates',
     /**
      * Permissions de module rapport
      */

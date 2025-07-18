@@ -264,12 +264,6 @@ class VenteController extends Controller
         return view('ventes.ajouter', compact('magasins_count','o_commercils', 'type', "o_unites", "o_taxes", "prix_revient", 'o_magasins', 'globals','templates'));
     }
 
-
-
-
-
-
-
     /**
      * @param Request $request
      * @param string $type
@@ -280,7 +274,7 @@ class VenteController extends Controller
     {
         $this->guard_custom(['vente.sauvegarder']);
         $globals = GlobalService::get_all_globals();
-
+        $date_permission = !$request->user()->can('vente.date');
         DB::beginTransaction();
         try {
             // --- Vérification limite de crédit ---
@@ -324,7 +318,7 @@ class VenteController extends Controller
                 "statut" => "brouillon",
                 "objet" => $request->get('objet'),
                 'date_document' => now()->toDateString(),
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString() : Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
                 'type_document' => $type,
                 'statut_paiement' => 'non_paye',
                 'note' => $request->get('i_note'),
@@ -333,7 +327,7 @@ class VenteController extends Controller
 
             ];
             if (in_array($type, ['dv', 'fa', 'fp', 'bc'])) {
-                $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
+                $data['date_expiration'] = $date_permission ? Carbon::today()->addDays(15)->toDateString() :  Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
             }
             if ($type === 'dv') {
                 $data['statut_com'] = 'créé';
@@ -402,33 +396,6 @@ class VenteController extends Controller
     }
 
     /**
-     * @param float $ht
-     * @param float $reduction
-     * @param float $tva
-     * @param float $quantite
-     * @return string
-     */
-    function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
-    {
-        $ht = round($ht - $reduction, 2);
-        $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
-    }
-
-    /**
-     * @param float $ht
-     * @param float $reduction
-     * @param float $tva
-     * @param float $quantite
-     * @return float
-     */
-    function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
-    {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
-    }
-
-    /**
      * @param string $type
      * @param int $id
      * @return View|Application|Factory|RedirectResponse|\Illuminate\Contracts\Foundation\Application
@@ -488,7 +455,7 @@ class VenteController extends Controller
     public function mettre_a_jour(VenteUpdateRequest $request, string $type, int $id): RedirectResponse
     {
         $this->guard_custom(['vente.mettre_a_jour']);
-
+        $date_permission = !$request->user()->can('vente.date');
         $o_vente = Vente::find($id);
         if (!$o_vente) {
             abort(404);
@@ -514,7 +481,7 @@ class VenteController extends Controller
                 'commission_par_defaut' => $request->get('commercial_id') ? $request->get('i_commercial_pourcentage') : null,
                 "objet" => $request->get('objet'),
                 'date_document' => now()->toDateString(),
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString()  :  Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
                 'note' => $request->get('i_note'),
                 'magasin_id' => $magasin_id,
                 'template_id' => $request->get('template_id') // Mise à jour du template
@@ -523,7 +490,7 @@ class VenteController extends Controller
                 $data['reference'] = $request->get('i_reference');
             }
             if (in_array($type, ['dv', 'fa', 'fp', 'bc'])) {
-                $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
+                $data['date_expiration'] = $date_permission ? Carbon::today()->toDateString() :  Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
             }
             $o_vente->update($data);
             $lignes = $request->get('lignes', []);
@@ -1103,7 +1070,7 @@ class VenteController extends Controller
     public function convertir(Request $request, string $type, int $id): RedirectResponse
     {
         $this->guard_custom(['vente.convertir']);
-
+        $date_permission = !$request->user()->can('vente.date');
         $request->validate([
             'date_emission' => 'required|date_format:d/m/Y',
         ]);
@@ -1133,9 +1100,9 @@ class VenteController extends Controller
                 "statut" => "brouillon",
                 "objet" => $o_vente->objet,
 
-                'date_document' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
-                'date_expiration' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
+                'date_document' => Carbon::now()->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString() : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
+                'date_expiration' =>  $date_permission ? Carbon::today()->addDays(15)->toDateString() : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
 //                'date_document' => $o_vente->date_document,
 //                'date_emission' => $dateEmission,
 //                'date_expiration' => $o_vente->date_expiration ? Carbon::createFromFormat('d/m/Y', $o_vente->date_expiration)->toDateString() : null,
@@ -1205,6 +1172,7 @@ class VenteController extends Controller
     public function cloner(string $type, int $id, Request $request): RedirectResponse
     {
         $this->guard_custom(['vente.cloner']);
+        $date_permission = !$request->user()->can('vente.date');
         $rules = [
             'date_emission' => 'required|date_format:d/m/Y'
         ];
@@ -1235,9 +1203,9 @@ class VenteController extends Controller
                 'reference' => null,
                 "statut" => "brouillon",
                 "objet" => $o_vente->objet,
-                'date_document' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
-                'date_expiration' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
+                'date_emission' =>  $date_permission ? Carbon::today()->toDateString()  : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
+                'date_document' => Carbon::now()->toDateString(),
+                'date_expiration' => $date_permission ? Carbon::today()->addDays(15)->toDateString() : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
                 'type_document' => $type,
                 'statut_paiement' => 'non_paye',
                 'note' => $o_vente->note,
@@ -1436,9 +1404,6 @@ class VenteController extends Controller
 
     }
 
-
-
-
     /**
      * Marque une vente comme contrôlée.
      *
@@ -1549,36 +1514,6 @@ class VenteController extends Controller
         session()->flash('success', "Pièce jointe supprimée avec succès");
         return redirect()->route('ventes.afficher', [$type, $o_piece_jointe->document_id]);
     }
-    /**
-     * @param $vente
-     * @return void
-     */
-    function stock_reverse($vente): void
-    {
-        StockService::stock_revert(Vente::class, $vente);
-    }
-
-    /**
-     * @param $vente
-     * @return void
-     */
-    function stock($vente): void
-    {
-        $modules = ModuleService::getModules();
-        $o_vente = Vente::find($vente);
-        if ($o_vente->statut === 'validé') {
-            foreach ($o_vente->lignes as $ligne) {
-                if ($ligne['article_id']) {
-                    if (in_array($o_vente->type_document, $modules->where('action_stock', 'sortir')->pluck('type')->toArray())) {
-                        StockService::stock_sortir($ligne['article_id'], $ligne->quantite, Carbon::createFromFormat('d/m/Y', $o_vente->date_emission)->format('Y-m-d'), Vente::class, $o_vente->id, $ligne->magasin_id);
-                    } elseif (in_array($o_vente->type_document, $modules->where('action_stock', 'entrer')->pluck('type')->toArray())) {
-                        StockService::stock_entre($ligne['article_id'], $ligne->quantite, Carbon::createFromFormat('d/m/Y', $o_vente->date_emission)->format('Y-m-d'), Vente::class, $o_vente->id, $ligne->magasin_id);
-                    }
-                }
-            }
-        }
-    }
-
     public function relancer_modal(string $type, int $id)
     {
         $this->guard_custom(['vente.relancer']);
@@ -1724,4 +1659,59 @@ class VenteController extends Controller
     }
 
 
+    /**
+     * @param float $ht
+     * @param float $reduction
+     * @param float $tva
+     * @param float $quantite
+     * @return string
+     */
+    function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
+    {
+        $ht = round($ht - $reduction, 2);
+        $tva = (1 + $tva / 100);
+        $ttc = round($ht * $tva, 2) * $quantite;
+        return round($ttc, 2);
+    }
+
+    /**
+     * @param float $ht
+     * @param float $reduction
+     * @param float $tva
+     * @param float $quantite
+     * @return float
+     */
+    function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
+    {
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+    }
+    /**
+     * @param $vente
+     * @return void
+     */
+    function stock_reverse($vente): void
+    {
+        StockService::stock_revert(Vente::class, $vente);
+    }
+
+    /**
+     * @param $vente
+     * @return void
+     */
+    function stock($vente): void
+    {
+        $modules = ModuleService::getModules();
+        $o_vente = Vente::find($vente);
+        if ($o_vente->statut === 'validé') {
+            foreach ($o_vente->lignes as $ligne) {
+                if ($ligne['article_id']) {
+                    if (in_array($o_vente->type_document, $modules->where('action_stock', 'sortir')->pluck('type')->toArray())) {
+                        StockService::stock_sortir($ligne['article_id'], $ligne->quantite, Carbon::createFromFormat('d/m/Y', $o_vente->date_emission)->format('Y-m-d'), Vente::class, $o_vente->id, $ligne->magasin_id);
+                    } elseif (in_array($o_vente->type_document, $modules->where('action_stock', 'entrer')->pluck('type')->toArray())) {
+                        StockService::stock_entre($ligne['article_id'], $ligne->quantite, Carbon::createFromFormat('d/m/Y', $o_vente->date_emission)->format('Y-m-d'), Vente::class, $o_vente->id, $ligne->magasin_id);
+                    }
+                }
+            }
+        }
+    }
 }

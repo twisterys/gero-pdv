@@ -145,8 +145,13 @@
                                     <label for="date_emission" class="form-label required">
                                         @lang('ventes.' . $type . '.date_emission')
                                     </label>
+                                    @cannot('vente.date')
+                                        <input type="text"
+                                               class="form-control {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
+                                               readonly value="{{ old('date_emission', Carbon\Carbon::now()->setYear(session()->get('exercice'))->format('d/m/Y')) }}">
+                                    @endcannot
                                     <input type="text"
-                                        class="form-control {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
+                                        class="form-control @cannot('vente.date') d-none @endcannot  {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
                                         id="date_emission" name="date_emission" required readonly
                                         value="{{ old('date_emission', Carbon\Carbon::now()->setYear(session()->get('exercice'))->format('d/m/Y')) }}">
                                     @if ($errors->has('date_emission'))
@@ -160,8 +165,13 @@
                                         <label for="date_expiration" class="form-label required">
                                             @lang('ventes.' . $type . '.date_expiration')
                                         </label>
+                                        @cannot('vente.date')
+                                            <input type="text"
+                                                   class="form-control {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
+                                                   readonly value="{{ old('date_expiration', Carbon\Carbon::now()->addDays(15)->format('d/m/Y')) }}">
+                                        @endcannot
                                         <input type="text"
-                                            class="form-control {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
+                                            class="form-control @cannot('vente.date') d-none @endcannot {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
                                             id="date_expiration" name="date_expiration" readonly required
                                             value="{{ old('date_expiration', Carbon\Carbon::now()->setYear(session()->get('exercice'))->format('d/m/Y')) }}">
                                         @if ($errors->has('date_expiration'))
