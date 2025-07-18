@@ -110,8 +110,14 @@
                                     <label for="date_emission" class="form-label required">
                                         @lang('achats.' . $type . '.date_emission')
                                     </label>
+                                    @cannot('achat.date')
+                                        <input type="text" class="form-control"
+                                               readonly
+                                               value="{{ old('date_emission', $o_achat->date_emission) }}">
+                                    @endcannot
                                     <input type="text"
-                                        class="form-control {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
+                                        class="form-control @cannot('achat.date') d-none @endcannot
+                                        {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
                                         id="date_emission" name="date_emission" required readonly
                                         value="{{ old('date_emission', $o_achat->date_emission) }}">
                                     @if ($errors->has('date_emission'))
@@ -125,8 +131,13 @@
                                         <label for="date_expiration" class="form-label required">
                                             @lang('achats.' . $type . '.date_expiration')
                                         </label>
+                                        @cannot('achat.date')
+                                            <input type="text" class="form-control"
+                                                   readonly
+                                                   value="{{ old('date_expiration', $o_achat->date_expiration) }}">
+                                        @endcannot
                                         <input type="text"
-                                            class="form-control {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
+                                            class="form-control @cannot('achat.date') d-none @endcannot {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
                                             id="date_expiration" name="date_expiration" readonly required
                                             value="{{ old('date_expiration', $o_achat->date_expiration) }}">
                                         @if ($errors->has('date_expiration'))

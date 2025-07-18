@@ -255,6 +255,7 @@ class AchatController extends Controller
     {
         $this->guard_custom(['achat.sauvegarder']);
         $globals = GlobalService::get_all_globals();
+        $date_permission = !$request->user()->can('achat.date');
         DB::beginTransaction();
         try {
             // ------------------- ### Magasin ### -------------------
@@ -272,7 +273,7 @@ class AchatController extends Controller
                 "statut" => "brouillon",
                 "objet" => $request->get('objet'),
                 'date_document' => now()->toDateString(),
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString() :   Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
                 'type_document' => $type,
                 'statut_paiement' => 'non_paye',
                 'note' => $request->get('i_note'),
@@ -281,7 +282,7 @@ class AchatController extends Controller
             ];
             // ------------------- ### Check if date d'expiration is required ### -------------------
             if (in_array($type, ['dva', 'faa', 'bca'])) {
-                $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
+                $data['date_expiration'] = $date_permission ? Carbon::today()->addDays(15)->toDateString() :  Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
             }
             // ------------------- ### End of data defining ### -------------------
             $o_achat = Achat::create($data);
@@ -407,6 +408,7 @@ class AchatController extends Controller
     {
         $this->guard_custom(['achat.metter_a_jour']);
         $o_achat = Achat::find($id);
+        $date_permission = !$request->user()->can('achat.date');
         if (!$o_achat) {
             abort(404);
         }
@@ -427,7 +429,7 @@ class AchatController extends Controller
                 'reference' => $request->get('reference'),
                 'fournisseur_id' => $request->get('fournisseur_id'),
                 "objet" => $request->get('objet'),
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString() : Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
                 'type_document' => $type,
                 'note' => $request->get('i_note'),
                 'magasin_id' => $magasin_id,
@@ -441,7 +443,7 @@ class AchatController extends Controller
             }
             // ------------------- ### Check if date d'expiration is required ### -------------------
             if (in_array($type, ['dva', 'faa', 'fpa', 'bca'])) {
-                $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
+                $data['date_expiration'] = $date_permission ? Carbon::today()->addDays(15)->toDateString() :  Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
             }
             // ------------------- ### Check if there is details or not ### -------------------
             if (!$request->get('details')) {
@@ -860,8 +862,8 @@ class AchatController extends Controller
 
     public function cloner(string $type, int $id, Request $request)
     {
-
         $this->guard_custom(['achat.cloner']);
+        $date_permission = !$request->user()->can('achat.date');
         $rules = [
             'date_emission' => 'required|date_format:d/m/Y'
         ];
@@ -884,8 +886,8 @@ class AchatController extends Controller
             $cloned = Achat::create([
                 'statut' => 'brouillon',
                 'objet' => $o_achat->objet,
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
-                'date_expiration' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString() : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
+                'date_expiration' => $date_permission? Carbon::today()->addDays(15)->toDateString() :  Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
                 'fournisseur_id' => $o_achat->fournisseur_id,
                 'total_ht' => $o_achat->total_ht,
                 'total_tva' => $o_achat->total_tva,
@@ -1148,6 +1150,7 @@ class AchatController extends Controller
     public function convertir(Request $request, string $type, int $id): RedirectResponse
     {
         $this->guard_custom(['achat.convertir']);
+        $date_permission = !$request->user()->can('achat.date');
 
         $request->validate([
             'date_emission' => 'required|date_format:d/m/Y',
@@ -1181,8 +1184,8 @@ class AchatController extends Controller
                 "statut" => "brouillon",
                 "objet" => $o_achat->objet,
 
-                'date_emission' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
-                'date_expiration' => Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
+                'date_emission' => $date_permission ? Carbon::today()->toDateString() : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->toDateString(),
+                'date_expiration' => $date_permission ? Carbon::today()->addDays(15)->toDateString() : Carbon::createFromFormat('d/m/Y', $request->input("date_emission"))->addDays(15)->toDateString(),
                 'type_document' => $request->get('i_type'),
                 'statut_paiement' => 'non_paye',
                 'note' => $o_achat->note,

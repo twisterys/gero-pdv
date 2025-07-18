@@ -13,7 +13,7 @@
 @endpush
 @section('page')
     <form action="{{ route('achats.sauvegarder', ['type' => $type]) }}" enctype="multipart/form-data" method="POST"
-        class="needs-validation" novalidate autocomplete="off">
+          class="needs-validation" novalidate autocomplete="off">
         @csrf
         <div class="row">
             <div class="col-12">
@@ -29,7 +29,8 @@
                                     </h5>
                                 </div>
                                 <div class="pull-right">
-                                    <button class="btn btn-soft-info"><i class="fa fa-save"></i> <span class="d-none d-sm-inline" >Sauvegarder</span></button>
+                                    <button class="btn btn-soft-info"><i class="fa fa-save"></i> <span
+                                            class="d-none d-sm-inline">Sauvegarder</span></button>
                                 </div>
                             </div>
                             <hr class="border">
@@ -42,16 +43,17 @@
                                         Magasin
                                     </label>
                                     <select name="magasin_id" {{count($o_magasins) <=1 ? 'readonly':null}}
-                                        class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
-                                        id="magasin-select">
+                                    class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
+                                            id="magasin-select">
                                         @foreach ($o_magasins as $o_magasin)
-                                            <option @selected(old('magasin_id') == $o_magasin->id) value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
+                                            <option
+                                                @selected(old('magasin_id') == $o_magasin->id) value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
                                         @endforeach
                                     </select>
                                     @error('magasin_id')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
                                     @enderror
                                 </div>
                                 @if ($type !== 'bca')
@@ -60,8 +62,8 @@
                                             Référence (Externe)
                                         </label>
                                         <input type="text"
-                                            class="form-control {{ $errors->has('reference') ? 'is-invalid' : '' }}"
-                                            id="reference" name="reference" value="{{ old('reference') }}">
+                                               class="form-control {{ $errors->has('reference') ? 'is-invalid' : '' }}"
+                                               id="reference" name="reference" value="{{ old('reference') }}">
                                         @if ($errors->has('reference'))
                                             <div class="invalid-feedback">
                                                 {{ $errors->first('reference') }}
@@ -73,12 +75,12 @@
                                     <label for="fournisseur_select" class="form-label required">Fournisseur</label>
                                     <div class="input-group d-grid" style="grid-template-columns:9fr 1fr ">
                                         <select required
-                                            class="select2 form-control mb-3 custom-select {{ $errors->has('fournisseur_id') ? 'is-invalid' : '' }} "
-                                            id="fournisseur_select" name="fournisseur_id">
+                                                class="select2 form-control mb-3 custom-select {{ $errors->has('fournisseur_id') ? 'is-invalid' : '' }} "
+                                                id="fournisseur_select" name="fournisseur_id">
                                         </select>
                                         <button type="button" id="ajout-fournisseur"
-                                            data-url="{{ route('fournisseurs.ajouter') }}"
-                                            class="btn btn-soft-secondary input-group-append">+
+                                                data-url="{{ route('fournisseurs.ajouter') }}"
+                                                class="btn btn-soft-secondary input-group-append">+
                                         </button>
                                         @if ($errors->has('fournisseur_id'))
                                             <div class="invalid-feedback">
@@ -91,10 +93,17 @@
                                     <label for="date_emission" class="form-label required">
                                         @lang('achats.' . $type . '.date_emission')
                                     </label>
+                                    @cannot('achat.date')
+                                        <input type="text"
+                                               class="form-control {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
+                                               readonly
+                                               value="{{ old('date_emission', Carbon\Carbon::now()->setYear(session()->get('exercice'))->format('d/m/Y')) }}">
+                                    @endcannot
                                     <input type="text"
-                                        class="form-control {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
-                                        id="date_emission" name="date_emission" required readonly
-                                        value="{{ old('date_emission', Carbon\Carbon::now()->setYear(session()->get('exercice'))->format('d/m/Y')) }}">
+                                           class="form-control @cannot('achat.date') d-none @endcannot
+                                         {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
+                                           id="date_emission" name="date_emission" required readonly
+                                           value="{{ old('date_emission', Carbon\Carbon::now()->setYear(session()->get('exercice'))->format('d/m/Y')) }}">
                                     @if ($errors->has('date_emission'))
                                         <div class="invalid-feedback">
                                             {{ $errors->first('date_emission') }}
@@ -106,10 +115,18 @@
                                         <label for="date_expiration" class="form-label required">
                                             @lang('achats.' . $type . '.date_expiration')
                                         </label>
+                                        @cannot('achat.date')
+                                            <input type="text"
+                                                   class="form-control
+                                                            {{ $errors->has('date_emission') ? 'is-invalid' : '' }}"
+                                                   readonly
+                                                   value="{{ old('date_emission', Carbon\Carbon::now()->addDays(15)->format('d/m/Y')) }}">
+                                        @endcannot
                                         <input type="text"
-                                            class="form-control {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
-                                            id="date_expiration" name="date_expiration" readonly required
-                                            value="{{ old('date_expiration', \Carbon\Carbon::now()->setYear(session()->get('exercice'))->addDays(15)->format('d/m/Y')) }}">
+                                               class="form-control @cannot('achat.date') d-none @endcannot
+                                               {{ $errors->has('date_expiration') ? 'is-invalid' : '' }}"
+                                               id="date_expiration" name="date_expiration" readonly required
+                                               value="{{ old('date_expiration', \Carbon\Carbon::now()->setYear(session()->get('exercice'))->addDays(15)->format('d/m/Y')) }}">
                                         @if ($errors->has('date_expiration'))
                                             <div class="invalid-feedback">
                                                 {{ $errors->first('date_expiration') }}
@@ -123,8 +140,9 @@
                                         Objet
                                     </label>
                                     <input type="text"
-                                        class="form-control {{ $errors->has('objet') ? 'is-invalid' : '' }}" id="object"
-                                        name="objet" value="{{ old('objet') }}">
+                                           class="form-control {{ $errors->has('objet') ? 'is-invalid' : '' }}"
+                                           id="object"
+                                           name="objet" value="{{ old('objet') }}">
                                     @if ($errors->has('objet'))
                                         <div class="invalid-feedback">
                                             {{ $errors->first('objet') }}
@@ -135,8 +153,9 @@
                                     <label for="balises-select" class="form-label">
                                         Étiquette
                                     </label>
-                                    <select multiple class="form-control {{ $errors->has('balises') ? 'is-invalid' : '' }}"
-                                        id="balises-select" name="balises">
+                                    <select multiple
+                                            class="form-control {{ $errors->has('balises') ? 'is-invalid' : '' }}"
+                                            id="balises-select" name="balises">
                                     </select>
                                     @if ($errors->has('balises'))
                                         <div class="invalid-feedback">
@@ -146,26 +165,29 @@
                                 </div>
 
                                 @if (in_array($type, [ 'bca']))
-                                @if($globals['template_par_document'])
-                                    <div class="col-12 col-lg-3 col-md-4 mb-3">
-                                        <label for="template_id" class="form-label">
-                                            Template
-                                        </label>
-                                        <select class="form-select {{ $errors->has('template_id') ? 'is-invalid' : '' }}" id="template_id" name="template_id">
-                                            <option value="">Choisir un template</option>
-                                            @foreach($templates as $template)
-                                                <option value="{{ $template->id }}" {{ old('template_id') == $template->id ? 'selected' : '' }}>
-                                                    {{ $template->nom }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('template_id'))
-                                            <div class="invalid-feedback">
-                                                {{ $errors->first('template_id') }}
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endif
+                                    @if($globals['template_par_document'])
+                                        <div class="col-12 col-lg-3 col-md-4 mb-3">
+                                            <label for="template_id" class="form-label">
+                                                Template
+                                            </label>
+                                            <select
+                                                class="form-select {{ $errors->has('template_id') ? 'is-invalid' : '' }}"
+                                                id="template_id" name="template_id">
+                                                <option value="">Choisir un template</option>
+                                                @foreach($templates as $template)
+                                                    <option
+                                                        value="{{ $template->id }}" {{ old('template_id') == $template->id ? 'selected' : '' }}>
+                                                        {{ $template->nom }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @if ($errors->has('template_id'))
+                                                <div class="invalid-feedback">
+                                                    {{ $errors->first('template_id') }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 @endif
                                 <div class="col-12"></div>
                             </div>
@@ -173,30 +195,30 @@
                             <div data-simplebar="init" class="table-responsive col-12 mt-3">
                                 <table class="table rounded overflow-hidden table-hover table-striped" id="table">
                                     <thead>
-                                        <tr class="bg-primary text-white ">
-                                            {{-- <th>Reference</th> --}}
-                                            <th class="text-white ">Article</th>
-                                            <th class="text-white" style="width: 1%;white-space: nowrap;">Quantité</th>
-                                            <th class="text-white" style="width: 1%;white-space: nowrap;">HT (MAD)</th>
-                                            <th class="text-white" style="width: 1%;white-space: nowrap;"> Réduction HT
-                                            </th>
-                                            <th class="text-white" style="width: 1%;white-space: nowrap;">TVA (%)</th>
-                                            <th class="text-white" style="width: 1%;white-space: nowrap;min-width: 130px">
-                                                Total TTC (MAD)
-                                            </th>
-                                            <th class="text-white " style="width: 1%;white-space: nowrap;min-width: 55px">
-                                            </th>
-                                        </tr>
+                                    <tr class="bg-primary text-white ">
+                                        {{-- <th>Reference</th> --}}
+                                        <th class="text-white ">Article</th>
+                                        <th class="text-white" style="width: 1%;white-space: nowrap;">Quantité</th>
+                                        <th class="text-white" style="width: 1%;white-space: nowrap;">HT (MAD)</th>
+                                        <th class="text-white" style="width: 1%;white-space: nowrap;"> Réduction HT
+                                        </th>
+                                        <th class="text-white" style="width: 1%;white-space: nowrap;">TVA (%)</th>
+                                        <th class="text-white" style="width: 1%;white-space: nowrap;min-width: 130px">
+                                            Total TTC (MAD)
+                                        </th>
+                                        <th class="text-white " style="width: 1%;white-space: nowrap;min-width: 55px">
+                                        </th>
+                                    </tr>
                                     </thead>
                                     <!-- The tbody tag will be populated by JavaScript -->
                                     <tbody id="productTableBody">
-                                        @if (old('lignes'))
-                                            @foreach (old('lignes') as $key => $ligne)
-                                                @include('achats.partials.product_row_ajouter')
-                                            @endforeach
-                                        @else
+                                    @if (old('lignes'))
+                                        @foreach (old('lignes') as $key => $ligne)
                                             @include('achats.partials.product_row_ajouter')
-                                        @endif
+                                        @endforeach
+                                    @else
+                                        @include('achats.partials.product_row_ajouter')
+                                    @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -207,11 +229,13 @@
                             </div>
                             <div class="col-12 mt-3 mx-0 row justify-content-between p-2">
                                 <div class="col-md-6 col-12"></div>
-                                <div class="col-md-6 col-12 row mx-0 m-0 bg-primary p-3 rounded text-white" style="max-width: 500px">
+                                <div class="col-md-6 col-12 row mx-0 m-0 bg-primary p-3 rounded text-white"
+                                     style="max-width: 500px">
                                     <h5 class="col-md-4 col-6 fw-normal">Total HT</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal" id="total-ht-text">0.00 MAD</h5>
                                     <h5 class="col-md-4 col-6 fw-normal">Total Réduction</h5>
-                                    <h5 class="col-md-8  col-6 text-end fw-normal" id="total-reduction-text">0.00 MAD</h5>
+                                    <h5 class="col-md-8  col-6 text-end fw-normal" id="total-reduction-text">0.00
+                                        MAD</h5>
                                     <h5 class="col-md-4 col-6  fw-normal">Total TVA</h5>
                                     <h5 class="col-md-8  col-6 text-end fw-normal" id="total-tva-text">0.00 MAD</h5>
                                     <h5 class="col-md-4 col-6 mb-0 fw-normal">Total TTC</h5>
@@ -229,14 +253,14 @@
         </div>
     </form>
     <div class="modal fade " id="article-modal" tabindex="-1" aria-labelledby="article-modal-title" aria-hidden="true"
-        style="display: none;">
+         style="display: none;">
         <div class="modal-dialog  modal-dialog-centered position-relative "
-            style="transform-style: preserve-3d;transition: all .7s ease 0s;">
+             style="transform-style: preserve-3d;transition: all .7s ease 0s;">
             <div class="modal-content position-absolute" id="article-search-content"
-                style="backface-visibility: hidden;-webkit-backface-visibility: hidden">
+                 style="backface-visibility: hidden;-webkit-backface-visibility: hidden">
             </div>
             <div class="modal-content position-absolute" id="article-add-content"
-                style="backface-visibility: hidden;-webkit-backface-visibility: hidden;transform: rotateY(180deg)"></div>
+                 style="backface-visibility: hidden;-webkit-backface-visibility: hidden;transform: rotateY(180deg)"></div>
         </div>
     </div>
     <div class="modal fade " id="fournisseur-modal" tabindex="-1" aria-hidden="true" style="display: none;">
@@ -255,17 +279,17 @@
         const __row = `@include('achats.partials.product_blank_row')`;
         const __articles_modal_route = "{{ route('articles.article_select_modal', ['type' => 'achat']) }}";
         @if (old('fournisseur_id'))
-            $.ajax({
-                url: '{{ route('fournisseurs.afficher_ajax', old('fournisseur_id')) }}',
-                success: function(response) {
-                    $('#fournisseur_select').append(
-                        `<option value="{{ old('fournisseur_id') }}">${response.nom}</option>`).trigger(
-                        'change')
-                },
-                error: function(xhr) {
+        $.ajax({
+            url: '{{ route('fournisseurs.afficher_ajax', old('fournisseur_id')) }}',
+            success: function (response) {
+                $('#fournisseur_select').append(
+                    `<option value="{{ old('fournisseur_id') }}">${response.nom}</option>`).trigger(
+                    'change')
+            },
+            error: function (xhr) {
 
-                }
-            })
+            }
+        })
         @endif
     </script>
     @vite('resources/js/achats_create.js')
