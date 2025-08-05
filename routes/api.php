@@ -117,6 +117,9 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
     });
 
     Route::group(['prefix' => 'v-classic', 'namespace' => 'App\Http\Controllers\Api\classic'], function () {
+        Route::get('/',function (){
+             echo 'Classic';
+        });
         Route::get('articles',  'ArticleController@recherche_par_reference');
         Route::get('articles/{id}', 'ArticleController@afficher');
         Route::get('articles-liste', 'ArticleController@recherche_liste');
@@ -128,7 +131,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         Route::get('clients-liste',  'ClientController@recherche_liste');
 
-        Route::post('ventes', 'VenteController@sauvegarder');
+        Route::post('ventes', 'VenteController@sauvegarder_vente');
         Route::get('ventes/ticket/{id}', 'VenteController@ticket');
         Route::post('ventes-paiement', 'VenteController@sauvegarder_avec_paiement');
         Route::post('ventes-ajouter-paiement', 'VenteController@ajouter_paiement');
@@ -155,6 +158,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::get('familles','ArticleController@familles');
         Route::get('marques','ArticleController@marques');
         Route::post('articles-stock-rapport','RapportController@stock');
+        Route::get('comptes','CompteController@liste');
+        Route::get('/methodes-paiement','MethodePaiementController@liste');
     });
 
     Route::group(['prefix' => 'v-caisse', 'namespace' => 'App\Http\Controllers\Api\caisse'], function () {
