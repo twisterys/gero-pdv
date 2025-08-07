@@ -40,7 +40,7 @@ class VenteController extends Controller
             'lignes.*.quantity' => ['required', 'min:1', 'regex:/^[0-9]+(\.[0-9]{1,2})?$/'],
             'lignes.*.prix' => 'numeric|min:0|required',
             'client' => 'exists:clients,id|required',
-            'type' => 'required|in:bc,br',
+            'type' => 'required|in:vente,retour',
             'exercice' => 'required|date_format:Y',
             'session_id' => 'required|exists:pos_sessions,id'
         ];
@@ -83,7 +83,7 @@ class VenteController extends Controller
         }
 
         Validator::make($request->all(), $rules, [], $attributes)->validate();
-        $type = $request->get('type') === 'br' ? (PosService::getValue('type_retour') ?? 'br') : (PosService::getValue('type_vente') ?? 'bc');
+        $type = $request->get('type') === 'retour' ? (PosService::getValue('type_retour') ?? 'br') : (PosService::getValue('type_vente') ?? 'bc');
         Session::put('exercice', $request->get('exercice'));
         DB::beginTransaction();
 

@@ -160,6 +160,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('articles-stock-rapport','RapportController@stock');
         Route::get('comptes','CompteController@liste');
         Route::get('/methodes-paiement','MethodePaiementController@liste');
+        Route::get('/depense-categories','DepenseCategoryController@liste');
+        Route::get('/magasins','MagasinController@liste');
     });
 
     Route::group(['prefix' => 'v-caisse', 'namespace' => 'App\Http\Controllers\Api\caisse'], function () {

@@ -53,7 +53,7 @@ export const DemandesExterne = ({refresh}) => {
                         <td>{demande.magasin_entree}</td>
                         <td>{demande.statut}</td>
                         <td>
-                            <button className="btn btn-sm btn-primary mx-1" onClick={() => setSelectedDemande(demande)}>
+                            <button className="btn btn-sm btn-primary mx-1" onClick={() => setSelectedDemaande(demande)}>
                                 <i className="fa fa-eye"></i>
                             </button>
                             {demande.statut === 'Livrée' ? <button onClick={()=>printElm(demande.id)} className="btn btn-sm btn-success mx-1" >
