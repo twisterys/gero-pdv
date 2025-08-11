@@ -124,10 +124,10 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::get('articles/{id}', 'ArticleController@afficher');
         Route::get('articles-liste', 'ArticleController@recherche_liste');
         Route::get('articles-all', 'ArticleController@liste');
-        Route::post('articles-clients-rapport','RapportController@article_client_rapport');
-        Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
-        Route::post('creance-rapport','RapportController@creance_rapport');
-        Route::post('tresorie-rapport','RapportController@tresorie_rapport');
+        Route::get('articles-clients-rapport','RapportController@article_client_rapport');
+        Route::get('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
+        Route::get('creance-rapport','RapportController@creance_rapport');
+        Route::get('tresorie-rapport','RapportController@tresorie_rapport');
 
         Route::get('clients-liste',  'ClientController@recherche_liste');
 
@@ -157,7 +157,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         Route::get('familles','ArticleController@familles');
         Route::get('marques','ArticleController@marques');
-        Route::post('articles-stock-rapport','RapportController@stock');
+        Route::get('articles-stock-rapport','RapportController@stock');
         Route::get('comptes','CompteController@liste');
         Route::get('/methodes-paiement','MethodePaiementController@liste');
         Route::get('/depense-categories','DepenseCategoryController@liste');

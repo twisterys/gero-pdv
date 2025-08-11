@@ -151,6 +151,7 @@ class VenteController extends Controller
                     $montantImpaye = $totalTtcCourant - $montantPaiement;
                 }
 
+
                 // Only check credit limits if it's a credit sale or partial payment
                 if (
                     ($request->get('credit') || ($with_paiement && $montantImpaye > 0)) &&
@@ -223,6 +224,7 @@ class VenteController extends Controller
                 ]);
             }
 
+
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
@@ -238,6 +240,8 @@ class VenteController extends Controller
                 // Use payment details from request
                 $paiement = $request->get('paiement');
                 $paiement['i_date_paiement'] = now()->format('d/m/Y');
+                // Round payment amount to 2 decimal places
+                $paiement['i_montant'] = round((float)$paiement['i_montant'], 2);
                 PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             } else if (!$request->filled('credit')) {
                 // Create default payment with cash method if not a credit sale
@@ -247,7 +251,7 @@ class VenteController extends Controller
                     'i_compte_id' => $o_compte->id,
                     'i_method_key' => 'especes',
                     'client_id' => $request->get('id'),
-                    'i_montant' => $vente_ttc,
+                    'i_montant' => round($vente_ttc, 2),
                     'i_session_id' => $o_pos_session->id,
                 ];
                 PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement_data, $o_pos_session->magasin_id, $o_pos_session->id);
@@ -332,6 +336,8 @@ class VenteController extends Controller
 
             $paiement = $request->get('paiement');
             $paiement['i_date_paiement'] = now()->format('d/m/Y');
+            // Round payment amount to 2 decimal places
+            $paiement['i_montant'] = round((float)$paiement['i_montant'], 2);
             PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             DB::commit();
             // ------------------ ### Response ### ------------------

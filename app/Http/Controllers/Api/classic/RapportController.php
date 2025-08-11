@@ -340,7 +340,7 @@ class RapportController extends Controller
                 $join->on('ventes.id', '=', 'paiements.payable_id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
             })->join('clients', 'ventes.client_id', '=', 'clients.id')
-            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
+            ->where('ventes.date_emission', '<=', Carbon::today()->format('Y-m-d'))
             ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
             ->whereNotNull('ventes.pos_session_id')->select(
                 'ventes.reference',
@@ -359,19 +359,11 @@ class RapportController extends Controller
         // Convert the creances to an array for easier manipulation
         $creancesArray = json_decode(json_encode($creances), true);
 
-        // Debug: Check if statut_paiement is included in the response
         foreach ($creancesArray as &$creance) {
             // Ensure statut_paiement is always set
-            if (empty($creance['statut_paiement'])) {
-                // If statut_paiement is not set, set it based on creance_amount
-                if ($creance['creance_amount'] <= 0) {
-                    $creance['statut_paiement'] = 'paye';
-                } else if ($creance['creance_amount'] < $creance['total_ttc']) {
-                    $creance['statut_paiement'] = 'partiellement_paye';
-                } else {
-                    $creance['statut_paiement'] = 'non_paye';
-                }
-            }
+
+                    $creance['statut_paiement'] = ucfirst(__('ventes.'.$creance['statut_paiement']));
+
         }
 
         // Return the modified array
