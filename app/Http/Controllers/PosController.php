@@ -55,13 +55,8 @@ class PosController extends Controller
         $rapport_cr_enabled = DB::table('pos_rapports')->where('cle', 'cr')->value('actif') ?? false;
 
         auth()->user()->tokens()->delete();
-        return view('pos.pos', compact(
-            'depenses','client', 'comptes', 'methodes',
-            'formes_juridique', 'session', 'pos_type', 'magasins','ouverture',
-            'modifier_prix','is_code_barre','on_reduction','is_price_editable',
-            'is_depenses','is_historique','is_demandes', 'rapport_ac_enabled',
-            'rapport_as_enabled','rapport_af_enabled','rapport_tr_enabled','rapport_cr_enabled'
-        ));
+
+        return view('pos.pos');
     }
     public  function demandes()
     {

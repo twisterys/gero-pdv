@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\pos\v1\PosSettingsController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -205,5 +206,64 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::get('marques','ArticleController@marques');
         Route::post('articles-stock-rapport','RapportController@stock');
 
+    });
+
+    Route::group(['prefix' => 'pos'], function () {
+        Route::group(['prefix'=>'v1','namespace' => '\App\Http\Controllers\Api\pos\v1'],function () {
+
+            // ------------- POS ---------------
+            Route::get('/','PosSettingsController@index');
+            Route::get('/settings','PosSettingsController@init');
+            Route::delete('pos-session/terminer', 'PosController@terminer');
+            Route::get('pos-session/cloture', 'PosController@cloture');
+
+            // ------------- Ventes ---------------
+            Route::post('ventes', 'VenteController@sauvegarder_vente');
+            Route::get('ventes/ticket/{id}', 'VenteController@ticket');
+            Route::post('ventes-ajouter-paiement', 'VenteController@ajouter_paiement');
+            Route::get('history', 'VenteController@history');
+
+            // ------------ Articles ---------------
+            Route::get('articles',  'ArticleController@recherche_par_reference');
+            Route::get('articles/{id}', 'ArticleController@afficher');
+            Route::get('articles-liste', 'ArticleController@recherche_liste');
+            Route::get('articles-all', 'ArticleController@liste');
+
+            // ------------ Clients ---------------
+            Route::get('clients-liste',  'ClientController@recherche_liste');
+            Route::post('clients', 'ClientController@sauvegarder');
+
+            // ------------ Demandes ---------------
+            Route::post('demande-transfert','DemandeTransfertController@sauvegarder');
+            Route::get('demande-transfert','DemandeTransfertController@liste');
+            Route::get('mes-demandes','DemandeTransfertController@mes_demandes');
+            Route::get('demandes-externe','DemandeTransfertController@demandes_externe');
+            Route::get('demandes-externe-print/{id}','DemandeTransfertController@printDemande');
+            Route::get('demande-transfert/{id}','DemandeTransfertController@afficher');
+            Route::post('demande-transfert/{id}/refuser','DemandeTransfertController@refuser');
+            Route::post('demande-transfert/{id}/livrer','DemandeTransfertController@livrer');
+            Route::post('demande-transfert/{id}/accepter','DemandeTransfertController@accepter');
+            Route::post('demande-transfert/{id}/annuler','DemandeTransfertController@annuler');
+
+            // ------------ Rapports ---------------
+            Route::post('creance-rapport','RapportController@creance_rapport');
+            Route::post('tresorie-rapport','RapportController@tresorie_rapport');
+            Route::post('articles-clients-rapport','RapportController@article_client_rapport');
+            Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
+            Route::get('articles-stock-rapport','RapportController@stock');
+
+
+            // ------------ Depenses ---------------
+            Route::post('depense','DepenseController@sauvegarder');
+            Route::get('depense','DepenseController@liste');
+
+            // ------------ Options --------------
+            Route::get('/methodes-paiement','MethodePaiementController@liste');
+            Route::get('/depense-categories','DepenseCategoryController@liste');
+            Route::get('/magasins','MagasinController@liste');
+            Route::get('comptes','CompteController@liste');
+
+
+        });
     });
 });

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\classic;
+namespace App\Http\Controllers\Api\pos\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\parfums\DepenseResource;
@@ -301,17 +301,6 @@ class VenteController extends Controller
             DB::rollBack();
             return response('Erreur lors de l\'ajout de la vente ! ', 500);
         }
-    }
-
-    // Alias methods for backward compatibility
-    public function sauvegarder(Request $request)
-    {
-        return $this->sauvegarder_vente($request);
-    }
-
-    public function sauvegarder_avec_paiement(Request $request)
-    {
-        return $this->sauvegarder_vente($request);
     }
 
     public function ajouter_paiement(Request $request)
