@@ -28,36 +28,18 @@ use Session;
 
 class VenteController extends Controller
 {
-    public function sauvegarder_vente(Request $request)
+    public function sauvegarder(Request $request)
     {
-        // Determine if payment details are provided
-        $with_paiement = $request->has('paiement');
-
-        // Define validation rules based on whether payment details are provided
         $rules = [
             'lignes' => 'array|min:1|required',
             'lignes.*.id' => 'exists:articles,id|required',
             'lignes.*.quantity' => ['required', 'min:1', 'regex:/^[0-9]+(\.[0-9]{1,2})?$/'],
             'lignes.*.prix' => 'numeric|min:0|required',
             'client' => 'exists:clients,id|required',
-            'type' => 'required|in:vente,retour',
+            'type' => 'required|in:bc,br',
             'exercice' => 'required|date_format:Y',
             'session_id' => 'required|exists:pos_sessions,id'
         ];
-
-        // Add payment validation rules if payment details are provided
-        if ($with_paiement) {
-            $payment_rules = [
-                'paiement.i_compte_id' => 'required|exists:comptes,id',
-                'paiement.i_montant' => 'required|min:1|numeric',
-                'paiement.i_method_key' => ['required', 'exists:methodes_paiement,key'],
-                'paiement.i_date' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'date_format:d/m/Y', 'nullable'],
-                'paiement.i_reference' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'max:255'],
-            ];
-            $rules = array_merge($rules, $payment_rules);
-        }
-
-        // Define attribute names for validation messages
         $attributes = [
             'lignes' => 'lignes',
             'lignes.*.id' => 'article',
@@ -68,25 +50,193 @@ class VenteController extends Controller
             'exercice' => 'exercice',
             'session_id' => 'session'
         ];
-
-        // Add payment attribute names if payment details are provided
-        if ($with_paiement) {
-            $payment_attributes = [
-                'paiement.i_compte_id' => 'compte',
-                'paiement.i_montant' => 'montant',
-                'paiement.i_method_key' => 'méthode de paiement',
-                'paiement.i_date' => 'date prevu',
-                'paiement.i_date_paiement' => 'date de paiement',
-                'paiement.i_reference' => 'reference',
-            ];
-            $attributes = array_merge($attributes, $payment_attributes);
-        }
-
         Validator::make($request->all(), $rules, [], $attributes)->validate();
-        $type = $request->get('type') === 'retour' ? (PosService::getValue('type_retour') ?? 'br') : (PosService::getValue('type_vente') ?? 'bc');
+        $type = $request->get('type') === 'br' ? (PosService::getValue('type_retour') ?? 'br') : (PosService::getValue('type_vente') ?? 'bc');
         Session::put('exercice', $request->get('exercice'));
         DB::beginTransaction();
+        // Sauvegarder la vente
+        try {
+            // ------------------ ### Definir la session ### ------------------
+            $o_pos_session = PosSession::find($request->get('session_id'));
 
+            // ------------------ ### Vérifier si la session est ouverte ### ------------------
+            if (!$o_pos_session->ouverte) {
+                return response('Cette session n\'est pas ouverte ! ', 500);
+            }
+
+            // ------------------ ### Créer la vente ### ------------------
+            $data = [
+                'created_by' => auth()->id(),
+                'client_id' => $request->get('client'),
+                'commercial_id' => null,
+                'commission_par_defaut' => null,
+                'reference' => ReferenceService::generateReference($type, Carbon::now()),
+                "statut" => "validé",
+                "objet" => 'Point de vente',
+                'date_document' => now()->toDateString(),
+                'date_emission' => Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'))->toDateString(),
+                'type_document' => $type,
+                'statut_paiement' => 'non_paye',
+                'pos_session_id' => $o_pos_session->id,
+                'magasin_id' => $o_pos_session->magasin_id,
+                'note' => null
+            ];
+            if (in_array($type, ['dv', 'fa', 'fp', 'bc'])) {
+                $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'))->toDateString();
+            }
+            $lignes = $request->get('lignes', []);
+            // --- Vérification limite de crédit ---
+            $client = Client::find($request->get('client'));
+            if ($client) {
+                $creditInfo = $this->checkEncaissementCredit($client);
+                $typeCourant = $type;
+                $totalTtcCourant = 0;
+                if (count($lignes) > 0) {
+                    foreach ($lignes as $ligne) {
+                        $ht = $ligne['prix'] ?? 0;
+                        $reduction = 0;
+                        $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
+                        $quantite = $ligne['quantity'] ?? 0;
+                        $htReduit = $ht - $reduction;
+                        $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                        $totalTtcCourant += $ttc;
+                    }
+                }
+                // Vérification des limites de crédit (montant et nombre de ventes)
+                if (
+                    $request->get('credit') &&
+                    in_array($typeCourant, $creditInfo['encaissement_types']) &&
+                    (
+                        // Vérification de la limite de crédit par montant
+                        ($client->limite_de_credit > 0 &&
+                        $creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit']) ||
+
+                        // Vérification de la limite de crédit par nombre de ventes
+                        ($client->limite_ventes_impayees > 0 &&
+                        $creditInfo['total_ventes_impayees'] + 1 > $creditInfo['limite_ventes_impayees'])
+                    )
+                ){
+                    $message = ($client->limite_de_credit > 0 &&
+                               $creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit'])
+                               ? "Limite de crédit (montant) dépassée pour ce client."
+                               : "Limite du nombre de ventes impayées dépassée pour ce client.";
+
+                    return response()->json(['error' => $message], 422);
+                }
+            }
+            // --- Fin vérification crédit ---
+            $o_vente = Vente::create($data);
+            $vente_ht = 0;
+            $vente_ttc = 0;
+            $vente_tva = 0;
+            $vente_reduction = 0;
+            if (count($lignes) > 0) {
+                foreach ($lignes as $key => $ligne) {
+                    $o_article = Article::find($ligne['id']);
+                    $o_ligne = new VenteLigne();
+                    $o_ligne->vente_id = $o_vente->id;
+                    $o_ligne->article_id = $ligne['id'];
+                    $o_ligne->unit_id = $o_article->unite_id;
+                    $o_ligne->mode_reduction = 'fixe';
+                    $o_ligne->nom_article = $ligne['name'];
+                    $o_ligne->ht = $ligne['prix'];
+                    $o_ligne->quantite = $ligne['quantity'];
+                    $o_ligne->taxe = $o_article->taxe;
+                    $o_ligne->reduction = 0;
+                    $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht, 0, $o_ligne->taxe, $o_ligne->quantite);
+                    $o_ligne->position = $key;
+                    $o_ligne->magasin_id = $o_pos_session->magasin_id;
+                    $o_ligne->save();
+                    // ------------------ ### Stock ### ------------------
+                    if (in_array($type, ModuleService::stockEntrerTypes())) {
+                        StockService::stock_entre($o_article->id, $o_ligne->quantite, now()->format('Y-m-d'), Vente::class, $o_vente->id, $o_pos_session->magasin_id);
+                    } elseif (in_array($type, ModuleService::stockSortirTypes())) {
+                        StockService::stock_sortir($o_article->id, $o_ligne->quantite, now()->format('Y-m-d'), Vente::class, $o_vente->id, $o_pos_session->magasin_id);
+                    }
+
+                    // ------------------ ### Calculer les totaux ### ------------------
+                    $vente_ht += ($o_ligne->ht) * $o_ligne->quantite;
+                    $vente_reduction += 0;
+                    $vente_tva += $this->calculate_tva_amount($o_ligne->ht, 0, $o_ligne->taxe, $o_ligne->quantite);
+                    $vente_ttc += $o_ligne->total_ttc;
+                }
+                $o_vente->update([
+                    'total_ht' => $vente_ht,
+                    'total_tva' => $vente_tva,
+                    'total_reduction' => $vente_reduction,
+                    'total_ttc' => $vente_ttc,
+                    'solde' => $vente_ttc,
+                ]);
+            }
+            $o_compte = Compte::where('principal', 1)->first() ?? Compte::first();
+            $paiement_data = [
+                'i_date_paiement' => now()->format('d/m/Y'),
+                'i_compte_id' => $o_compte->id,
+                'i_method_key' => 'especes',
+                'client_id' => $request->get('id'),
+                'i_montant' => $vente_ttc,
+                'i_session_id' => $o_pos_session->id,
+            ];
+            // ------------------ ### Receipt ### ------------------
+            if (PosService::getValue('ticket')) {
+                $template = PosService::getValue('ticket_template');
+                if (PosService::getValue('double_ticket_template')) {
+                    $template_rendered = view('documents.ventes.double_receipt', compact('o_vente', 'template'))->render();
+                } else {
+                    $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
+                }
+            }
+            // -------------------------------------------------------
+            if (!$request->filled('credit')){
+                PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement_data, $o_pos_session->magasin_id, $o_pos_session->id);
+            }
+            ReferenceService::incrementCompteur($type);
+            DB::commit();
+            // ------------------ ### Response ### ------------------
+            $repsonse = ['message' => $o_vente->reference . ' ajoutée avec succès ! ', 'template' => $template_rendered ?? null];
+            return response($repsonse, 200);
+        } catch (Exception $exception) {
+            LogService::logException($exception);
+            DB::rollBack();
+            return response('Erreur lors de l\'ajout de la vente ! ', 500);
+        }
+    }
+
+    public function sauvegarder_avec_paiement(Request $request)
+    {
+
+        $rules = [
+            'lignes' => 'array|min:1|required',
+            'lignes.*.id' => 'exists:articles,id|required',
+            'lignes.*.quantity' => ['required', 'min:1', 'regex:/^[0-9]+(\.[0-9]{1,2})?$/'],
+            'lignes.*.prix' => 'numeric|min:0|required',
+            'client' => 'exists:clients,id|required',
+            'type' => 'required|in:bc,br',
+            'exercice' => 'required|date_format:Y',
+            'paiement.i_compte_id' => 'required|exists:comptes,id',
+            'paiement.i_montant' => 'required|min:1|numeric',
+            'paiement.i_method_key' => ['required', 'exists:methodes_paiement,key'],
+            'paiement.i_date' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'date_format:d/m/Y', 'nullable'],
+            'paiement.i_reference' => [Rule::requiredIf(in_array($request->i_method_key, ['cheque', 'lcn'])), 'max:255'],
+            'session_id' => 'required|exists:pos_sessions,id'
+        ];
+        $attributes = [
+            'lignes' => 'lignes',
+            'client' => 'client',
+            'type' => 'type',
+            'exercice' => 'exercice',
+            'paiement.i_compte_id' => 'compte',
+            'paiement.i_montant' => 'montant',
+            'paiement.i_method_key' => 'méthode de paiement',
+            'paiement.i_date' => 'date prevu',
+            'paiement.i_date_paiement' => 'date de paiement',
+            'paiement.i_reference' => 'reference',
+            'session_id' => 'session'
+        ];
+        Validator::make($request->all(), $rules, [], $attributes)->validate();
+        $type = $request->get('type') === 'br' ? (PosService::getValue('type_retour') ?? 'br') : (PosService::getValue('type_vente') ?? 'bc');
+        Session::put('exercice', $request->get('exercice'));
+        DB::beginTransaction();
         // Sauvegarder la vente
         try {
             // ------------------ ### Definir la session ### ------------------
@@ -114,11 +264,9 @@ class VenteController extends Controller
                 'pos_session_id' => $o_pos_session->id,
                 'magasin_id' => $o_pos_session->magasin_id,
             ];
-
             if (in_array($type, ['dv', 'fa', 'fp', 'bc'])) {
                 $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', now()->format('d/m/Y'))->toDateString();
             }
-
             $lignes = $request->get('lignes', []);
 
             // Calcul préliminaire du montant total pour vérification de crédit
@@ -135,96 +283,63 @@ class VenteController extends Controller
                 }
             }
 
-            // Vérification des limites de crédit
-            $client = Client::find($request->get('client'));
+            // Vérification des limites de crédit si le paiement est partiel
+            $paiement = $request->get('paiement');
+            $montantPaiement = $paiement['i_montant'] ?? 0;
 
-            if ($client) {
-                $creditInfo = $this->checkEncaissementCredit($client);
-                $typeCourant = $type;
+            if ($montantPaiement < $totalTtcCourant) {
+                $client = Client::find($request->get('client'));
+                if ($client) {
+                    $creditInfo = $this->checkEncaissementCredit($client);
+                    $typeCourant = $type;
 
-                // Determine the unpaid amount based on payment details
-                $montantImpaye = $totalTtcCourant;
-
-                if ($with_paiement) {
-                    $paiement = $request->get('paiement');
-                    $montantPaiement = $paiement['i_montant'] ?? 0;
+                    // Montant qui restera impayé
                     $montantImpaye = $totalTtcCourant - $montantPaiement;
-                }
 
+                    if (
+                        in_array($typeCourant, $creditInfo['encaissement_types']) &&
+                        (
+                            // Vérification de la limite de crédit par montant
+                            ($client->limite_de_credit > 0 &&
+                            $creditInfo['total_non_paye'] + $montantImpaye > $creditInfo['limite_credit']) ||
 
-                // Only check credit limits if it's a credit sale or partial payment
-                if (
-                    ($request->get('credit') || ($with_paiement && $montantImpaye > 0)) &&
-                    in_array($typeCourant, $creditInfo['encaissement_types']) &&
-                    (
-                        // Vérification de la limite de crédit par montant
-                        ($client->limite_de_credit > 0 &&
-                        $creditInfo['total_non_paye'] + $montantImpaye > $creditInfo['limite_credit']) ||
+                            // Vérification de la limite de crédit par nombre de ventes
+                            ($client->limite_ventes_impayees > 0 &&
+                            $creditInfo['total_ventes_impayees'] + 1 > $creditInfo['limite_ventes_impayees'])
+                        )
+                    ){
+                        $message = ($client->limite_de_credit > 0 &&
+                                   $creditInfo['total_non_paye'] + $montantImpaye > $creditInfo['limite_credit'])
+                                   ? "Limite de crédit (montant) dépassée pour ce client."
+                                   : "Limite du nombre de ventes impayées dépassée pour ce client.";
 
-                        // Vérification de la limite de crédit par nombre de ventes
-                        ($client->limite_ventes_impayees > 0 &&
-                        $creditInfo['total_ventes_impayees'] + 1 > $creditInfo['limite_ventes_impayees'])
-                    )
-                ){
-                    $message = ($client->limite_de_credit > 0 &&
-                               $creditInfo['total_non_paye'] + $montantImpaye > $creditInfo['limite_credit'])
-                               ? "Limite de crédit (montant) dépassée pour ce client."
-                               : "Limite du nombre de ventes impayées dépassée pour ce client.";
-
-                    return response()->json(['error' => $message], 422);
+                        return response()->json(['error' => $message], 422);
+                    }
                 }
             }
 
-            // Create the sale
             $o_vente = Vente::create($data);
             $vente_ht = 0;
             $vente_ttc = 0;
             $vente_tva = 0;
             $vente_reduction = 0;
-
-            // Create sale lines
             if (count($lignes) > 0) {
                 foreach ($lignes as $key => $ligne) {
-                    $global_reduction = $request->get('global_reduction');
-                    if ($global_reduction) {
-                        $ligne_reduction = $ligne['reduction'] ?? 0;
-                        $ligne_reduction_type = $ligne['reduction_type'] ?? 'fixe';
-                        if ($ligne_reduction) {
-                            if (in_array($ligne_reduction_type, ['percent', 'pourcentage'])) {
-                                $ligne_reduction += (float)$global_reduction;
-                                $ligne_reduction_type = 'pourcentage';
-                            } else {
-                                $prix = (float)($ligne['prix'] ?? 0);
-                                $reduction_percent = $prix > 0 ? (($ligne_reduction * 100) / $prix) : 0;
-                                $ligne_reduction = (float)$global_reduction + $reduction_percent;
-                                $ligne_reduction_type = 'pourcentage';
-                            }
-                            $ligne['reduction'] = round($ligne_reduction, 2);
-                            $ligne['reduction_type'] = $ligne_reduction_type;
-                        } else if ($global_reduction > 0) {
-                            $ligne['reduction'] = round((float)$global_reduction, 2);
-                            $ligne['reduction_type'] = 'pourcentage';
-                        }
-                    }
-                    $fixed_reduction = in_array(($ligne['reduction_type'] ?? ''), ['percent', 'pourcentage']) ? round((($ligne['reduction'] ?? 0) * $ligne['prix']) / 100, 2) : ($ligne['reduction'] ?? 0);
                     $o_article = Article::find($ligne['id']);
                     $o_ligne = new VenteLigne();
                     $o_ligne->vente_id = $o_vente->id;
                     $o_ligne->article_id = $ligne['id'];
                     $o_ligne->unit_id = $o_article->unite_id;
-                    $mode_reduction = $ligne['reduction_type'] ?? 'fixe';
-                    if ($mode_reduction === 'percent') { $mode_reduction = 'pourcentage'; }
-                    $o_ligne->mode_reduction = $mode_reduction;
+                    $o_ligne->mode_reduction = 'fixe';
                     $o_ligne->nom_article = $ligne['name'];
                     $o_ligne->ht = $ligne['prix'];
                     $o_ligne->quantite = $ligne['quantity'];
                     $o_ligne->taxe = $o_article->taxe;
-                    $o_ligne->reduction = $ligne['reduction'] ?? 0;
-                    $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht, $fixed_reduction, $o_ligne->taxe, $o_ligne->quantite);
+                    $o_ligne->reduction = 0;
+                    $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht, 0, $o_ligne->taxe, $o_ligne->quantite);
                     $o_ligne->position = $key;
                     $o_ligne->magasin_id = $o_pos_session->magasin_id;
                     $o_ligne->save();
-
                     // ------------------ ### Stock ### ------------------
                     if (in_array($type, ModuleService::stockEntrerTypes())) {
                         StockService::stock_entre($o_article->id, $o_ligne->quantite, now()->format('Y-m-d'), Vente::class, $o_vente->id, $o_pos_session->magasin_id);
@@ -234,11 +349,10 @@ class VenteController extends Controller
 
                     // ------------------ ### Calculer les totaux ### ------------------
                     $vente_ht += ($o_ligne->ht) * $o_ligne->quantite;
-                    $vente_reduction += ($fixed_reduction * $o_ligne->quantite);
-                    $vente_tva += $this->calculate_tva_amount($o_ligne->ht, $fixed_reduction, $o_ligne->taxe, $o_ligne->quantite);
+                    $vente_reduction += 0;
+                    $vente_tva += $this->calculate_tva_amount($o_ligne->ht, 0, $o_ligne->taxe, $o_ligne->quantite);
                     $vente_ttc += $o_ligne->total_ttc;
                 }
-
                 $o_vente->update([
                     'total_ht' => $vente_ht,
                     'total_tva' => $vente_tva,
@@ -247,8 +361,6 @@ class VenteController extends Controller
                     'solde' => $vente_ttc,
                 ]);
             }
-
-
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
@@ -259,59 +371,23 @@ class VenteController extends Controller
                 }
             }
 
-            // Handle payment
-            if ($with_paiement) {
-                // Use payment details from request
-                $paiement = $request->get('paiement');
-                $paiement['i_date_paiement'] = now()->format('d/m/Y');
-                // Round payment amount to 2 decimal places
-                $paiement['i_montant'] = round((float)$paiement['i_montant'], 2);
-                PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
-            } else if (!$request->filled('credit')) {
-                // Create default payment with cash method if not a credit sale
-                $o_compte = Compte::where('principal', 1)->first() ?? Compte::first();
-                $paiement_data = [
-                    'i_date_paiement' => now()->format('d/m/Y'),
-                    'i_compte_id' => $o_compte->id,
-                    'i_method_key' => 'especes',
-                    'client_id' => $request->get('id'),
-                    'i_montant' => round($vente_ttc, 2),
-                    'i_session_id' => $o_pos_session->id,
-                ];
-                PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement_data, $o_pos_session->magasin_id, $o_pos_session->id);
-            }
-
+            $paiement = $request->get('paiement');
+            $paiement['i_date_paiement'] = now()->format('d/m/Y');
+            PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             ReferenceService::incrementCompteur($type);
             DB::commit();
-
             // ------------------ ### Response ### ------------------
             $repsonse = [
                 'message' => $o_vente->reference . ' ajoutée avec succès ! ',
-                'template' => $template_rendered ?? null
+                'template' => $template_rendered ?? null,
+                'vente_id' => $o_vente->id
             ];
-
-            // Include sale ID in response if payment details were provided
-            if ($with_paiement) {
-                $repsonse['vente_id'] = $o_vente->id;
-            }
-
             return response($repsonse, 200);
         } catch (Exception $exception) {
             LogService::logException($exception);
             DB::rollBack();
             return response('Erreur lors de l\'ajout de la vente ! ', 500);
         }
-    }
-
-    // Alias methods for backward compatibility
-    public function sauvegarder(Request $request)
-    {
-        return $this->sauvegarder_vente($request);
-    }
-
-    public function sauvegarder_avec_paiement(Request $request)
-    {
-        return $this->sauvegarder_vente($request);
     }
 
     public function ajouter_paiement(Request $request)
@@ -360,8 +436,6 @@ class VenteController extends Controller
 
             $paiement = $request->get('paiement');
             $paiement['i_date_paiement'] = now()->format('d/m/Y');
-            // Round payment amount to 2 decimal places
-            $paiement['i_montant'] = round((float)$paiement['i_montant'], 2);
             PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             DB::commit();
             // ------------------ ### Response ### ------------------

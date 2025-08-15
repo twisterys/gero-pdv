@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\pos\v1\PosSettingsController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -118,21 +117,18 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
     });
 
     Route::group(['prefix' => 'v-classic', 'namespace' => 'App\Http\Controllers\Api\classic'], function () {
-        Route::get('/',function (){
-             echo 'Classic';
-        });
         Route::get('articles',  'ArticleController@recherche_par_reference');
         Route::get('articles/{id}', 'ArticleController@afficher');
         Route::get('articles-liste', 'ArticleController@recherche_liste');
         Route::get('articles-all', 'ArticleController@liste');
-        Route::get('articles-clients-rapport','RapportController@article_client_rapport');
-        Route::get('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
-        Route::get('creance-rapport','RapportController@creance_rapport');
-        Route::get('tresorie-rapport','RapportController@tresorie_rapport');
+        Route::post('articles-clients-rapport','RapportController@article_client_rapport');
+        Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
+        Route::post('creance-rapport','RapportController@creance_rapport');
+        Route::post('tresorie-rapport','RapportController@tresorie_rapport');
 
         Route::get('clients-liste',  'ClientController@recherche_liste');
 
-        Route::post('ventes', 'VenteController@sauvegarder_vente');
+        Route::post('ventes', 'VenteController@sauvegarder');
         Route::get('ventes/ticket/{id}', 'VenteController@ticket');
         Route::post('ventes-paiement', 'VenteController@sauvegarder_avec_paiement');
         Route::post('ventes-ajouter-paiement', 'VenteController@ajouter_paiement');
@@ -158,11 +154,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         Route::get('familles','ArticleController@familles');
         Route::get('marques','ArticleController@marques');
-        Route::get('articles-stock-rapport','RapportController@stock');
-        Route::get('comptes','CompteController@liste');
-        Route::get('/methodes-paiement','MethodePaiementController@liste');
-        Route::get('/depense-categories','DepenseCategoryController@liste');
-        Route::get('/magasins','MagasinController@liste');
+        Route::post('articles-stock-rapport','RapportController@stock');
     });
 
     Route::group(['prefix' => 'v-caisse', 'namespace' => 'App\Http\Controllers\Api\caisse'], function () {
@@ -207,7 +199,6 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('articles-stock-rapport','RapportController@stock');
 
     });
-
     Route::group(['prefix' => 'pos'], function () {
         Route::group(['prefix'=>'v1','namespace' => '\App\Http\Controllers\Api\pos\v1'],function () {
 
@@ -266,4 +257,5 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         });
     });
+
 });
