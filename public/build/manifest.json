@@ -1,55 +1,7 @@
 {
-  "_ClientSelect-YS10ZlhY.js": {
-    "file": "assets/ClientSelect-YS10ZlhY.js",
-    "name": "ClientSelect",
-    "imports": [
-      "_react-select.esm-AIjEkChc.js",
-      "_RapportsPage-H6nFPwYD.js"
-    ]
-  },
-  "_DepenseModal-CzfmvvQQ.js": {
-    "file": "assets/DepenseModal-CzfmvvQQ.js",
-    "name": "DepenseModal",
-    "imports": [
-      "_react-select.esm-AIjEkChc.js"
-    ]
-  },
-  "_Numpad-Ck20mgBJ.js": {
-    "file": "assets/Numpad-Ck20mgBJ.js",
-    "name": "Numpad",
-    "imports": [
-      "_react-select.esm-AIjEkChc.js"
-    ]
-  },
-  "_RapportsPage-H6nFPwYD.js": {
-    "file": "assets/RapportsPage-H6nFPwYD.js",
-    "name": "RapportsPage",
-    "imports": [
-      "_react-select.esm-AIjEkChc.js"
-    ]
-  },
-  "_Searchbar-Byjzi2je.js": {
-    "file": "assets/Searchbar-Byjzi2je.js",
-    "name": "Searchbar",
-    "imports": [
-      "_react-select.esm-AIjEkChc.js"
-    ]
-  },
-  "_historique_prix-BzH9eh97.js": {
-    "file": "assets/historique_prix-BzH9eh97.js",
+  "_historique_prix-DBhLI32P.js": {
+    "file": "assets/historique_prix-DBhLI32P.js",
     "name": "historique_prix"
-  },
-  "_react-select.esm-AIjEkChc.js": {
-    "file": "assets/react-select.esm-AIjEkChc.js",
-    "name": "react-select.esm"
-  },
-  "public/sounds/addArticle.mp3": {
-    "file": "assets/addArticle-BU63IQ_p.mp3",
-    "src": "public/sounds/addArticle.mp3"
-  },
-  "public/sounds/cash-paid.mp3": {
-    "file": "assets/cash-paid-BIoOFO-7.mp3",
-    "src": "public/sounds/cash-paid.mp3"
   },
   "resources/css/app-dark.scss": {
     "file": "assets/app-dark-BoE3i3tw.css",
@@ -223,7 +175,7 @@
     "src": "resources/fonts/typicons.woff"
   },
   "resources/js/achats_create.js": {
-    "file": "assets/achats_create-C1drVPSH.js",
+    "file": "assets/achats_create-DCsyJAx0.js",
     "name": "achats_create",
     "src": "resources/js/achats_create.js",
     "isEntry": true,
@@ -232,165 +184,101 @@
     ]
   },
   "resources/js/achats_liste.js": {
-    "file": "assets/achats_liste-DbA7Wwe2.js",
+    "file": "assets/achats_liste-CisysDSP.js",
     "name": "achats_liste",
     "src": "resources/js/achats_liste.js",
     "isEntry": true
   },
   "resources/js/affaire_afficher.js": {
-    "file": "assets/affaire_afficher-fscSx0-H.js",
+    "file": "assets/affaire_afficher-BbugKuhW.js",
     "name": "affaire_afficher",
     "src": "resources/js/affaire_afficher.js",
     "isEntry": true
   },
   "resources/js/affaires_create.js": {
-    "file": "assets/affaires_create-BSw0mwXY.js",
+    "file": "assets/affaires_create-Z8861D5v.js",
     "name": "affaires_create",
     "src": "resources/js/affaires_create.js",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-DSBMhXHe.js",
+    "file": "assets/app-CBbhC1Yb.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/js/article_create.js": {
-    "file": "assets/article_create-Bp14rUd6.js",
+    "file": "assets/article_create-DTTIqeFV.js",
     "name": "article_create",
     "src": "resources/js/article_create.js",
     "isEntry": true
   },
   "resources/js/article_index.js": {
-    "file": "assets/article_index-f5ZNgW31.js",
+    "file": "assets/article_index-6jqAUzBa.js",
     "name": "article_index",
     "src": "resources/js/article_index.js",
     "isEntry": true
   },
   "resources/js/article_modal.js": {
-    "file": "assets/article_modal-CMP1lIzI.js",
+    "file": "assets/article_modal-DVqVjBbS.js",
     "name": "article_modal",
     "src": "resources/js/article_modal.js",
     "isEntry": true
   },
   "resources/js/cheques_decaisser.js": {
-    "file": "assets/cheques_decaisser-CFFPmETk.js",
+    "file": "assets/cheques_decaisser-Cyz3EsHg.js",
     "name": "cheques_decaisser",
     "src": "resources/js/cheques_decaisser.js",
     "isEntry": true
   },
   "resources/js/cheques_encaisser.js": {
-    "file": "assets/cheques_encaisser-Czx_sJvL.js",
+    "file": "assets/cheques_encaisser-CGhsctUZ.js",
     "name": "cheques_encaisser",
     "src": "resources/js/cheques_encaisser.js",
     "isEntry": true
   },
   "resources/js/clients_liste.js": {
-    "file": "assets/clients_liste-DU8jq9DA.js",
+    "file": "assets/clients_liste-GA-KG9fh.js",
     "name": "clients_liste",
     "src": "resources/js/clients_liste.js",
     "isEntry": true
   },
-  "resources/js/components/pages/Demandes.jsx": {
-    "file": "assets/Demandes-CetzgNk_.js",
-    "name": "Demandes",
-    "src": "resources/js/components/pages/Demandes.jsx",
-    "isEntry": true,
-    "imports": [
-      "_react-select.esm-AIjEkChc.js",
-      "_Searchbar-Byjzi2je.js",
-      "_Numpad-Ck20mgBJ.js"
-    ]
-  },
-  "resources/js/components/pages/PosCaisse.jsx": {
-    "file": "assets/PosCaisse-DkhFdN7N.js",
-    "name": "PosCaisse",
-    "src": "resources/js/components/pages/PosCaisse.jsx",
-    "isEntry": true,
-    "imports": [
-      "_react-select.esm-AIjEkChc.js",
-      "_ClientSelect-YS10ZlhY.js",
-      "_DepenseModal-CzfmvvQQ.js",
-      "_RapportsPage-H6nFPwYD.js"
-    ],
-    "assets": [
-      "assets/addArticle-BU63IQ_p.mp3",
-      "assets/cash-paid-BIoOFO-7.mp3"
-    ]
-  },
-  "resources/js/components/pages/PosClassic.jsx": {
-    "file": "assets/PosClassic-Dq-UwoT4.js",
-    "name": "PosClassic",
-    "src": "resources/js/components/pages/PosClassic.jsx",
-    "isEntry": true,
-    "imports": [
-      "_react-select.esm-AIjEkChc.js",
-      "_ClientSelect-YS10ZlhY.js",
-      "_Searchbar-Byjzi2je.js",
-      "_DepenseModal-CzfmvvQQ.js",
-      "_RapportsPage-H6nFPwYD.js"
-    ]
-  },
-  "resources/js/components/pages/PosCommercial.jsx": {
-    "file": "assets/PosCommercial-TNIez_Sc.js",
-    "name": "PosCommercial",
-    "src": "resources/js/components/pages/PosCommercial.jsx",
-    "isEntry": true,
-    "imports": [
-      "_react-select.esm-AIjEkChc.js",
-      "_RapportsPage-H6nFPwYD.js",
-      "_Searchbar-Byjzi2je.js"
-    ]
-  },
-  "resources/js/components/pages/PosParfums.jsx": {
-    "file": "assets/PosParfums-DGxUj_CT.js",
-    "name": "PosParfums",
-    "src": "resources/js/components/pages/PosParfums.jsx",
-    "isEntry": true,
-    "imports": [
-      "_react-select.esm-AIjEkChc.js",
-      "_Numpad-Ck20mgBJ.js",
-      "_RapportsPage-H6nFPwYD.js",
-      "_Searchbar-Byjzi2je.js",
-      "_DepenseModal-CzfmvvQQ.js"
-    ]
-  },
   "resources/js/compte_show.js": {
-    "file": "assets/compte_show-BauuXrci.js",
+    "file": "assets/compte_show-sxqRa-fW.js",
     "name": "compte_show",
     "src": "resources/js/compte_show.js",
     "isEntry": true
   },
   "resources/js/documents_parameters.js": {
-    "file": "assets/documents_parameters-CHOoVnlM.js",
+    "file": "assets/documents_parameters-Ldx9o3t-.js",
     "name": "documents_parameters",
     "src": "resources/js/documents_parameters.js",
     "isEntry": true
   },
   "resources/js/importations/woocommerce.js": {
-    "file": "assets/woocommerce-B_jA2Kl5.js",
+    "file": "assets/woocommerce-BVMJUnGz.js",
     "name": "woocommerce",
     "src": "resources/js/importations/woocommerce.js",
     "isEntry": true
   },
   "resources/js/inventaire_create.js": {
-    "file": "assets/inventaire_create-BMY_8LVc.js",
+    "file": "assets/inventaire_create-COcNndhm.js",
     "name": "inventaire_create",
     "src": "resources/js/inventaire_create.js",
     "isEntry": true,
     "imports": [
       "resources/js/article_modal.js",
-      "_historique_prix-BzH9eh97.js"
+      "_historique_prix-DBhLI32P.js"
     ]
   },
   "resources/js/parametres/woocommerce_liste.js": {
-    "file": "assets/woocommerce_liste-BZwqC8ho.js",
+    "file": "assets/woocommerce_liste-DZXQTMo-.js",
     "name": "woocommerce_liste",
     "src": "resources/js/parametres/woocommerce_liste.js",
     "isEntry": true
   },
   "resources/js/transformations/ajouter.js": {
-    "file": "assets/ajouter-C2Fkx_qi.js",
+    "file": "assets/ajouter-CL1ZDxnt.js",
     "name": "ajouter",
     "src": "resources/js/transformations/ajouter.js",
     "isEntry": true,
@@ -399,19 +287,48 @@
     ]
   },
   "resources/js/vente_create.js": {
-    "file": "assets/vente_create-BWJuPCiB.js",
+    "file": "assets/vente_create-Brgewyt_.js",
     "name": "vente_create",
     "src": "resources/js/vente_create.js",
     "isEntry": true,
     "imports": [
       "resources/js/article_modal.js",
-      "_historique_prix-BzH9eh97.js"
+      "_historique_prix-DBhLI32P.js"
     ]
   },
   "resources/js/ventes_liste.js": {
-    "file": "assets/ventes_liste-BGIPQWYt.js",
+    "file": "assets/ventes_liste-DMMUsfnh.js",
     "name": "ventes_liste",
     "src": "resources/js/ventes_liste.js",
     "isEntry": true
+  },
+  "resources/pos/app/app.css": {
+    "file": "assets/app-DSpTVwGr.css",
+    "src": "resources/pos/app/app.css",
+    "isEntry": true
+  },
+  "resources/pos/components/demandes/DemandeExterne.tsx": {
+    "file": "assets/DemandeExterne-BiKEwCgF.js",
+    "name": "DemandeExterne",
+    "src": "resources/pos/components/demandes/DemandeExterne.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/pos/main.tsx"
+    ],
+    "css": [
+      "assets/app-DSpTVwGr.css"
+    ]
+  },
+  "resources/pos/main.tsx": {
+    "file": "assets/main-ypOI0rCN.js",
+    "name": "main",
+    "src": "resources/pos/main.tsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/pos/components/demandes/DemandeExterne.tsx"
+    ],
+    "css": [
+      "assets/app-DSpTVwGr.css"
+    ]
   }
 }

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 class PosController extends Controller
 {
-    public  function pos()
+    public  function pos(Request $request)
     {
         $this->guard_custom(['pos.*']);
         if (!LimiteService::is_enabled('pos')){
@@ -54,8 +54,11 @@ class PosController extends Controller
         $rapport_af_enabled = DB::table('pos_rapports')->where('cle', 'af')->value('actif') ?? false;
         $rapport_cr_enabled = DB::table('pos_rapports')->where('cle', 'cr')->value('actif') ?? false;
 
-        auth()->user()->tokens()->delete();
 
+        if (!$request->get('token') || !$request->get('session_id')) {
+            auth()->user()->tokens()->delete();
+            return redirect()->route('pos',['token'=>auth()->user()->createToken('auth-api')->plainTextToken,'session_id'=>$pos_ouverte->id]);
+        }
         return view('pos.pos');
     }
     public  function demandes()

@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import obfuscator from "rollup-plugin-obfuscator";
 import react from "@vitejs/plugin-react";
+import tsconfigPaths from 'vite-tsconfig-paths';
+
 
 let fonts = [
     "resources/fonts/dripicons-v2.eot",
@@ -72,11 +74,8 @@ let js = [
 ];
 
 let reactComponents = [
-    "resources/js/components/pages/PosParfums.jsx",
-    "resources/js/components/pages/PosCommercial.jsx",
-    "resources/js/components/pages/PosClassic.jsx",
-    "resources/js/components/pages/PosCaisse.jsx",
-    "resources/js/components/pages/Demandes.jsx",
+    "resources/pos/main.tsx",
+    "resources/pos/app/app.css",
 ];
 export default defineConfig({
     plugins: [
@@ -84,6 +83,7 @@ export default defineConfig({
             input: [...fonts, ...base_scss, ...js, ...reactComponents],
             refresh: true,
         }),
+        tsconfigPaths(),
         react(),
         obfuscator({
             options: {
@@ -143,5 +143,8 @@ export default defineConfig({
     ],
     build: {
         commonjsOptions: { transformMixedEsModules: true },
+    },
+    resolve: {
+        alias: [],
     },
 });

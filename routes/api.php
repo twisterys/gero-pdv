@@ -246,10 +246,10 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
             Route::post('demande-transfert/{id}/annuler','DemandeTransfertController@annuler');
 
             // ------------ Rapports ---------------
-            Route::post('creance-rapport','RapportController@creance_rapport');
-            Route::post('tresorie-rapport','RapportController@tresorie_rapport');
-            Route::post('articles-clients-rapport','RapportController@article_client_rapport');
-            Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
+            Route::get('creance-rapport','RapportController@creance_rapport');
+            Route::get('tresorie-rapport','RapportController@tresorie_rapport');
+            Route::get('articles-clients-rapport','RapportController@article_client_rapport');
+            Route::get('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
             Route::get('articles-stock-rapport','RapportController@stock');
 
 

@@ -412,7 +412,7 @@ $gutters: $spacers;
 
 // Container padding
 
-$container-padding-x: $grid-gutter-width / 2;
+$container-padding-x: calc($grid-gutter-width / 2);
 
 // Components
 //
@@ -978,7 +978,7 @@ $navbar-brand-font-size: $font-size-lg;
 // Compute the navbar-brand padding-y so the navbar-brand will have the same height as navbar-text and nav-link
 $nav-link-height: $font-size-base * $line-height-base + $nav-link-padding-y * 2;
 $navbar-brand-height: $navbar-brand-font-size * $line-height-base;
-$navbar-brand-padding-y: ($nav-link-height - $navbar-brand-height) / 2;
+$navbar-brand-padding-y:calc( ($nav-link-height - $navbar-brand-height) / 2);
 $navbar-brand-margin-end: 1rem;
 
 $navbar-toggler-padding-y: 0.25rem;
@@ -1107,7 +1107,7 @@ $card-border-width: 0;
 $card-border-radius: $border-radius;
 $card-border-color: $gray-300;
 $card-inner-border-radius: subtract($card-border-radius, $card-border-width);
-$card-cap-padding-y: $card-spacer-y / 2;
+$card-cap-padding-y: calc($card-spacer-y / 2);
 $card-cap-padding-x: $card-spacer-x;
 $card-cap-bg: $gray-200;
 $card-cap-color: null;
@@ -1117,7 +1117,7 @@ $card-bg: #181b2e;
 
 $card-img-overlay-padding: 1.25rem;
 
-$card-group-margin: $grid-gutter-width / 2;
+$card-group-margin: calc($grid-gutter-width / 2);
 
 // Accordion
 $accordion-padding-y: 0.75rem;

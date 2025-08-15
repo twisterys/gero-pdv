@@ -40,7 +40,7 @@ class PosSettingsController extends Controller
                 "paymentsAndCredit"=>$rapports->where('cle','cr')->first()->actif,
                 "treasury"=>$rapports->where('cle','tr')->first()->actif,
             ],
-            "default_client" => $client,
+            "defaultClient" => $client,
             "url"=>URL::to('/'),
             "url_api"=>URL::to('/api/pos/v1'),
         ];

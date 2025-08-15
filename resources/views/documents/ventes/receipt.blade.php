@@ -137,24 +137,6 @@
     </div>
 
     {!! str_replace(array_keys($functions),$functions,$template) !!}
-
-    <div class="receipt-totals">
-        <div>Total HT: {!! number_format($o_vente->total_ht + $o_vente->total_reduction,2,'.',' ') !!} MAD</div>
-        <div>Total TVA: {!! number_format($o_vente->total_tva,2,'.',' ') !!} MAD</div>
-        <div class="total-line">Total TTC: {!! number_format($o_vente->total_ttc,2,'.',' ') !!} MAD</div>
-        <div>Montant Payé: {!! number_format($total_paye,2,'.',' ') !!} MAD</div>
-        <div>Montant Restant: {!! number_format($montant_restant,2,'.',' ') !!} MAD</div>
-    </div>
-
-    <div class="receipt-signature">
-        <div class="signature-box">Client</div>
-        <div class="signature-box">Vendeur</div>
-    </div>
-
-    <div class="receipt-footer">
-        Merci pour votre achat!<br>
-        {!! $o_vente->magasin->nom ?? 'Magasin' !!} - {!! now()->format('d/m/Y') !!}
-    </div>
 </div>
 </body>
 </html>
