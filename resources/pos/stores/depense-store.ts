@@ -42,6 +42,14 @@ const handleAsyncOperation = async <T>(
 };
 
 // Create the store
+/**
+ * `useDepenseStore` is a Zustand store that manages the state of depenses in the application.
+ * It provides state properties for categories of depenses, loading state, and error handling,
+ * along with asynchronous operations to fetch categories and create new depenses.
+ *
+ * State properties:
+ * - `categories`: An array to store the categories of depenses.
+ */
 export const useDepenseStore = create<DepenseState>((set, get) => ({
   categories: [],
   isLoading: false,

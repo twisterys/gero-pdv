@@ -13,8 +13,10 @@ import {History} from "../pos-components/history/History.jsx";
 import {ClientModal} from "../pos-components/ClientModal";
 import {PaiementModal} from "../pos-components/PaiementModal.jsx";
 // Add the debounce function
-import { debounce } from 'lodash';
+import {debounce} from 'lodash';
 import RapportsPage from "../pos-components/rapports/RapportsPage.jsx";
+import {DevSupport} from "@react-buddy/ide-toolbox";
+import {ComponentPreviews, useInitial} from "../../../../dev/index.js";
 
 function PosClassic() {
     // set all variable needed
@@ -104,6 +106,7 @@ function PosClassic() {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
     }
+
     const printCloture = () => {
         setIsLoading(true);
         axios.get('pos-session/cloture').then(response => {
@@ -427,7 +430,7 @@ function PosClassic() {
         }
     };
 
-    const cashOut = (credit=false) => {
+    const cashOut = (credit = false) => {
         if (client == null) {
             toastr.warning("Vuillez inserer un client !");
             return;
@@ -575,10 +578,10 @@ function PosClassic() {
         debounce((value) => {
             // Your search logic here
             axios.get("articles", {
-                params: { reference: value },
+                params: {reference: value},
             })
-            .then(response => populateData(response))
-            .catch(error => toastr.error("Une erreur est survenue"));
+                .then(response => populateData(response))
+                .catch(error => toastr.error("Une erreur est survenue"));
         }, 300),
         [populateData]
     );
@@ -594,7 +597,7 @@ function PosClassic() {
                         <div className="card-body pb-1 px-0">
                             <div className="float-end">
                                 <button
-                                    onClick={()=>printCloture()}
+                                    onClick={() => printCloture()}
                                     className="btn btn-info mx-1">
                                     <i className="fa fa-file-contract "></i>
                                 </button>
@@ -612,7 +615,7 @@ function PosClassic() {
                                         Demandes
                                     </a>
                                 )}
-                                { __is_historique && (
+                                {__is_historique && (
                                     <button
                                         className="btn btn-primary mx-1 shadow-sm"
                                         type="button"
@@ -653,7 +656,7 @@ function PosClassic() {
                                 <div className="col-5">
                                     <div className="input-group flex-nowrap">
                                         <div className="w-100">
-                                            <ClientSelect client={client} setClient={setClient} />
+                                            <ClientSelect client={client} setClient={setClient}/>
                                         </div>
                                         <button
                                             data-bs-toggle="modal"
@@ -748,15 +751,15 @@ function PosClassic() {
                     />
                 </div>
                 <div className="col-5" style={{height: "calc(100vh - 16rem)"}}>
-                    <div className="card card-body position-absolute" style={{inset:".3rem"}}>
+                    <div className="card card-body position-absolute" style={{inset: ".3rem"}}>
                         <Articles items={items} setItems={setItems}/>
                     </div>
                 </div>
             </div>
-            <DepenseModal depense={depense} setDepense={setDepense} />
+            <DepenseModal depense={depense} setDepense={setDepense}/>
             <History reduction={false}/>
-            <ClientModal setClient={setClient} setIsLoading={setIsLoading} />
-            <PaiementModal paiement={paiement} setPaiement={setPaiement} payer={payer} />
+            <ClientModal setClient={setClient} setIsLoading={setIsLoading}/>
+            <PaiementModal paiement={paiement} setPaiement={setPaiement} payer={payer}/>
         </>
     );
 }
@@ -769,6 +772,10 @@ axios.defaults.headers.Authorization = "Bearer " + sessionStorage.getItem('acces
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
-        <PosClassic/>
+        <DevSupport ComponentPreviews={ComponentPreviews}
+                    useInitialHook={useInitial}
+        >
+            <PosClassic/>
+        </DevSupport>
     </React.StrictMode>
 );

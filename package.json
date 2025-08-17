@@ -41,6 +41,7 @@
         "react-toastify": "^11.0.5",
         "sweetalert2": "^11.22.4",
         "tailwindcss": "^4.1.12",
-        "zustand": "^4.5.2"
+        "zustand": "^4.5.2",
+      "@react-buddy/ide-toolbox": "^2.4.0"
     }
 }

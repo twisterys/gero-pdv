@@ -1,8 +1,12 @@
 import {printHtml, printReport} from "../../utils/helpers";
 import Swal from "sweetalert2";
 import {endpoints} from "../../services/api";
+import {useSettingsStore} from "../../stores/settings-store";
 
 const ClotureButton = () => {
+    const { features} = useSettingsStore();
+
+    if (!features.cloture) return null;
     const printCloture = async () => {
         await endpoints.system.cloture().then(response => {
             Swal.fire({

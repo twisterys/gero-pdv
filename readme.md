@@ -98,3 +98,9 @@ Template::create([
 'afficher_total_en_chiffre' => '0',
 'elements' => 'image_en_bas,image_en_tete,cachet'
 ]);
+
+
+## POS Documentation
+
+- User Guide (How to use the POS): docs/pos/User_Guide.md
+- Developer Guide (Architecture, libraries, coding guidelines): docs/pos/Developer_Guide.md

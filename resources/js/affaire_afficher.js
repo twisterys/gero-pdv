@@ -482,9 +482,7 @@ const dataTable_lang = {
 const __dataTable_filter_inputs_id = {
     affaire_id: '#affaire-input',
 }
-const __dataTable_filter = function (data) {
-    d = __datatable_ajax_callback(data);
-};
+
 $(document).on('click', '.depense-tab', function () {
     $("#depense-table table").DataTable().destroy();
     const __dataTable_columns_depense = [

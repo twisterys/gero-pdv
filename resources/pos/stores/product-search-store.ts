@@ -22,6 +22,30 @@ interface ProductSearchState {
   selectProduct: (product: Product) => void;
 }
 
+/**
+ * A Zustand store for managing product search state and actions in an application.
+ *
+ * This store includes the state variables for handling product search functionality, such as the search term,
+ * search results, loading status, and UI-related properties like open and focus states. It also provides
+ * various actions for updating the state and handling operations like searching, clearing search results,
+ * and selecting a product.
+ *
+ * State:
+ * - `searchTerm` (string): The current search input value.
+ * - `searchResults` (Product[]): The list of products matching the search term.
+ * - `loading` (boolean): Indicates whether a search operation is in progress.
+ * - `isOpen` (boolean): Determines if the search UI is open.
+ * - `isFocused` (boolean): Tracks the focus state of the search input field.
+ *
+ * Actions:
+ * - `setSearchTerm(val, search?)`: Updates the search input value and optionally triggers a debounced search.
+ * - `setSearchResults(val)`: Sets the current search results to the given list of products.
+ * - `setLoading(val)`: Updates the loading status.
+ * - `setIsOpen(val)`: Updates the open state of the search UI.
+ * - `setIsFocused(val)`: Updates the focus state of the search input.
+ * - `clearSearch()`: Clears the search term, results, and resets the isOpen state to false.
+ * - `selectProduct(product)`: Handles logic when a product is selected, adds the product to the cart, and resets the search state.
+ */
 export const useProductSearchStore = create<ProductSearchState>()((set, get) => ({
   // initial state
   searchTerm: '',

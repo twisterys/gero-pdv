@@ -117,13 +117,11 @@
                             <div class="row col-12 mx-0">
                                 <div class="col-12">
                                     <table class="table table-bordered table-hover settings-table mt-3 rounded overflow-hidden">
-                                        <thead>
-                                            <tr>
-                                                <th class="bg-light" style="width: 40%">Option</th>
-                                                <th class="bg-light">Valeur</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
+                                        <!-- Types de vente -->
+                                        <tr id="types_vente" class="table-active">
+                                            <th colspan="2"><i class="fa fa-tags me-2"></i>Types de vente</th>
+                                        </tr>
                                         <tr>
                                             <td>{{$pos_settings->where('key','type_vente')->first()?->label}}</td>
                                             <td>
@@ -155,12 +153,25 @@
                                                 </select>
                                             </td>
                                         </tr>
+
+                                        <!-- Fonctionnalités -->
+                                        <tr id="fonctionnalites" class="table-active">
+                                            <th colspan="2"><i class="fa fa-sliders-h me-2"></i>Fonctionnalités</th>
+                                        </tr>
                                         <tr>
                                             <td>{{$pos_settings->where('key','reduction')->first()?->label}}</td>
                                             <td>
                                                 <input name="reduction" value="1" type="checkbox" id="reduction"
                                                        switch="bool" @checked(old('reduction',$pos_settings->where('key','reduction')->first()?->value)) >
                                                 <label for="reduction" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{$pos_settings->where('key','global_reduction')->first()?->label ?? 'Réduction globale'}}</td>
+                                            <td>
+                                                <input name="global_reduction" value="1" type="checkbox" id="global_reduction"
+                                                       switch="bool" @checked(old('global_reduction',$pos_settings->where('key','global_reduction')->first()?->value)) >
+                                                <label for="global_reduction" data-on-label="Oui" data-off-label="Non"></label>
                                             </td>
                                         </tr>
                                         <tr>
@@ -196,12 +207,62 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td>{{$pos_settings->where('key','cloture')->first()?->label ?? 'Clôture de caisse'}}</td>
+                                            <td>
+                                                <input name="cloture" value="1" type="checkbox" id="cloture"
+                                                       switch="bool" @checked(old('cloture',$pos_settings->where('key','cloture')->first()?->value)) >
+                                                <label for="cloture" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Raccourcis de paiement -->
+                                        <tr id="paiements" class="table-active">
+                                            <th colspan="2"><i class="fa fa-money-bill-wave me-2"></i>Raccourcis de paiement</th>
+                                        </tr>
+                                        <tr>
+                                            <td>{{$pos_settings->where('key','button_credit')->first()?->label ?? 'Bouton Crédit'}}</td>
+                                            <td>
+                                                <input name="button_credit" value="1" type="checkbox" id="button_credit"
+                                                       switch="bool" @checked(old('button_credit',$pos_settings->where('key','button_credit')->first()?->value)) >
+                                                <label for="button_credit" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{$pos_settings->where('key','button_other')->first()?->label ?? 'Bouton Autre'}}</td>
+                                            <td>
+                                                <input name="button_other" value="1" type="checkbox" id="button_other"
+                                                       switch="bool" @checked(old('button_other',$pos_settings->where('key','button_other')->first()?->value)) >
+                                                <label for="button_other" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{$pos_settings->where('key','button_cash')->first()?->label ?? 'Bouton Espèces'}}</td>
+                                            <td>
+                                                <input name="button_cash" value="1" type="checkbox" id="button_cash"
+                                                       switch="bool" @checked(old('button_cash',$pos_settings->where('key','button_cash')->first()?->value)) >
+                                                <label for="button_cash" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Tickets & Impression -->
+                                        <tr id="tickets" class="table-active">
+                                            <th colspan="2"><i class="fa fa-receipt me-2"></i>Tickets & Impression</th>
+                                        </tr>
+                                        <tr>
                                             <td>{{$pos_settings->where('key','ticket')->first()?->label}}</td>
                                             <td>
                                                 <input name="ticket" value="1" type="checkbox" id="ticket"
                                                        switch="bool" @checked(old('ticket',$pos_settings->where('key','ticket')->first()?->value))
                                                        onchange="if(!this.checked) document.getElementById('double_ticket_template').checked = false;" >
                                                 <label for="ticket" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{$pos_settings->where('key','autoTicketPrinting')->first()?->label ?? 'Impression automatique du ticket'}}</td>
+                                            <td>
+                                                <input name="autoTicketPrinting" value="1" type="checkbox" id="autoTicketPrinting"
+                                                       switch="bool" @checked(old('autoTicketPrinting',$pos_settings->where('key','autoTicketPrinting')->first()?->value)) >
+                                                <label for="autoTicketPrinting" data-on-label="Oui" data-off-label="Non"></label>
                                             </td>
                                         </tr>
                                         <tr>

@@ -66,7 +66,6 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for handling common errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -107,7 +106,9 @@ api.interceptors.response.use(
   }
 );
 
-// API endpoints as functions
+/**
+ * API endpoints for the system operations like health check, settings retrieval, and session management.
+ */
 const endpoints = {
   // System
   system: {

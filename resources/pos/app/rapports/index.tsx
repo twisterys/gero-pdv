@@ -13,7 +13,7 @@ const rapportsList = [
 
 const Rapports = () => {
   const rapports = useSettingsStore((s) => s.rapports);
-  const visible = rapportsList.filter((r) => (rapports as any)[r.key] !== false);
+  const visible = rapportsList.filter((r) => (rapports as any)[r.key] != false);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

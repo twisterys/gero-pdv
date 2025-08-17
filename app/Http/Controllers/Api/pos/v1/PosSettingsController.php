@@ -14,35 +14,58 @@ class PosSettingsController extends Controller
         return response()->json(['status' => 'up']);
     }
 
-    public function init(){
-        $settings = \App\Models\PosSettings::first();
+    public function init()
+    {
+        // Load all settings as a collection (some code elsewhere relies on collection methods)
+        $settings = \App\Models\PosSettings::all();
 
+        // Load rapports once
         $rapports = DB::table('pos_rapports')->get();
 
+        // Default client (nullable)
         $client = Client::first(['id as value', 'nom as label']) ?? null;
 
+        // Helper to fetch boolean setting by key safely
+        $bool = function (string $key, bool $default = false) use ($settings): bool {
+            $val = $settings->firstWhere('key', $key)?->value ?? $default;
+            return (bool) $val;
+        };
+
+        // Helper to fetch rapport actif by cle safely
+        $rapport = function (string $cle, bool $default = false) use ($rapports): bool {
+            $row = $rapports->firstWhere('cle', $cle);
+            return (bool) ($row?->actif ?? $default);
+        };
+
         $data = [
-            "features" => [
-                "ticketPrinting"=>$settings->where('key','ticket')->first()?->value,
-                "autoTicketPrinting"=>$settings->where('key','autoTicketPrinting')->first()?->value,
-                "priceEditing"=>$settings->where('key','modifier_prix')->first()?->value,
-                "reductionEnabled"=>$settings->where('key','reduction')->first()?->value,
-                "globalReductionEnabled"=>$settings->where('key','global_reduction')->first()?->value,
-                "demandes"=>$settings->where('key','demandes')->first()?->value,
-                "depense"=>$settings->where('key','depenses')->first()?->value,
-                "history"=>$settings->where('key','historique')->first()?->value,
+            'features' => [
+                'ticketPrinting' => $bool('ticket', false),
+                'autoTicketPrinting' => $bool('autoTicketPrinting', false),
+                'priceEditing' => $bool('modifier_prix', false),
+                'reductionEnabled' => $bool('reduction', false),
+                'globalReductionEnabled' => $bool('global_reduction', false),
+                'demandes' => $bool('demandes', false),
+                'history' => $bool('historique', false),
+                'depense' => $bool('depenses', false),
+                'cloture' => $bool('cloture', false),
             ],
-            "posType"=>$settings->where('key','type_pos')->first()?->value,
-            "rapports"=> [
-                "stock"=> $rapports->where('cle','as')->first()->actif,
-                "saleByProductAndCLient"=> $rapports->where('cle','ac')->first()->actif,
-                "productBySupplier"=>$rapports->where('cle','af')->first()->actif,
-                "paymentsAndCredit"=>$rapports->where('cle','cr')->first()->actif,
-                "treasury"=>$rapports->where('cle','tr')->first()->actif,
+            'rapports' => [
+                'stock' => $rapport('as', false),
+                'saleByProductAndCLient' => $rapport('ac', false),
+                'productBySupplier' => $rapport('af', false),
+                'paymentsAndCredit' => $rapport('cr', false),
+                'treasury' => $rapport('tr', false),
+                'daily' => $rapport('dl', false),
             ],
-            "defaultClient" => $client,
-            "url"=>URL::to('/'),
-            "url_api"=>URL::to('/api/pos/v1'),
+            'buttons' => [
+                'credit' => $bool('button_credit', false),
+                'other' => $bool('button_other', false),
+                'cash' => $bool('button_cash', false),
+            ],
+            'defaultClient' => $client,
+            'posType' => $settings->firstWhere('key', 'type_pos')?->value ?? 'caisse',
+            'url' => URL::to('/'),
+            'apiUrl' => URL::to('/api/pos/v1'),
         ];
 
         return response()->json($data);

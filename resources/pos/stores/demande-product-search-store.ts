@@ -22,6 +22,34 @@ interface DemandeProductSearchState {
   selectProduct: (product: Product) => void;
 }
 
+/**
+ * A Zustand store that manages the state and actions for searching products in the product demande flow.
+ *
+ * @constant {object} useDemandeProductSearchStore
+ *
+ * State:
+ * - `searchTerm` {string}: The current search term entered by the user.
+ * - `searchResults` {Product[]}: The list of products resulting from the search.
+ * - `loading` {boolean}: Indicates whether the search operation is in progress.
+ * - `isOpen` {boolean}: Determines if the search dropdown or modal is open.
+ * - `isFocused` {boolean}: Indicates whether the search input is currently focused.
+ *
+ * Actions:
+ * - `setSearchTerm(val: string | ((prev: string) => string), search?: boolean): void`
+ *   Updates the search term and optionally triggers a debounced search operation.
+ * - `setSearchResults(val: Product[]): void`
+ *   Sets the list of search results.
+ * - `setLoading(val: boolean): void`
+ *   Sets the loading status for the search operation.
+ * - `setIsOpen(val: boolean): void`
+ *   Toggles the open state of the search dropdown or modal.
+ * - `setIsFocused(val: boolean): void`
+ *   Updates the input focus status.
+ * - `clearSearch(): void`
+ *   Clears the search term, search results, and closes the dropdown or modal.
+ * - `selectProduct(product: Product): void`
+ *   Selects a product and adds it to the demande cart. Resets the search term and closes the dropdown or modal.
+ */
 export const useDemandeProductSearchStore = create<DemandeProductSearchState>()((set, get) => ({
   // initial state
   searchTerm: '',

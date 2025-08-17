@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { endpoints } from '../services/api';
+import {create} from "zustand";
+import {endpoints} from '../services/api';
 
 // Product type from POS store
 export interface Product {
@@ -82,7 +82,7 @@ interface DemandesState {
   acceptDemande: (id: number) => Promise<any>;
   printDemande: (id: number) => Promise<any>;
   livrerDemande: (id: number, data: Demande) => Promise<any>;
-  
+
   // Product and cart management
   fetchProducts: (page?: number) => Promise<void>;
   fetchNextPage: () => Promise<void>;
@@ -117,7 +117,38 @@ const handleAsyncOperation = async <T>(
 };
 
 /**
- * Zustand store for managing demandes (demands/requests)
+ * The `useDemandesStore` variable is a store managing the state and actions
+ * related to demandes (requests/orders) and products. This includes fetching,
+ * creating, updating, and managing demandes and their associated products.
+ * It also handles pagination, loading states, and various operations on a demande cart.
+ *
+ * State properties:
+ * - `demandesIntern`: List of internal demandes.
+ * - `demandesExtern`: List of external demandes.
+ * - `products`: List of products available for selection in demandes.
+ * - `demandeCart`: List of products selected for the current demande.
+ * - `isLoading`: Flag indicating whether a demand-related operation is in progress.
+ * - `error`: Error message or object, if an operation fails.
+ * - `pagination`: Object managing pagination data for the products list.
+ * - `isLoadingMore`: Flag indicating whether more products are being loaded (pagination).
+ * - `showCreateModal`: Flag to control the visibility of the create demande modal.
+ * - `fetching`: Flag used for custom loading scenarios.
+ *
+ * Actions:
+ * - `fetchDemandesIntern`: Fetches the list of internal demandes.
+ * - `fetchDemandesExtern`: Fetches the list of external demandes.
+ * - `createDemande`: Creates a new demande.
+ * - `cancelDemande`: Cancels an existing demande by ID.
+ * - `acceptDemande`: Accepts an existing demande by ID.
+ * - `printDemande`: Triggers printing of a demande by ID.
+ * - `livrerDemande`: Delivers an existing demande by ID with required data.
+ * - `fetchProducts`: Fetches a list of products with optional pagination.
+ * - `fetchNextPage`: Fetches the next page of products if available.
+ * - `addToDemandeCart`: Adds a product to the demande cart or updates its quantity if it already exists in the cart.
+ * - `removeFromDemandeCart`: Removes a specific product from the demande cart.
+ * - `updateQuantity`: Updates the quantity of a product in the demande cart by product ID.
+ * - `clearDemandeCart`: Clears all items from the demande cart.
+ * - `setShowCreateModal`: Sets the visibility of the create demande modal.
  */
 export const useDemandesStore = create<DemandesState>((set, get) => ({
   // Initial state
@@ -162,40 +193,35 @@ export const useDemandesStore = create<DemandesState>((set, get) => ({
   // Create a new demande
   createDemande: async (data: DemandeData) => {
     return await handleAsyncOperation(async () => {
-      const response = await endpoints.demandes.create(data);
-      return response;
+        return await endpoints.demandes.create(data);
     }, set, 'Failed to create demande');
   },
 
   // Cancel a demande
   cancelDemande: async (id: number) => {
     return await handleAsyncOperation(async () => {
-      const response = await endpoints.demandes.cancel(id);
-      return response;
+        return await endpoints.demandes.cancel(id);
     }, set, 'Failed to cancel demande');
   },
 
   // Accept a demande
   acceptDemande: async (id: number) => {
     return await handleAsyncOperation(async () => {
-      const response = await endpoints.demandes.accept(id);
-      return response;
+        return await endpoints.demandes.accept(id);
     }, set, 'Failed to accept demande');
   },
 
   // Print a demande
   printDemande: async (id: number) => {
     return await handleAsyncOperation(async () => {
-      const response = await endpoints.demandes.print(id);
-      return response;
+        return await endpoints.demandes.print(id);
     }, set, 'Failed to print demande');
   },
 
   // Deliver a demande
   livrerDemande: async (id: number, data: Demande) => {
     return await handleAsyncOperation(async () => {
-      const response = await endpoints.demandes.livrer(id, data);
-      return response;
+        return await endpoints.demandes.livrer(id, data);
     }, set, 'Failed to deliver demande');
   },
 
@@ -204,7 +230,7 @@ export const useDemandesStore = create<DemandesState>((set, get) => ({
     await handleAsyncOperation(async () => {
       const response = await endpoints.products.getAll(page);
       const { data, meta } = response.data;
-      
+
       set({
         products: page === 1 ? data : [...get().products, ...data],
         pagination: {
@@ -221,11 +247,11 @@ export const useDemandesStore = create<DemandesState>((set, get) => ({
   // Fetch the next page of products
   fetchNextPage: async () => {
     const { pagination, isLoadingMore } = get();
-    
+
     if (isLoadingMore || !pagination.hasNextPage) return;
-    
+
     set({ isLoadingMore: true });
-    
+
     try {
       await get().fetchProducts(pagination.currentPage + 1);
     } finally {
@@ -237,19 +263,19 @@ export const useDemandesStore = create<DemandesState>((set, get) => ({
   addToDemandeCart: (product: Product) => {
     const { demandeCart } = get();
     const existingItem = demandeCart.find(item => item.product.id === product.id);
-    
+
     if (existingItem) {
       set({
-        demandeCart: demandeCart.map(item => 
-          item.product.id === product.id 
-            ? { ...item, quantity: item.quantity + 1 } 
+        demandeCart: demandeCart.map(item =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         )
       });
     } else {
       set({
-        demandeCart: [...demandeCart, { 
-          product, 
+        demandeCart: [...demandeCart, {
+          product,
           quantity: 1,
           quantite_actuelle: product.quantity
         }]
@@ -269,9 +295,9 @@ export const useDemandesStore = create<DemandesState>((set, get) => ({
   updateQuantity: (productId: string, quantity: number) => {
     const { demandeCart } = get();
     set({
-      demandeCart: demandeCart.map(item => 
-        item.product.id === productId 
-          ? { ...item, quantity } 
+      demandeCart: demandeCart.map(item =>
+        item.product.id === productId
+          ? { ...item, quantity }
           : item
       )
     });

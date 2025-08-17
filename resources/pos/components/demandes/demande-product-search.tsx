@@ -1,8 +1,40 @@
-import React from 'react';
-import { type Product } from '../../stores/demandes-store';
+import React, {useEffect} from 'react';
 import useDemandeProductSearch from './useDemandeProductSearch';
+import {barcodeDetection} from "../../utils/helpers";
 
+/**
+ * `DemandeProductSearch` is a React functional component that provides an interactive
+ * product search input field with dynamic suggestions, barcode detection, and callbacks for
+ * handling various user interactions.
+ *
+ * Features:
+ * - Allows users to search for products in real-time by entering a search term.
+ * - Displays a dynamic dropdown containing search results matching the entered term.
+ * - Handles user interactions such as focus, blur, selecting a product, and clearing the search field.
+ * - Integrates barcode detection for improved usability (via `inputRef` with `barcodeDetection` utility).
+ * - Provides dynamic visual feedback for actions like loading results and no match found.
+ *
+ * Dependencies:
+ * The component uses the `useDemandeProductSearch` custom hook to manage:
+ * - State: `searchTerm`, `searchResults`, `loading`, `isOpen`, and `isFocused`.
+ * - Refs: `containerRef` for managing the component's DOM reference.
+ * - Handlers:
+ *   - `handleSearch` for updating the search term.
+ *   - `handleClearSearch` for clearing the input field.
+ *   - `handleSelectProduct` for user product selection.
+ *   - `handleFocus` and `handleBlur` for managing focus state.
+ *
+ * Rendering Details:
+ * - Renders an input field with a label for searching products.
+ * - Includes a dropdown that displays matching results or relevant feedback such as "Loading..." or "No products found".
+ * - Provides UI enhancements such as styled hover effects, dynamic classes, and accessibility considerations.
+ *
+ * Props:
+ * None directly accepted by the component as it relies on `useDemandeProductSearch` for dependencies.
+ */
 const DemandeProductSearch: React.FC = () => {
+
+    const inputRef:React.RefObject<HTMLInputElement|null> = React.useRef(null);
     const {
         // state
         searchTerm,
@@ -20,6 +52,10 @@ const DemandeProductSearch: React.FC = () => {
         handleBlur,
     } = useDemandeProductSearch();
 
+    useEffect(() => {
+        barcodeDetection(inputRef)
+    }, []);
+
     return (
         <div className="relative w-full" ref={containerRef}>
             <label className="block text-sm font-medium text-gray-700 mb-1">Rechercher un produit</label>
@@ -27,6 +63,7 @@ const DemandeProductSearch: React.FC = () => {
                 <div className={`relative flex-1 flex items-center transition-all duration-150`}>
                     <input
                         type="text"
+                        ref={inputRef}
                         className="w-full py-2 px-3 outline-none bg-white rounded-md"
                         placeholder="Rechercher un produit"
                         value={searchTerm}
@@ -36,8 +73,8 @@ const DemandeProductSearch: React.FC = () => {
                     />
                     <div className="absolute right-0 flex items-center pr-2 h-full">
                         {searchTerm && (
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 onClick={handleClearSearch}
                                 className="text-gray-400 hover:text-gray-600 mr-1"
                             >

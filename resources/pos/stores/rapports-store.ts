@@ -84,6 +84,33 @@ interface RapportStore {
     getTreasury: () => Promise<void>;
 }
 
+/**
+ * A store module for managing rapport-related data and state.
+ *
+ * This store includes functionalities for fetching and managing various
+ * reports related to stock, sales, products by supplier, payments and credits,
+ * and treasury details. Includes loading and error states for better API request management.
+ *
+ * Properties:
+ * - `stock`: Array of stock-related data.
+ * - `saleByProductAndCLient`: Object containing data on sales by product and client.
+ * - `productBySupplier`: Object containing data on products categorized by supplier.
+ * - `paymentsAndCredit`: Array of data on payments and credits.
+ * - `treasury`: Object containing various metrics related to treasury status.
+ * - `isLoading`: Boolean indicating if an operation is in progress.
+ * - `isError`: Boolean indicating if any error has occurred.
+ * - `error`: String representing the current error message, if applicable.
+ *
+ * Methods:
+ * - `setIsLoading(isLoading)`: Updates the loading state.
+ * - `setIsError(isError)`: Sets the error state.
+ * - `setError(error)`: Assigns the error message.
+ * - `getStock()`: Fetches stock data from an external API and updates the store.
+ * - `getSaleByProductAndClient()`: Fetches sales data categorized by product and client.
+ * - `getProductBySupplier()`: Fetches product data categorized by supplier.
+ * - `getPaymentsAndCredit()`: Fetches information on payments and credits.
+ * - `getTreasury()`: Fetches treasury metrics and updates the treasury state.
+ */
 export const useRapportsStore = create<RapportStore>((set) => ({
     stock: [],
     saleByProductAndCLient: {

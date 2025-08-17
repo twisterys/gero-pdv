@@ -1,6 +1,7 @@
 import React, {type RefObject, useEffect, useRef} from 'react';
 import { type Product } from '~/pos/pos-store';
 import useProductSearch from './useProductSearch';
+import {barcodeDetection} from "../../utils/helpers";
 
 const ProductSearch: React.FC = () => {
 
@@ -22,35 +23,7 @@ const ProductSearch: React.FC = () => {
         handleBlur,
     } = useProductSearch();
     useEffect(() => {
-        const SCANNER_PREFIX_KEY = 'F9';
-        let buffer = '';
-        let lastKeyTime = Date.now();
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            const now = Date.now();
-
-            // Prefix detection
-            if (e.key === SCANNER_PREFIX_KEY) {
-                inputRef.current?.focus();
-                buffer = '';
-                return;
-            }
-
-            // Fast typing detection
-            const timeDiff = now - lastKeyTime;
-            lastKeyTime = now;
-
-            if (timeDiff > 100) {
-                buffer = '';
-            }
-
-            buffer += e.key;
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
+        barcodeDetection(inputRef)
     }, []);
     return (
         <div className="relative w-full" ref={containerRef}>
@@ -68,8 +41,8 @@ const ProductSearch: React.FC = () => {
                     />
                     <div className="absolute right-0 flex items-center pr-2 h-full">
                         {searchTerm && (
-                            <button 
-                                type="button" 
+                            <button
+                                type="button"
                                 onClick={handleClearSearch}
                                 className="text-gray-400 hover:text-gray-600 mr-1"
                             >
