@@ -308,7 +308,7 @@
     "isEntry": true
   },
   "resources/pos/components/demandes/DemandeExterne.tsx": {
-    "file": "assets/DemandeExterne-sZLORVu_.js",
+    "file": "assets/DemandeExterne-DmcJkDc9.js",
     "name": "DemandeExterne",
     "src": "resources/pos/components/demandes/DemandeExterne.tsx",
     "isDynamicEntry": true,
@@ -320,7 +320,7 @@
     ]
   },
   "resources/pos/main.tsx": {
-    "file": "assets/main-CHsJ3nKC.js",
+    "file": "assets/main-CjdXg7T8.js",
     "name": "main",
     "src": "resources/pos/main.tsx",
     "isEntry": true,

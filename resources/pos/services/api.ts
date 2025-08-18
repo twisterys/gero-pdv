@@ -2,7 +2,14 @@ import axios from 'axios';
 import type {SettingsApiResponse} from "../stores/settings-store";
 
 // Base URL for all API requests
-const API_BASE_URL = 'http://pdv.gero-pdv.test/api/pos/v1';
+// Get the base URL from the current URL's basename and append api/pos/v1
+const getBaseUrl = () => {
+  // Get the origin part of the URL (protocol + hostname + port)
+  const origin = window.location.origin;
+  return `${origin}/api/pos/v1`;
+};
+
+const API_BASE_URL = getBaseUrl();
 
 // Create a configured Axios instance
 const api = axios.create({
