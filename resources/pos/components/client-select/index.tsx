@@ -7,9 +7,27 @@ import {type Client, usePOSStore} from '~/pos/pos-store';
 import QuickAddClientModal from './quick-add-client-modal';
 import {endpoints} from "../../services/api";
 import { useSettingsStore } from '../../stores/settings-store';
+// Custom hook for debounced value
+function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+}
 
 const ClientSelect: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedClientName, setSelectedClientName] = useState<string>('');
+    const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
     const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -36,10 +54,12 @@ const ClientSelect: React.FC = () => {
         };
     }, []);
 
-    // Update search term when client changes
+    // Update selected client name when client changes
     useEffect(() => {
         if (client) {
-            setSearchTerm(client.nom);
+            setSelectedClientName(client.nom);
+        } else {
+            setSelectedClientName('');
         }
     }, [client]);
 
@@ -48,21 +68,24 @@ const ClientSelect: React.FC = () => {
         if (!client && defaultClient && defaultClient.value && defaultClient.label) {
             const mapped: Client = { id: defaultClient.value, nom: defaultClient.label };
             setClient(mapped);
-            setSearchTerm(mapped.nom);
+            setSelectedClientName(mapped.nom);
         }
     }, [client, defaultClient, setClient]);
 
-    // Debounced search function
-    const debouncedSearch = useCallback(
-        debounce(async (search: string) => {
-            if (!search.trim()) {
+    // Use the debounced search term
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    // Search effect that runs when the debounced search term changes
+    useEffect(() => {
+        const performSearch = async () => {
+            if (!debouncedSearchTerm.trim()) {
                 setClients([]);
                 return;
             }
 
             try {
                 setLoading(true);
-                const response = await endpoints.clients.getAll(search);
+                const response = await endpoints.clients.getAll(debouncedSearchTerm);
                 setClients(response.data);
                 setIsOpen(true);
             } catch (error) {
@@ -71,33 +94,45 @@ const ClientSelect: React.FC = () => {
             } finally {
                 setLoading(false);
             }
-        }, 300), // 300ms delay
-        []
-    );
+        };
+
+        performSearch();
+    }, [debouncedSearchTerm, setClients, setLoading, setIsOpen]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        setSearchTerm(value);
-        if (client) {
-            clearClient();
+
+        // Switch to search mode when the user starts typing
+        if (!isSearchMode) {
+            setIsSearchMode(true);
         }
-        debouncedSearch(value);
+
+        setSearchTerm(value);
+        // No longer clear client when typing in search box
     };
 
     const handleSelectClient = (selectedClient: Client) => {
         setClient(selectedClient);
-        setSearchTerm(selectedClient.nom);
+        setSelectedClientName(selectedClient.nom);
+        setSearchTerm(''); // Clear search term after selection
+        setIsSearchMode(false); // Switch back to display mode
         setIsOpen(false);
     };
 
     const handleClearSelection = () => {
         clearClient();
         setSearchTerm('');
+        setSelectedClientName('');
+        setIsSearchMode(false); // Reset search mode
         setClients([]);
     };
 
     const handleFocus = () => {
         setIsFocused(true);
+
+        // Switch to search mode when the user focuses on the input
+        setIsSearchMode(true);
+
         if (searchTerm.trim() && clients.length > 0) {
             setIsOpen(true);
         }
@@ -105,6 +140,11 @@ const ClientSelect: React.FC = () => {
 
     const handleBlur = () => {
         setIsFocused(false);
+
+        // Switch back to display mode when the user blurs the input and there's no search term
+        if (!searchTerm.trim() && selectedClientName) {
+            setIsSearchMode(false);
+        }
     };
 
     const handleOpenModal = () => {
@@ -117,19 +157,21 @@ const ClientSelect: React.FC = () => {
 
     const handleClientAdded = (newClient: Client) => {
         setClient(newClient);
-        setSearchTerm(newClient.nom);
+        setSelectedClientName(newClient.nom);
+        setSearchTerm(''); // Clear search term after adding a client
+        setIsSearchMode(false); // Switch back to display mode
         setIsOpen(false);
     };
 
     return (
         <div className="relative w-full" ref={containerRef}>
             <div className={`flex space-x-2 mb-2 rounded-md overflow-hidden border ${isFocused ? 'border-primary ring-2 ring-blue-100' : 'border-gray-300'} `}>
-                <div className={`relative flex-1 flex items-center   transition-all duration-150`}>
+                <div className={`relative flex-1 flex items-center transition-all duration-150`}>
                     <input
                         type="text"
                         className="w-full py-2 px-3 outline-none bg-white rounded-md"
                         placeholder="Rechercher un client..."
-                        value={searchTerm}
+                        value={isSearchMode ? searchTerm : (selectedClientName || searchTerm)}
                         onChange={handleSearch}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
@@ -138,8 +180,9 @@ const ClientSelect: React.FC = () => {
                         {searchTerm && (
                             <button
                                 type="button"
-                                onClick={handleClearSelection}
+                                onClick={() => setSearchTerm('')}
                                 className="text-gray-400 hover:text-gray-600 mr-1"
+                                title="Effacer la recherche"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
