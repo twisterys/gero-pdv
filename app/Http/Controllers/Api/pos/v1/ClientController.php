@@ -43,8 +43,8 @@ class ClientController extends Controller
             ReferenceService::incrementCompteur('clt');
             DB::commit();
             return response(['client' => [
-                'value' => $o_client->id,
-                'label' => $o_client->nom
+                'id' => $o_client->id,
+                'nom' => $o_client->nom
             ], 'message' => 'Client ajouté avec succès !'], 200);
         } catch (Exception $e) {
             DB::rollBack();

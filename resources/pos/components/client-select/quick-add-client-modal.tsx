@@ -5,8 +5,8 @@ import {endpoints} from "../../services/api";
 
 interface QuickAddClientFormData {
   denomination: string;
-  telephone: string;
-  ville: string;
+  telephone: string|null;
+  ville: string|null;
 }
 
 interface QuickAddClientModalProps {
@@ -21,19 +21,18 @@ const QuickAddClientModal: React.FC<QuickAddClientModalProps> = ({
   onClientAdded
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  
+
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
+      setError
   } = useForm<QuickAddClientFormData>();
 
   const onSubmit = async (data: QuickAddClientFormData) => {
     setIsSubmitting(true);
-    setError(null);
-    
+
     try {
       // API call to create a new client
       const response = await endpoints.clients.create( {
@@ -42,16 +41,21 @@ const QuickAddClientModal: React.FC<QuickAddClientModalProps> = ({
         ville: data.ville
       }
       );
-      
-      // Call the callback with the newly created client
-      onClientAdded(response.data);
-      
-      // Reset form and close modal
+      onClientAdded(response.data.client);
       reset();
       onClose();
-    } catch (err) {
-      console.error('Error creating client:', err);
-      setError('Failed to create client. Please try again.');
+    } catch (err:any) {
+      if (err.response.status === 422){
+          if (err.response.data.errors){
+              Object.entries(err.response.data.errors).forEach(([field, message])=>{
+                  setError(field as any, {
+                      type: 'server',
+                      message: Array.isArray(message) ? message[0] : message
+                  });
+              })
+          }
+          console.log("tessst");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -60,11 +64,11 @@ const QuickAddClientModal: React.FC<QuickAddClientModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50 animate-fadeIn"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md border border-gray-100 transform transition-all duration-300 animate-scaleIn"
         onClick={(e) => e.stopPropagation()}
       >
@@ -82,11 +86,6 @@ const QuickAddClientModal: React.FC<QuickAddClientModalProps> = ({
           </button>
         </div>
 
-        {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
@@ -112,7 +111,7 @@ const QuickAddClientModal: React.FC<QuickAddClientModalProps> = ({
               id="telephone"
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${errors.telephone ? 'border-red-500' : 'border-gray-300'}`}
-              {...register('telephone', { required: 'Ce champ est obligatoire' })}
+              {...register('telephone')}
             />
             {errors.telephone && (
               <p className="mt-1 text-sm text-red-600">{errors.telephone.message}</p>
@@ -127,7 +126,7 @@ const QuickAddClientModal: React.FC<QuickAddClientModalProps> = ({
               id="ville"
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${errors.ville ? 'border-red-500' : 'border-gray-300'}`}
-              {...register('ville', { required: 'Ce champ est obligatoire' })}
+              {...register('ville')}
             />
             {errors.ville && (
               <p className="mt-1 text-sm text-red-600">{errors.ville.message}</p>
