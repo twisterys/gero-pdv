@@ -151,7 +151,8 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'backup_storage'
+                'google_storage', // For Google Drive
+                'sftp_storage', // For SFTP
             ],
         ],
 

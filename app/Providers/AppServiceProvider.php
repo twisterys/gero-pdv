@@ -7,6 +7,7 @@ use App\Http\Resources\Api\parfums\ArticleResource;
 use App\Http\Resources\Api\parfums\DemandeTransfertResource;
 use App\Models\TransactionStock;
 use App\Observers\TrasnsactionStockObserver;
+use App\Services\BackupLink\BackupLinkGeneratorService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
         DemandeTransfertResource::withoutWrapping();
         Validator::extend('without_spaces', function($attr, $value){
             return preg_match('/^\S*$/u', $value);
+        });
+        $this->app->singleton(BackupLinkGeneratorService::class, function ($app) {
+            return new BackupLinkGeneratorService();
         });
     }
 }

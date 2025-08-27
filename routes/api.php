@@ -47,6 +47,9 @@ Route::group([
         Route::get("/{tenantId}", 'LimiteController@liste');
         Route::put("/{tenantId}", 'LimiteController@sauvegarder');
     });
+    Route::prefix('stats')->group(function () {
+        Route::post('/', 'StatController@stats');
+    });
 });
 
 

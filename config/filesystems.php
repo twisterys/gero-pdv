@@ -64,12 +64,34 @@ return [
             'visibility' => 'public',
         ],
 
-        'backup_storage' => [
+        'google_storage' => [
             'driver' => '',
             'clientId' => '',
             'clientSecret' => '',
             'refreshToken' => '',
             'folder' => '',
+        ],
+
+        'sftp_storage' => [
+            'driver' => '',
+            'host' => '',
+            'username' => '',
+            'password' => '',
+            'port' => '',
+            'root' => '',
+            'timeout' => 30,
+            'visibility' => 'public',
+
+            'permissions' => [
+                'file' => [
+                    'public' => 0644,  // -rw-r--r--
+                    'private' => 0600, // -rw-------
+                ],
+                'dir' => [
+                    'public' => 0755,  // drwxr-xr-x
+                    'private' => 0700, // drwx------
+                ],
+            ],
         ],
 
 

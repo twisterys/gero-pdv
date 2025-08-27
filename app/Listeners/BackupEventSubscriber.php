@@ -14,20 +14,6 @@ class BackupEventSubscriber
      */
     public function handleBackupSuccess(BackupWasSuccessful $event)
     {
-        $newestBackup = $event->backupDestination->newestBackup();
-
-        if ($newestBackup) {
-            // Extract just the filename from the full path
-            $filename = basename($newestBackup->path());
-        } else {
-            // Fallback to the stored filename if available
-            $filename = app('current_backup_filename') ?? config('current_backup_filename');
-        }
-
-        $this->sendCallback('success', [
-            'disk' => $event->backupDestination->diskName(),
-            'filename' => $filename,
-        ]);
     }
 
     /**
@@ -39,7 +25,7 @@ class BackupEventSubscriber
         $filename = app('current_backup_filename') ?? config('current_backup_filename');
 
         $this->sendCallback('error', [
-            'message' => $event->exception->getMessage(),
+            'message' => "Sauvegarde échouée : Paramètres de stockage incorrects ou vides" ,
             'filename' => $filename,
         ]);
     }
@@ -58,7 +44,9 @@ class BackupEventSubscriber
         }
 
         // Extract filename from data if present
-        $filename = $data['filename'] ?? null;
+        $filename = $status === "success" ? $data['filename'] : null;
+        $path = $status === "success" ? $data['path'] : null;
+        $message = $data['message'] ?? null;
 
         try {
             $apiToken = env('INTERNAL_API_TOKEN');
@@ -75,6 +63,8 @@ class BackupEventSubscriber
                 'backup_id' => $backupId,
                 'status' => $status,
                 'filename' => $filename,
+                'path' => $path,
+                'message' => $message,
             ]);
 
             if (!$response->successful()) {

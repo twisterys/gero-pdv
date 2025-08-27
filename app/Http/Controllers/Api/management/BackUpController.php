@@ -23,7 +23,6 @@ class BackUpController extends Controller
             $tenantId = $tenant['tenant_id'];
             $backupId = $tenant['backup_id'];
             $storageConfig = $tenant['storage_config'] ?? null;
-
             try {
                 $tenantModel = Tenant::find($tenantId);
                 if (!$tenantModel) {
@@ -39,7 +38,8 @@ class BackUpController extends Controller
                 $backupName = "{$tenantModel->tenancy_db_name}-{$timestamp}.zip";
 
 
-                RunTenantBackupJob::dispatch($tenantModel, $backupName, $backupId,$storageConfig)->onQueue('backups');
+                RunTenantBackupJob::dispatch($tenantModel->id, $backupName, $backupId,$storageConfig)->onQueue('backups');
+
 
                 $results[] = [
                     'tenant_id' => $tenantModel->id,
