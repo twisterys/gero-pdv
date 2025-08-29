@@ -107,9 +107,11 @@ const RapportsPage = () => {
                             .table { width: 100%; border-collapse: collapse; font-size: 10px; }
                             .table th, .table td { border: 1px solid #dee2e6; padding: 4px; text-align: center; }
                             .cell-content { page-break-inside: avoid; }
-                            .print-header { text-align: center; margin-bottom: 20px; padding: 10px; }
+                            .print-header { position: relative; text-align: center; margin-bottom: 20px; padding: 10px; }
                             .print-header h1 { font-size: 16px; margin: 0; }
                             .print-header .print-date { font-size: 12px; color: #666; }
+                            .print-meta { position: absolute; right: 10px; top: 10px; text-align: right; font-size: 12px; color: #333; }
+                            .print-meta .line { white-space: nowrap; }
                             .page-break { page-break-after: always; }
                             .no-print { display: none !important; }
                         }
@@ -117,9 +119,13 @@ const RapportsPage = () => {
                 </head>
                 <body>
                     <div class="print-header">
+                        <div class="print-meta">
+                            <div class="line"><strong>Magasin:</strong> ${__magasin_ref}</div>
+                            <div class="line"><strong>Vendeur:</strong> ${__vendeur_nom}</div>
+                        </div>
                         <h1>${title}</h1>
                         <div class="print-date">
-                            Date d'impression: ${new Date().toLocaleTimeString('fr-FR')}
+                            Date d'impression: ${new Date().toLocaleString('fr-FR')}
                         </div>
                     </div>
                     ${printContents}

@@ -65,6 +65,7 @@
         const __rapport_af_enabled='{{$rapport_af_enabled}}'
         const __rapport_cr_enabled='{{$rapport_cr_enabled}}'
         const __rapport_tr_enabled='{{$rapport_tr_enabled}}'
+        const __vendeur_nom = '{{ auth()->user()->name }}'
         $(document).on('show.bs.modal', function () {
             $('.tooltip').remove();
         })
