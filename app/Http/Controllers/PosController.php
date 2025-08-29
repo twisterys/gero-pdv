@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\DB;
 
 class PosController extends Controller
 {
-    public  function pos(Request $request)
-    {
+
+    public  function pos(Request $request){
         $this->guard_custom(['pos.*']);
         if (!LimiteService::is_enabled('pos')){
             abort(404);
@@ -54,6 +54,26 @@ class PosController extends Controller
         $rapport_af_enabled = DB::table('pos_rapports')->where('cle', 'af')->value('actif') ?? false;
         $rapport_cr_enabled = DB::table('pos_rapports')->where('cle', 'cr')->value('actif') ?? false;
 
+        auth()->user()->tokens()->delete();
+        return view('pos.pos', compact(
+            'depenses','client', 'comptes', 'methodes',
+            'formes_juridique', 'session', 'pos_type', 'magasins','ouverture',
+            'modifier_prix','is_code_barre','on_reduction','is_price_editable',
+            'is_depenses','is_historique','is_demandes', 'rapport_ac_enabled',
+            'rapport_as_enabled','rapport_af_enabled','rapport_tr_enabled','rapport_cr_enabled'
+        ));
+    }
+    public  function posNew(Request $request)
+    {
+        $this->guard_custom(['pos.*']);
+        if (!LimiteService::is_enabled('pos')){
+            abort(404);
+        }
+        $pos_ouverte = PosSession::where('ouverte', 1)->where('user_id', auth()->user()->id)->first();
+
+        if (!$pos_ouverte) {
+            return redirect()->route('pos.ajouter');
+        }
 
         if (!$request->get('token') || !$request->get('session_id')) {
             auth()->user()->tokens()->delete();

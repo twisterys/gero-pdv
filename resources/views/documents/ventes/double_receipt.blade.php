@@ -169,51 +169,18 @@
 <div class="page">
     <!-- Première moitié (Copie client) -->
     <div class="half-page">
-        <div class="receipt-title">COPIE CLIENT</div>
-        <div class="receipt-header">
-            <h2>{!! $o_vente->magasin->nom ?? 'Magasin' !!}</h2>
-            <div>{!! $o_vente->magasin->adresse ?? '' !!}</div>
-            <div>Référence: {!! $o_vente->reference !!}</div>
-            <div>Date: {!! now()->format('d/m/Y H:i') !!}</div>
-        </div>
-
-        <div class="receipt-info">
-            <div>
-                <strong>Client:</strong> {!! $o_vente->client->nom ?? 'Client' !!}
-            </div>
-            <div>
-                <strong>Vendeur:</strong> {!! $nom_revendeur !!}
-            </div>
-        </div>
 
         {!! str_replace(array_keys($functions),$functions,$template) !!}
+
     </div>
 
-    <!-- Séparation -->
-    <div class="divider">
-        <span class="divider-text">✂ Découper ici ✂</span>
-    </div>
 
     <!-- Deuxième moitié (Copie vendeur) -->
     <div class="half-page">
-        <div class="receipt-title">COPIE VENDEUR</div>
-        <div class="receipt-header">
-            <h2>{!! $o_vente->magasin->nom ?? 'Magasin' !!}</h2>
-            <div>{!! $o_vente->magasin->adresse ?? '' !!}</div>
-            <div>Référence: {!! $o_vente->reference !!}</div>
-            <div>Date: {!! now()->format('d/m/Y H:i') !!}</div>
-        </div>
 
-        <div class="receipt-info">
-            <div>
-                <strong>Client:</strong> {!! $o_vente->client->nom ?? 'Client' !!}
-            </div>
-            <div>
-                <strong>Vendeur:</strong> {!! $nom_revendeur !!}
-            </div>
-        </div>
 
         {!! str_replace(array_keys($functions),$functions,$template) !!}
+
     </div>
 </div>
 

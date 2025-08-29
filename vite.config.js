@@ -76,6 +76,11 @@ let js = [
 let reactComponents = [
     "resources/pos/main.tsx",
     "resources/pos/app/app.css",
+    "resources/js/components/pages/PosParfums.jsx",
+    "resources/js/components/pages/PosCommercial.jsx",
+    "resources/js/components/pages/PosClassic.jsx",
+    "resources/js/components/pages/PosCaisse.jsx",
+    "resources/js/components/pages/Demandes.jsx",
 ];
 export default defineConfig({
     plugins: [
