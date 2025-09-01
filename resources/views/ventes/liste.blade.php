@@ -44,6 +44,17 @@
                             <hr class="border">
                         </div>
                         <div class="col-sm-3 col-12 mb-3">
+                            <label for="magasin_id" class="form-label">
+                                Magasin
+                            </label>
+                            <select name="magasin_id" class="form-select " id="magasin-select">
+                                <option></option>
+                                @foreach ($o_magasins as $o_magasin)
+                                    <option value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-3 col-12 mb-3">
                             <label class="form-label" for="client-select">Client</label>
                             <select class="select2 form-control mb-3 custom-select" name="client_id" id="client-select">
                             </select>
@@ -238,7 +249,8 @@
             reference: '#reference-input',
             balises: '#balises-select',
             total_ttc: '#ttc-input',
-            promesses_a_traiter: '#promesses_a_traiter'
+            promesses_a_traiter: '#promesses_a_traiter',
+            magasin_id: '#magasin-select',
         }
         const __dataTable_filter_trigger_button_id = '#search-btn';
         @php
@@ -322,7 +334,14 @@
             minDate: __datepicker_min_date,
             maxDate: __datepicker_end_extend_date
         })
-
+        $("#magasin-select").select2({
+            width: "100%",
+            placeholder: {
+                id: '',
+                text: 'Tous'
+            },
+            allowClear: true,
+        });
     </script>
     @vite('resources/js/ventes_liste.js')
     <script src="{{asset('js/dataTable_init.js')}}"></script>

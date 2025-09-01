@@ -74,6 +74,9 @@ class VenteController extends Controller
             if ($request->get('client_id')) {
                 $o_ventes->where('client_id', $request->get('client_id'));
             }
+            if ($request->get('magasin_id')) {
+                $o_ventes->where('magasin_id', $request->get('magasin_id'));
+            }
             if ($request->get('affaire_id')) {
                 $o_ventes->where('affaire_id', $request->get('affaire_id'));
             }
@@ -240,7 +243,8 @@ class VenteController extends Controller
         $status_paiement = Vente::STATUTS_DE_PAIEMENT;
         $payabale_types = ModuleService::getPayabaleTypes();
         $filter = $request->get('f');
-        return view("ventes.liste", compact('o_client', "type", 'status', 'status_paiement', 'balises', 'payabale_types','filter'));
+        $o_magasins = Magasin::all(['id','nom as text']);
+        return view("ventes.liste", compact('o_client', "type", 'status', 'status_paiement', 'balises', 'payabale_types','filter','o_magasins'));
     }
 
     /**
