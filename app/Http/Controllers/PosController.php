@@ -31,7 +31,7 @@ class PosController extends Controller
             return redirect()->route('pos.ajouter');
         }
         $session = $pos_ouverte;
-        $client = Client::first(['id as value', 'nom as label']) ?? null;
+        $client = Client::where('nom', 'Passager')->first(['id as value', 'nom as label']) ?? Client::first(['id as value', 'nom as label']);
         $comptes = Compte::all(['id as value', 'nom as label']);
         $methodes = MethodesPaiement::where('actif', 1)->get(['key as value', 'nom as label']);
         $formes_juridique = FormeJuridique::all(['id as value', 'nom as label']);
