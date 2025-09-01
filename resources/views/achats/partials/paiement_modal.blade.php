@@ -40,7 +40,7 @@
                            value="{{\Carbon\Carbon::now()->format('d/m/Y')}}"
                     >
                 @endcannot
-                <input required class="form-control datupickeru @cannot('paiement.date') d-none @endcann " data-provide="datepicker" data-date-autoclose="true" type="text"
+                <input required class="form-control datupickeru @cannot('paiement.date') d-none @endcannot " data-provide="datepicker" data-date-autoclose="true" type="text"
                        name="i_date_paiement" id="date_paiement" value="{{\Carbon\Carbon::now()->format('d/m/Y')}}">
                 <span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>
             </div>
