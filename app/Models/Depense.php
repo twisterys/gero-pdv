@@ -42,4 +42,9 @@ class Depense extends Model
     {
         return $this->morphMany(Paiement::class,'payable');
     }
+
+    public function magasin()
+    {
+        return $this->belongsTo(Magasin::class);
+    }
 }

@@ -486,6 +486,7 @@ class RapportController extends Controller
         // Get total expenses for the session
         $total_depenses = DB::table('depenses')
             ->where('date_operation','=',Carbon::today()->format('Y-m-d'))
+            ->where('magasin_id', $o_pos_session->magasin_id)
             ->sum('montant');
 
         // Calculate remaining cash

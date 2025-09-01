@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\parfums\DepenseResource;
 use App\Models\Compte;
 use App\Models\Depense;
+use App\Models\PosSession;
 use App\Services\PaiementService;
 use App\Services\ReferenceService;
 use Carbon\Carbon;
@@ -30,6 +31,8 @@ class DepenseController extends Controller
             ])->validate();
 
         $reference = ReferenceService::generateReference('dpa');
+        $o_pos_session = PosSession::find($request->get('session_id'));
+
         $o_depense = Depense::create([
             'reference' => $reference,
             'nom_depense' => $request->input('nom'),
@@ -38,7 +41,9 @@ class DepenseController extends Controller
             'pour' => $request->input('benificiaire'),
             'date_operation' => Carbon::today()->toDateString(),
             'solde' => $request->input('montant'),
-            'pos_session_id' => $request->input('session_id')
+            'pos_session_id' => $request->input('session_id'),
+            'magasin_id' => $o_pos_session->magasin_id,
+
         ]);
         PaiementService::payer_depense($o_depense->id, [
             'i_date_paiement' => Carbon::now()->format('d/m/Y'),
