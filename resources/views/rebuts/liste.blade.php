@@ -18,7 +18,7 @@
                             </h5>
                             <div class="page-title-right">
                                 <a href="{{ route('rebuts.ajouter') }}">
-                                    <button class="btn btn-soft-info"><i class="mdi mdi-plus"></i>Ajouter un rebut</button>
+                                    <button class="btn btn-soft-success"><i class="mdi mdi-plus"></i>Ajouter un rebut</button>
                                 </a>
                             </div>
                         </div>

@@ -11,6 +11,8 @@ export const History = ({reduction}) => {
     const [open, setOpen] = useState(false);
     const [depense, setDepense] = useState([]);
     const [tab, setTab] = useState('ventes');
+    const [rebuts, setRebuts] = useState([]);
+
     const populateVentes = () => {
         if (ventes.length > 0){
             return ventes.map((item) => {
@@ -70,12 +72,17 @@ export const History = ({reduction}) => {
         let data = {
             session_id: __session_id,
         };
-        axios.get("history", {params: data}).then((response) => {
+
+        axios.get('history', { params: data }).then((response) => {
             setVentes(response.data['ventes']);
             setRetours(response.data['retours']);
             setDepense(response.data['depenses']);
-            console.log(response.data['depenses']) ;
             setIsFetching(false);
+            if (__is_rebut == 1) {
+                axios.get('rebuts', { params: { session_id: __session_id }})
+                    .then(rr => setRebuts(rr.data || []))
+                    .catch(() => setRebuts([]));
+            }
         });
     };
     $(document).on('show.bs.offcanvas', '#offcanvasExample', function () {
@@ -126,20 +133,55 @@ export const History = ({reduction}) => {
                             className={tab === 'depenses' ? 'btn btn-light me-2 mb-2 history-tab active' : 'btn btn-light me-2 mb-2  history-tab'}
                             onClick={() => setTab('depenses')}>Dépenses
                         </button>
+                        {__is_rebut == 1 && (
+                            <button
+                                className={tab === 'rebuts' ? 'btn btn-light me-2 mb-2 history-tab active' : 'btn btn-light me-2 mb-2 history-tab'}
+                                onClick={() => setTab('rebuts')}
+                            >
+                                Rebut
+                            </button>
+                        )}
                     </div>
                     <div className="card shadow-none flex-grow-1 d-flex flex-column">
                         <div className="card-body flex-grow-1">
                             {isFetching ? (
                                 <div className="d-flex align-items-center justify-content-center">
-                                    <div class="spinner-border" role="status"></div>
+                                    <div className="spinner-border" role="status"></div>
                                 </div>
                             ) : tab === 'ventes' ? (
                                 <div className="row">{populateVentes()}</div>
                             ) : tab === 'depenses' ? (
                                 <div className="row">{populateDepense()}</div>
-                            ) : tab==='retours' ? (
+                            ) : tab === 'retours' ? (
                                 <div className="row">{populateRetours()}</div>
-                            ):''}
+                            ) : tab === 'rebuts' ? (
+                                rebuts.length === 0 ? (
+                                    <div className="row"><h5 className="text-center">Aucun rebut</h5></div>
+                                ): (
+                                    <div className="row">
+                                        {rebuts.map((r) => (
+                                            <div key={r.id} className="col-12 mb-2">
+                                                <div className="card shadow-sm">
+                                                    <div className="card-body">
+                                                        <div className="d-flex align-items-center justify-content-between mb-2">
+                                                            <div className="fw-semibold">{r.reference}</div>
+                                                            <small className="text-muted">Quantité rebutée</small>
+                                                        </div>
+                                                        <ul className="list-unstyled mb-0">
+                                                            {(r.lignes || []).map((l, idx) => (
+                                                                <li key={idx} className="d-flex justify-content-between border-top py-1">
+                                                                    <span>{l.article}</span>
+                                                                    <span className="fw-semibold">{l.quantity}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )
+                            ) : null}
                         </div>
                         <div className="card-body border-top border-light flex-grow-0 d-flex align-baseline justify-content-between">
                              <div>

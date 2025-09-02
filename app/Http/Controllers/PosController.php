@@ -46,6 +46,7 @@ class PosController extends Controller
         $is_depenses= (PosSettings::where('key','depenses')->value('value') == 1);
         $is_historique= (PosSettings::where('key','historique')->value('value') == 1);
         $is_demandes= (PosSettings::where('key','demandes')->value('value') == 1);
+        $is_rebut = (PosSettings::where('key','rebut')->value('value') == 1);
 
         // Get report statuses
         $rapport_ac_enabled = DB::table('pos_rapports')->where('cle', 'ac')->value('actif') ?? false;
@@ -60,7 +61,7 @@ class PosController extends Controller
             'formes_juridique', 'session', 'pos_type', 'magasins','ouverture',
             'modifier_prix','is_code_barre','on_reduction','is_price_editable',
             'is_depenses','is_historique','is_demandes', 'rapport_ac_enabled',
-            'rapport_as_enabled','rapport_af_enabled','rapport_tr_enabled','rapport_cr_enabled'
+            'rapport_as_enabled','rapport_af_enabled','rapport_tr_enabled','rapport_cr_enabled','is_rebut'
         ));
     }
     public  function posNew(Request $request)

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api\parfums;
 
 use App\Http\Controllers\Controller;
-use App\Models\Article;
-use App\Models\Magasin;
 use App\Models\PosSession;
 use App\Models\Rebut;
 use App\Services\ReferenceService;
@@ -31,8 +29,7 @@ class RebutController extends Controller
 
         $sessionId = $request->get('session_id');
         $o_pos_session = PosSession::findOrFail($sessionId);
-
-        $reference = ReferenceService::generateReference('rbt'); // définissez le compteur/clé ‘rbt’
+        $reference = "RBT" . \Carbon\Carbon::now()->format('YmdHis');
 
         DB::beginTransaction();
         try {
@@ -71,11 +68,43 @@ class RebutController extends Controller
     public function liste(Request $request)
     {
         $sessionId = $request->get('session_id');
-        $rebuts = Rebut::with('magasin')
-            ->where('pos_session_id', $sessionId)
+        if (!$sessionId) {
+            return response()->json([]);
+        }
+
+        // On récupère les entêtes Rebut de la session
+        $rebuts = Rebut::where('pos_session_id', $sessionId)
             ->orderByDesc('id')
             ->get();
 
-        return response()->json($rebuts);
+        // Pour chaque Rebut, on extrait les transactions de stock liées (articles + quantités)
+        $payload = $rebuts->map(function (Rebut $rebut) {
+            $lines = DB::table('transaction_stocks as ts')
+                ->join('articles as a', 'a.id', '=', 'ts.article_id')
+                ->select(
+                    'a.id as article_id',
+                    DB::raw("COALESCE(a.designation, a.reference) as article"),
+                    'ts.qte_sortir as quantity'
+                )
+                ->where('ts.stockable_type', Rebut::class)
+                ->where('ts.stockable_id', $rebut->id)
+                ->get()
+                ->map(function ($row) {
+                    return [
+                        'article_id' => (int) $row->article_id,
+                        'article' => $row->article ?? ('#' . $row->article_id),
+                        'quantity' => (float) $row->quantity,
+                    ];
+                });
+
+            return [
+                'id' => $rebut->id,
+                'reference' => $rebut->reference,
+                'date_operation' => $rebut->date_operation,
+                'lignes' => $lines,
+            ];
+        });
+
+        return response()->json($payload);
     }
 }

@@ -11,6 +11,7 @@ import {DepenseModal} from "../pos-components/DepenseModal.jsx";
 import React from "react";
 import ReactDOM from "react-dom";
 import RapportsPage from "../pos-components/rapports/RapportsPage.jsx";
+import { RebutModal } from "../pos-components/RebutModal.jsx";
 
 function PosParfums() {
     // set all variable needed
@@ -615,6 +616,15 @@ function PosParfums() {
                                     data-bs-target="#depense-modal" data-bs-toggle="modal">
                                     <i className="fa fa-money-bill-alt "> Dépenses</i>
                                 </button>)}
+                                {__is_rebut == 1 && (
+                                    <button
+                                        className="btn btn-soft-purple mx-1"
+                                        data-bs-target="#rebut-modal"
+                                        data-bs-toggle="modal"
+                                    >
+                                        <i className="mdi mdi-delete-variant "></i> Rebut
+                                    </button>
+                                )}
                                 {__is_demandes && (
                                     <a href="/point-de-vente/demandes"
                                        className="btn btn-soft-success mx-1"
@@ -842,6 +852,8 @@ function PosParfums() {
             <ClientModal setClient={setClient} setIsLoading={setIsLoading}/>
             <History reduction={false}/>
             <DepenseModal depense={depense} setDepense={setDepense} />
+            <RebutModal />
+
         </>
     );
 }
