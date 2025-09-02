@@ -15,6 +15,7 @@ import {PaiementModal} from "../pos-components/PaiementModal.jsx";
 // Add the debounce function
 import { debounce } from 'lodash';
 import RapportsPage from "../pos-components/rapports/RapportsPage.jsx";
+import { RebutModal } from "../pos-components/RebutModal.jsx";
 
 function PosClassic() {
     // set all variable needed
@@ -612,6 +613,15 @@ function PosClassic() {
                                         Demandes
                                     </a>
                                 )}
+                                {__is_rebut == 1 && (
+                                    <button
+                                        className="btn btn-soft-purple mx-1"
+                                        data-bs-target="#rebut-modal"
+                                        data-bs-toggle="modal"
+                                    >
+                                        <i className="mdi mdi-delete-variant "></i> Rebut
+                                    </button>
+                                )}
                                 { __is_historique && (
                                     <button
                                         className="btn btn-primary mx-1 shadow-sm"
@@ -757,6 +767,8 @@ function PosClassic() {
             <History reduction={false}/>
             <ClientModal setClient={setClient} setIsLoading={setIsLoading} />
             <PaiementModal paiement={paiement} setPaiement={setPaiement} payer={payer} />
+            <RebutModal />
+
         </>
     );
 }

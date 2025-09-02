@@ -161,6 +161,9 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::get('familles','ArticleController@familles');
         Route::get('marques','ArticleController@marques');
         Route::post('articles-stock-rapport','RapportController@stock');
+
+        Route::post('/rebut', 'RebutController@sauvegarder');
+        Route::get('/rebuts', 'RebutController@liste');
     });
 
     Route::group(['prefix' => 'v-caisse', 'namespace' => 'App\Http\Controllers\Api\caisse'], function () {
@@ -203,6 +206,9 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::get('familles','ArticleController@familles');
         Route::get('marques','ArticleController@marques');
         Route::post('articles-stock-rapport','RapportController@stock');
+
+        Route::post('/rebut', 'RebutController@sauvegarder');
+        Route::get('/rebuts', 'RebutController@liste');
 
     });
     Route::group(['prefix' => 'pos'], function () {
