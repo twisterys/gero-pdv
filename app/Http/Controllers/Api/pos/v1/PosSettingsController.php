@@ -48,6 +48,7 @@ class PosSettingsController extends Controller
                 'history' => $bool('historique', false),
                 'depense' => $bool('depenses', false),
                 'cloture' => $bool('cloture', false),
+                'rebut' => $bool('rebut', false),
             ],
             'rapports' => [
                 'stock' => $rapport('as', false),

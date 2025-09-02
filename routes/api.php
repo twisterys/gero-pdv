@@ -92,6 +92,9 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('depense','DepenseController@sauvegarder');
         Route::get('depense','DepenseController@liste');
         Route::post('articles-stock-rapport','RapportController@stock');
+
+        Route::post('/rebut', 'RebutController@sauvegarder');
+        Route::get('/rebuts', 'RebutController@liste');
     });
 
     Route::group(['prefix' => 'v-commercial', 'namespace' => 'App\Http\Controllers\Api\commercial'], function () {
@@ -257,6 +260,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
             Route::get('/magasins','MagasinController@liste');
             Route::get('comptes','CompteController@liste');
 
+            Route::post('/rebut', 'RebutController@sauvegarder');
+            Route::get('/rebuts', 'RebutController@liste');
 
         });
     });

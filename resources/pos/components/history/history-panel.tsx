@@ -2,6 +2,8 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {endpoints} from '../../services/api';
 import {formatNumber} from "../../utils/formats";
 import { useAuth } from '../auth/auth-provider';
+import { useSettingsStore } from '../../stores/settings-store';
+
 
 // Print a block of HTML without opening a new window by using a hidden iframe
 const printHtmlInHiddenIframe = async (html: string): Promise<void> => {
@@ -83,7 +85,8 @@ type VenteItem = {
     unite:string,
 }
 
-type TabKey = 'ventes' | 'retours' | 'depenses';
+type TabKey = 'ventes' | 'retours' | 'depenses' | 'rebuts';
+
 
 
 const ItemRow: React.FC<{ item: any; onClick?: () => void; onPrint?: () => void; printing?: boolean }> = ({item, onClick, onPrint, printing}) => {
@@ -327,6 +330,8 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
     const { sessionId: authSessionId } = useAuth();
     const effectiveSessionId = sessionId ?? authSessionId ?? undefined;
 
+    const rebutEnabled = useSettingsStore(state => state.features.rebut); // <-- flag
+
     const [activeTab, setActiveTab] = useState<TabKey>('ventes');
     const [data, setData] = useState<HistoryResponse>({depenses: [], ventes: [], retours: []});
     const [loading, setLoading] = useState(false);
@@ -334,37 +339,73 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
     const [showDetailsOpen, setShowDetailsOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<any | null>(null);
     const [printingId, setPrintingId] = useState<number | null>(null);
+    const [rebuts, setRebuts] = useState<Array<{
+        id: number;
+        reference: string;
+        date_operation: string;
+        lignes: { article_id: number; article: string; quantity: number }[];
+    }>>([]);
 
     const load = async () => {
         setLoading(true);
         setError(null);
         try {
             if (!effectiveSessionId) {
-                setData({depenses: [], ventes: [], retours: []});
+                setData({ depenses: [], ventes: [], retours: [] });
+                setRebuts([]);
                 return;
             }
-            const res = await endpoints.history.getSessionHistory(effectiveSessionId);
-            setData(res.data as HistoryResponse);
-        } catch (e: any) {
-            setError('Impossible de charger l\'historique');
+
+            if (rebutEnabled) {
+                const [histRes, rebutRes] = await Promise.all([
+                    endpoints.history.getSessionHistory(effectiveSessionId),
+                    endpoints.rebuts.list(), // only when enabled
+                ]);
+                setData(histRes.data as HistoryResponse);
+                setRebuts((rebutRes.data ?? []) as any);
+            } else {
+                const histRes = await endpoints.history.getSessionHistory(effectiveSessionId);
+                setData(histRes.data as HistoryResponse);
+                setRebuts([]);
+            }
+        } catch (e) {
+            setError("Impossible de charger l'historique");
         } finally {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [effectiveSessionId]);
+    }, [effectiveSessionId, rebutEnabled]);
+
+    // si le flag est désactivé et l'onglet courant est 'rebuts', revenir à 'ventes'
+    useEffect(() => {
+        if (!rebutEnabled && activeTab === 'rebuts') {
+            setActiveTab('ventes');
+        }
+    }, [rebutEnabled, activeTab]);
 
     const tabCounts = useMemo(() => ({
         ventes: data.ventes?.length ?? 0,
         retours: data.retours?.length ?? 0,
         depenses: data.depenses?.length ?? 0,
-    }), [data]);
+        rebuts: rebutEnabled ? (rebuts?.length ?? 0) : 0,
+    }), [data, rebuts, rebutEnabled]);
 
-    const list = activeTab === 'ventes' ? data.ventes : activeTab === 'retours' ? data.retours : data.depenses;
+    const tabs: TabKey[] = rebutEnabled
+        ? (['ventes', 'retours', 'depenses', 'rebuts'] as TabKey[])
+        : (['ventes', 'retours', 'depenses'] as TabKey[]);
 
+    const list: any[] = activeTab === 'ventes'
+        ? (data.ventes ?? [])
+        : activeTab === 'retours'
+            ? (data.retours ?? [])
+            : activeTab === 'depenses'
+                ? (data.depenses ?? [])
+                : activeTab === 'rebuts'
+                    ? (rebuts ?? [])
+                    : [];
     const handlePrintFromList = async (id?: number) => {
         if (!id) return;
         try {
@@ -396,7 +437,7 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
             </div>
 
             <div className="flex mb-3">
-                {(['ventes', 'retours', 'depenses'] as TabKey[]).map((key) => (
+                {tabs.map((key) => (
                     <button
                         key={key}
                         onClick={() => setActiveTab(key)}
@@ -406,8 +447,8 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                     >
                         {key.charAt(0).toUpperCase() + key.slice(1)}
                         <span className="ml-2 inline-block min-w-5 text-center bg-white/20 rounded-full px-2">
-              {tabCounts[key]}
-            </span>
+                            {tabCounts[key]}
+                        </span>
                     </button>
                 ))}
             </div>
@@ -415,10 +456,37 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
             <div className="flex-1 overflow-auto">
                 {loading && <EmptyState text="Chargement..."/>}
                 {!loading && error && <EmptyState text={error}/>}
-                {!loading && !error && (!list || list.length === 0) && (
+
+                {!loading && !error && activeTab === 'rebuts' && (
+                    rebuts.length === 0 ? (
+                        <EmptyState text="Aucun rebut"/>
+                    ) : (
+                        <div className="space-y-3">
+                            {rebuts.map((r: any) => (
+                                <div key={r.id} className="rounded-lg border border-gray-200 bg-white p-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="font-medium text-[#3b5461]">{r.reference}</div>
+                                        <div className="text-xs text-gray-500">Quantité rebutée</div>
+                                    </div>
+                                    <ul className="divide-y divide-gray-100">
+                                        {r.lignes.map((l: any, idx: number) => (
+                                            <li key={idx} className="flex items-center justify-between py-1.5 text-sm">
+                                                <span className="text-gray-800">{l.article}</span>
+                                                <span className="text-gray-700 font-semibold">{l.quantity}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                )}
+
+                {!loading && !error && activeTab !== 'rebuts' && (!list || list.length === 0) && (
                     <EmptyState text="Aucun élément"/>
                 )}
-                {!loading && !error && list && list.length > 0 && (
+
+                {!loading && !error && activeTab !== 'rebuts' && list && list.length > 0 && (
                     <div>
                         {list.map((item: any, idx: number) => (
                             activeTab === 'depenses' ? (
@@ -438,8 +506,7 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                         ))}
                     </div>
                 )}
-            </div>
-            <VenteDetailsModal
+            </div>            <VenteDetailsModal
                 isOpen={showDetailsOpen}
                 onClose={() => {
                     setShowDetailsOpen(false);

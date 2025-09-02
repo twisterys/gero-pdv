@@ -79,7 +79,7 @@ class PosController extends Controller
             auth()->user()->tokens()->delete();
             return redirect()->route('pos',['token'=>auth()->user()->createToken('auth-api')->plainTextToken,'session_id'=>$pos_ouverte->id]);
         }
-        return view('pos.pos');
+        return view('pos.pos-new');
     }
     public  function demandes()
     {

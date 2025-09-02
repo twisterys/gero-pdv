@@ -13,6 +13,7 @@ import ClotureButton from "../../components/pos/cloture-button";
 import DemandesButton from "../../components/demandes/demandes-button";
 import RapportsButton from "../../components/rapports/rapports-button";
 import HistoryButton from "../../components/history/history-button";
+import { RebutButton } from "../../components/rebut";
 
 export function POS() {
     const [isHistoryOpen, setHistoryOpen] = useState(false);
@@ -36,6 +37,7 @@ export function POS() {
                     <RapportsButton/>
                     <DemandesButton/>
                     <DepenseButton/>
+                    <RebutButton/>
                     <HistoryButton setHistoryOpen={setHistoryOpen}/>
                     <ShutdownButton/>
                 </div>

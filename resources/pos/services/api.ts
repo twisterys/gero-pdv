@@ -197,6 +197,12 @@ const endpoints = {
     articlesClientsRapport: () => api.get('/articles-clients-rapport'),
     articlesStockRapport: () => api.get('/articles-stock-rapport'),
   },
+
+    // Rebut
+    rebuts: {
+        create: (data: any) => api.post('/rebut', data),
+        list:   () => api.get('/rebuts'), // session_id ajouté automatiquement
+    },
 };
 
 export { api, endpoints };

@@ -12,6 +12,7 @@ export interface SettingsApiResponse {
         history:boolean;
         depense:boolean;
         cloture:boolean;
+        rebut:boolean;
     };
     url: string;
     apiUrl: string;
@@ -43,6 +44,7 @@ interface SettingsState {
         history:boolean;
         depense:boolean;
         cloture:boolean;
+        rebut:boolean;
     };
 
     posType: "parfums" | "classic"|"caisse";
@@ -108,6 +110,7 @@ export const useSettingsStore = create<SettingsState>()(
             history:false,
             depense:false,
             cloture:false,
+            rebut:false,
         },
         posType: "caisse",
         rapports: {

@@ -207,6 +207,14 @@
                                             </td>
                                         </tr>
                                         <tr>
+                                            <td>{{$pos_settings->where('key','rebut')->first()?->label}}</td>
+                                            <td>
+                                                <input name="rebut" value="1" type="checkbox" id="rebut"
+                                                       switch="bool" @checked(old('rebuts',$pos_settings->where('key','rebut')->first()?->value)) >
+                                                <label for="rebut" data-on-label="Oui" data-off-label="Non"></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td>{{$pos_settings->where('key','cloture')->first()?->label ?? 'Clôture de caisse'}}</td>
                                             <td>
                                                 <input name="cloture" value="1" type="checkbox" id="cloture"
@@ -214,6 +222,8 @@
                                                 <label for="cloture" data-on-label="Oui" data-off-label="Non"></label>
                                             </td>
                                         </tr>
+
+
 
                                         <!-- Raccourcis de paiement -->
                                         <tr id="paiements" class="table-active">
