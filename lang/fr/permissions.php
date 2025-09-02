@@ -194,12 +194,18 @@ return [
     /**
      * Permissions des transformations
      */
-
-
     'transformation'=>'Gestion des transformations',
     'transformation.liste'=>'Liste',
     'transformation.sauvegarder'=>'Ajout',
     'transformation.annuler'=>'Annulation',
     'transformation.supprimer'=>'Suppression',
     'transformation.afficher'=>'Affichage',
+
+    /**
+     * Permissions des rebuts
+     */
+    'rebut'=>'Gestion des rebuts',
+    'rebut.liste'=>'Liste',
+    'rebut.sauvegarder'=>'Ajout',
+    'rebut.afficher'=>'Affichage',
 ];

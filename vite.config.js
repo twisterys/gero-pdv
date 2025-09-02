@@ -70,7 +70,8 @@ let js = [
     "resources/js/cheques_decaisser.js",
     'resources/js/parametres/woocommerce_liste.js',
     'resources/js/importations/woocommerce.js',
-    'resources/js/transformations/ajouter.js'
+    'resources/js/transformations/ajouter.js',
+    'resources/js/rebuts_create.js',
 ];
 
 let reactComponents = [

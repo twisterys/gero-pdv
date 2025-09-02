@@ -93,5 +93,8 @@ Route::middleware([
         require_once  __DIR__ .'/modules/cheques.php';
 
         require_once  __DIR__ .'/modules/transformations.php';
+
+        require_once  __DIR__ .'/modules/rebuts.php';
+
     });
 });

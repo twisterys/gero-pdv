@@ -189,6 +189,15 @@
                     </li>
                 @endif
 
+                @can('rebut.liste')
+                    <li @if(in_array(Request::segment(1),['rebuts'])) class="mm-active" @endif>
+                        <a href="{{route('rebuts.liste')}}" aria-expanded="false">
+                            <i class="mdi mdi-delete-variant "></i>
+                            <span>Rebut</span>
+                        </a>
+                    </li>
+                @endcan
+
 
                 @canAny(['compte.liste','paiement.liste'])
                     <li @if(in_array(Request::segment(1),['tresorerie'])) class="mm-active" @endif>
