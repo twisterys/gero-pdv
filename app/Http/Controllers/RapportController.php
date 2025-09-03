@@ -38,7 +38,8 @@ class RapportController extends Controller
         $stock = Rapport::where('type','stock')->get();
         $statistiques = Rapport::where('type','statistiques')->get();
         $comptabilité = Rapport::where('type','comptabilité')->get();
-        return view('rapports.liste',compact('achat_vente','statistiques','stock','comptabilité'));
+        $pos = Rapport::where('type','pos')->get();
+        return view('rapports.liste',compact('achat_vente','statistiques','stock','comptabilité','pos'));
     }
 
     public function mouvement_stock(Request $request)

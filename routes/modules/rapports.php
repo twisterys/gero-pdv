@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\RapportController;
+use App\Http\Controllers\RapportJournalierController;
 
 Route::prefix('rapports')->group(function () {
     Route::controller(RapportController::class)->group(function () {
@@ -19,5 +20,17 @@ Route::prefix('rapports')->group(function () {
         Route::get('/commerciaux', 'commerciaux')->name('rapports.commerciaux');
         Route::get('/sessions', 'sessions')->name('rapports.sessions');
         Route::get('/sessions/ventes/{id}', 'afficher_session')->name('rapports.sessions.ventes');
+
+
+        Route::get('/journalier', [RapportJournalierController::class, 'index'])->name('rapports.journalier');
+        Route::post('/journalier', [RapportJournalierController::class, 'filtrer'])->name('rapports.journalier.filtrer');
+
+        // Optionnel: endpoints AJAX par section
+        Route::get('/journalier/ac', [RapportJournalierController::class, 'ac'])->name('rapports.journalier.ac');
+        Route::get('/journalier/af', [RapportJournalierController::class, 'af'])->name('rapports.journalier.af');
+        Route::get('/journalier/cr', [RapportJournalierController::class, 'cr'])->name('rapports.journalier.cr');
+        Route::get('/journalier/tr', [RapportJournalierController::class, 'tr'])->name('rapports.journalier.tr');
     });
+
+
 });
