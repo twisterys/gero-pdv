@@ -106,7 +106,7 @@
         $nom_revendeur = auth()->check() ? auth()->user()->name : 'N/A';
 
         $functions =[
-                '[Date_et_heure]'=>now()->toDateTimeString(),
+                '[Date_et_heure]'=>now()->format('d/m/Y H:i'),
                 '[Tableau]'=> lignes_table($o_vente),
                 '[Reference]'=> $o_vente->reference,
                 '[Magasin_adresse]'=>$o_vente->magasin->adresse,
