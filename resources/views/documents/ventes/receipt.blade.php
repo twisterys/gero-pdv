@@ -109,6 +109,7 @@
                 '[Date_et_heure]'=>now()->format('d/m/Y H:i'),
                 '[Tableau]'=> lignes_table($o_vente),
                 '[Reference]'=> $o_vente->reference,
+                '[Client]'=> $o_vente->client->nom,
                 '[Magasin_adresse]'=>$o_vente->magasin->adresse,
                 '[Magasin]'=>$o_vente->magasin->nom,
                 '[Total_HT]'=>  number_format($o_vente->total_ht + $o_vente->total_reduction,2,'.',' ').' MAD',
