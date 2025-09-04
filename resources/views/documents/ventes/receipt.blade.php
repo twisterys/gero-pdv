@@ -85,7 +85,7 @@
         foreach ($o_vente->lignes as $ligne){
             $table.= '<tr style="border-bottom: 1px dotted #eee;">
             <td style="padding: 5px; font-size: 11px;">'.$ligne->article->reference.' | '.$ligne->nom_article.'</td>
-            <td style="padding: 5px; text-align:center; font-size: 11px;">'.$ligne->quantite.'</td>
+            <td style="padding: 5px; text-align:center; font-size: 11px;">'.rtrim(number_format($ligne->quantite, 2, '.', ' '), '.00').'</td>
             <td style="padding: 5px; text-align:right; font-size: 11px;">'.number_format($ligne->ht,2,'.',' ').'</td>
             <td style="padding: 5px; text-align:right; font-size: 11px;">'.number_format($ligne->quantite * $ligne->ht,2,'.',' ').'</td>
             </tr>';
