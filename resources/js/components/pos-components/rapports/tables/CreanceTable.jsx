@@ -70,13 +70,13 @@ const CreanceTable = ({data, formatDate, formatCurrency}) => {
                     </tfoot>
                 )}
 
-                {
-                    data.length === 0 && <tr>
+                {/*{*/}
+                {/*    data.length === 0 && <tr>*/}
 
-                        <td colSpan={200} className="text-center">Aucune donnée trouvée</td>
+                {/*        <td colSpan={200} className="text-center">Aucune donnée trouvée</td>*/}
 
-                    </tr>
-                }
+                {/*    </tr>*/}
+                {/*}*/}
             </table>
         </div>
     );
