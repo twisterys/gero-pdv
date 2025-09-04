@@ -5,12 +5,14 @@ const CreanceTable = ({data, formatDate, formatCurrency}) => {
                 <thead>
                 <tr>
                     <th className="bg-light">Référence</th>
+                    <th className="bg-light">Magasin de vente</th>
                     <th className="bg-light">Client</th>
                     <th className="bg-light">Méthode de Paiement</th>
                     <th className="bg-light">Date de Paiement</th>
                     <th className="bg-light">N° Chèque/LCN</th>
                     <th className="bg-light">Date de Vente</th>
                     <th className="bg-light">Contrôlé</th>
+                    <th className="bg-light">Montant payé</th>
                     <th className="bg-light">Montant Total</th>
                     <th className="bg-light">Montant Créance</th>
                 </tr>
@@ -31,6 +33,7 @@ const CreanceTable = ({data, formatDate, formatCurrency}) => {
                             return (
                                 <tr key={index} className={rowClass}>
                                     <td>{item.reference || "-"}</td>
+                                    <td>{item.magasin_name || "-"}</td>
                                     <td>{item.client_name || "-"}</td>
                                     <td>{item.last_payment_method || "-"}</td>
                                     <td>{formatDate(item.last_payment_date)}</td>
@@ -43,6 +46,7 @@ const CreanceTable = ({data, formatDate, formatCurrency}) => {
                                             <span className="badge bg-danger">Non</span>
                                         )}
                                     </td>
+                                    <td>{formatDate(item.total_paiement_today)}</td>
                                     <td className="text-end">{formatCurrency(item.total_ttc)}</td>
                                     <td className="text-end">{formatCurrency(item.creance_amount)}</td>
                                 </tr>
@@ -60,10 +64,10 @@ const CreanceTable = ({data, formatDate, formatCurrency}) => {
                 {data.length > 0 && (
                     <tfoot>
                     <tr className="bg-light">
-                        <th colSpan="8" className="text-end">Total des Créances:</th>
+                        <th colSpan="10" className="text-end">Total des paiements:</th>
                         <th className="text-end">
                             {formatCurrency(
-                                data.reduce((sum, item) => sum + parseFloat(item.creance_amount || 0), 0)
+                                data.reduce((sum, item) => sum + parseFloat(item.total_paiement_today || 0), 0)
                             )}
                         </th>
                     </tr>

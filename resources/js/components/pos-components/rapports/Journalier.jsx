@@ -91,7 +91,7 @@ const RapportJournalier = ({
                         {
                             __rapport_af_enabled == 1 && (
                                 <div className="col-12 mb-4">
-                                    <h4>Rapport Articles-Fournisseurs</h4>
+                                    <h4>Rapport Articles-Fournisseurs par magasin</h4>
                                     <ArticlesFournisseursTable data={data.articlesFournisseurs}/>
                                 </div>
                             )
@@ -99,7 +99,7 @@ const RapportJournalier = ({
                         {
                             __rapport_cr_enabled == 1 && (
                                 <div className="col-12 mb-4">
-                                    <h4>Rapport des Paiements et Créances</h4>
+                                    <h4>Rapport de paiement des créances</h4>
                                     <CreanceTable
                                         data={data.creance}
                                         formatDate={formatDate}
@@ -111,7 +111,7 @@ const RapportJournalier = ({
                         {
                             __rapport_tr_enabled == 1 && (
                                 <div className="col-12 mb-4">
-                                    <h4>Rapport de Trésorerie</h4>
+                                    <h4>Rapport de trésorerie</h4>
                                     <TresorieTable
                                         data={data.tresorie}
                                         formatCurrency={formatCurrency}

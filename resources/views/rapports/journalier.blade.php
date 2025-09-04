@@ -62,13 +62,15 @@
                                         <th class="text-center">{{ $art }}</th>
                                     @endforeach
                                     <th class="text-end">Total TTC</th>
-                                    <th class="text-end">Payé</th>
+                                    <th class="text-end">Total Payé</th>
+                                    <th class="text-end">Total de Créance</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach(($ac['clients'] ?? []) as $cl)
                                     @php
                                         $totClient = $ac['client_totals'][$cl] ?? ['total_ttc' => 0, 'total_paye' => 0];
+                                        $creance = ($totClient['total_ttc'] ?? 0) - ($totClient['total_paye'] ?? 0);
                                     @endphp
                                     <tr>
                                         <td class="text-capitalize">{{ $cl }}</td>
@@ -80,14 +82,25 @@
                                             @endphp
                                             <td class="text-center">
                                                 @if($q != 0 || $ttc != 0)
-                                                    {{ (floor($q)===$q ? (int)$q : $q) }}@if($ttc != 0)@endif
+                                                    {{ (floor($q)===$q ? (int)$q : $q) }}
                                                 @endif
                                             </td>
                                         @endforeach
                                         <td class="text-end">{{ number_format($totClient['total_ttc'] ?? 0, 2, ',', ' ') }}</td>
                                         <td class="text-end">{{ number_format($totClient['total_paye'] ?? 0, 2, ',', ' ') }}</td>
+                                        <td class="text-end">{{ number_format($creance, 2, ',', ' ') }}</td>
                                     </tr>
                                 @endforeach
+                                {{-- Ligne des totaux --}}
+                                <tr class="fw-bold bg-soft-light">
+                                    <td>Total</td>
+                                    @foreach(($ac['articles'] ?? []) as $art)
+                                        <td></td>
+                                    @endforeach
+                                    <td class="text-end">{{ number_format($ac['totals']['total_ttc'] ?? 0, 2, ',', ' ') }}</td>
+                                    <td class="text-end">{{ number_format($ac['totals']['total_paye'] ?? 0, 2, ',', ' ') }}</td>
+                                    <td class="text-end">{{ number_format($ac['totals']['total_creance'] ?? 0, 2, ',', ' ') }}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -141,12 +154,14 @@
                                 <thead>
                                 <tr>
                                     <th>Référence</th>
+                                    <th>Magasin de vente</th>
                                     <th>Client</th>
                                     <th>Méthode de Paiement</th>
                                     <th>Date de Paiement</th>
                                     <th>N° Chèque/LCN</th>
                                     <th>Date vente</th>
                                     <th>Contrôlé</th>
+                                    <th>Montant Payé</th>
                                     <th>Montant Total	</th>
                                     <th>Montant Créance</th>
                                 </tr>
@@ -155,16 +170,22 @@
                                 @foreach($cr['rows'] as $row)
                                     <tr>
                                         <td>{{ $row['reference'] }}</td>
+                                        <td>{{ $row['magasin_name'] }}</td>
                                         <td>{{ $row['client_name'] }}</td>
                                         <td>{{ $row['last_payment_method'] ?? '—' }}</td>
                                         <td>{{ $row['last_payment_date'] ?? '—' }}</td>
                                         <td>{{ $row['cheque_lcn_reference'] ?? '—' }}</td>
                                         <td>{{ $row['sale_date'] }}</td>
                                         <td>{!! ($row['is_controled'] ?? false) ? '<span class="badge bg-success">Oui</span>' : '<span class="badge bg-danger">Non</span>' !!}</td>
+                                        <td>{{ $row['total_paiement_today'] }}</td>
                                         <td>{{ $row['total_ttc'] }}</td>
                                         <td >{{ number_format($row['creance_amount'] ?? 0, 2, ',', ' ') }}</td>
                                     </tr>
                                 @endforeach
+                                <tr class="fw-bold bg-light">
+                                    <td colspan="8" >Total des ventes</td>
+                                    <td colspan="2" class="text-end">{{ number_format($cr['total_paiements'] ?? 0, 2, ',', ' ') }}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -175,52 +196,55 @@
             </div>
 
             {{-- Trésorerie (alignée POS Parfum) --}}
-            <div class="card mb-3">
-                <div class="card-header"><strong>Trésorerie</strong></div>
-                <div class="card-body">
-                    @if(!empty($tr))
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="text-muted">Total ventes</div>
-                                    <div class="fs-6 fw-semibold">{{ number_format($tr['total_vente'] ?? 0, 2, ',', ' ') }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="text-muted">Total Espèce	</div>
-                                    <div class="fs-6 fw-semibold text-success">{{ number_format($tr['total_espece'] ?? 0, 2, ',', ' ') }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="text-muted">Total Chèque</div>
-                                    <div class="fs-6 fw-semibold text-success">{{ number_format($tr['total_cheque'] ?? 0, 2, ',', ' ') }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="text-muted">Total LCN</div>
-                                    <div class="fs-6 fw-semibold text-success">{{ number_format($tr['total_lcn'] ?? 0, 2, ',', ' ') }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="text-muted">Total Dépenses</div>
-                                    <div class="fs-6 fw-semibold text-danger">{{ number_format($tr['total_depenses'] ?? 0, 2, ',', ' ') }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="border rounded p-3 h-100">
-                                    <div class="text-muted">Reste en caisse</div>
-                                    <div class="fs-6 fw-semibold {{ ($tr['reste_en_caisse'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($tr['reste_en_caisse'] ?? 0, 2, ',', ' ') }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <p class="text-muted mb-0">Aucune donnée</p>
-                    @endif
-                </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th class="text-end">Jour</th>
+                        <th class="text-end">Créance</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Total ventes</td>
+                        <td colspan="2"></td>
+                        <td class="text-end">{{ number_format($tr['total_vente_jour'] ?? 0, 2, ',', ' ') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Espèces</td>
+                        <td class="text-end">{{ number_format($tr['total_espece_jour'] ?? 0, 2, ',', ' ') }}</td>
+                        <td class="text-end">{{ number_format($tr['total_espece_creance'] ?? 0, 2, ',', ' ') }}</td>
+                        <td class="text-end">{{ number_format($tr['total_espece'] ?? 0, 2, ',', ' ') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Chèques</td>
+                        <td class="text-end">{{ number_format($tr['total_cheque_jour'] ?? 0, 2, ',', ' ') }}</td>
+                        <td class="text-end">{{ number_format($tr['total_cheque_creance'] ?? 0, 2, ',', ' ') }}</td>
+                        <td class="text-end">{{ number_format($tr['total_cheque'] ?? 0, 2, ',', ' ') }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>LCN</td>
+                        <td class="text-end">{{ number_format($tr['total_lcn_jour'] ?? 0, 2, ',', ' ') }}</td>
+                        <td class="text-end">{{ number_format($tr['total_lcn_creance'] ?? 0, 2, ',', ' ') }}</td>
+                        <td class="text-end">{{ number_format($tr['total_lcn'] ?? 0, 2, ',', ' ') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Dépenses</td>
+                        <td colspan="2"></td>
+                        <td class="text-end text-danger">{{ number_format($tr['total_depenses'] ?? 0, 2, ',', ' ') }}</td>
+                    </tr>
+                    <tr class="fw-bold table-info">
+                        <td>Reste en caisse</td>
+                        <td colspan="2"></td>
+                        <td class="text-end {{ ($tr['reste_en_caisse'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ number_format($tr['reste_en_caisse'] ?? 0, 2, ',', ' ') }}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
         </div>

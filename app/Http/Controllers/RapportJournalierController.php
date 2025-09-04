@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Magasin;
+use App\Models\Paiement;
 use App\Models\Vente;
 use App\Models\VenteLigne;
 use App\Services\PosService;
@@ -142,11 +143,25 @@ class RapportJournalierController extends Controller
             }
         }
 
+        $grand_total_ttc = 0;
+        $grand_total_paye = 0;
+        $grand_total_creance = 0;
+        foreach ($totals as $c => $t) {
+            $grand_total_ttc += $t['total_ttc'];
+            $grand_total_paye += $t['total_paye'];
+            $grand_total_creance += ($t['total_ttc'] - $t['total_paye']);
+        }
+
         return [
             'clients' => array_keys($clients),
             'articles' => array_keys($articles),
             'data' => $matrix,
             'client_totals' => $totals,
+            'totals' => [
+                'total_ttc' => $grand_total_ttc,
+                'total_paye' => $grand_total_paye,
+                'total_creance' => $grand_total_creance,
+            ],
         ];
     }
 
@@ -217,81 +232,39 @@ class RapportJournalierController extends Controller
         $date = $request->get('date') ?: Carbon::today()->format('Y-m-d');
         $magasinId = (int)$request->get('magasin_id');
 
-        $qA = DB::table('paiements')
-            ->where('paiements.date_paiement', '=', $date)
-            ->where('paiements.magasin_id', $magasinId)
-            ->join('ventes', function ($join) {
+        $rows = Paiement::where('date_paiement', '=', $date)
+            ->where('paiements.magasin_id', $magasinId)->join('ventes', function ($join) {
                 $join->on('ventes.id', '=', 'paiements.payable_id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })
-            ->join('clients', 'ventes.client_id', '=', 'clients.id')
-            ->where('ventes.date_emission', '<=', $date)
+            })->join('clients', 'ventes.client_id', '=', 'clients.id')
+            ->join('magasins', 'magasins.id', '=', 'ventes.magasin_id')
+            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
             ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
-            ->whereNotNull('ventes.pos_session_id')
-            ->where('ventes.magasin_id', $magasinId)
             ->select(
-                'ventes.id as vente_id',
                 'ventes.reference',
                 'clients.nom as client_name',
+                'magasins.nom as magasin_name',
                 'methodes_paiement.nom as last_payment_method',
                 'paiements.date_paiement as last_payment_date',
+                'paiements.encaisser as total_paiement_today',
                 'paiements.cheque_lcn_reference',
                 'ventes.date_emission as sale_date',
                 'ventes.is_controled',
                 'ventes.total_ttc',
                 'ventes.statut_paiement',
                 DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            );
-
-        $qB = DB::table('ventes')
-            ->leftJoin('clients', 'ventes.client_id', '=', 'clients.id')
-            ->leftJoin('paiements', function ($join) {
-                $join->on('paiements.payable_id', '=', 'ventes.id')
-                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })
-            ->whereNotNull('ventes.pos_session_id')
-            ->where('ventes.magasin_id', $magasinId)
-            ->where('ventes.date_emission', '<=', $date)
-            ->whereNotIn('ventes.statut_paiement', ['paye', 'solde'])
-            ->where('ventes.date_document', '=', $date)
-            ->select(
-                'ventes.id as vente_id',
-                'ventes.reference',
-                'clients.nom as client_name',
-                DB::raw('NULL as last_payment_method'),
-                DB::raw('NULL as last_payment_date'),
-                DB::raw('NULL as cheque_lcn_reference'),
-                'ventes.date_emission as sale_date',
-                'ventes.is_controled',
-                'ventes.total_ttc',
-                'ventes.statut_paiement',
-                DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            );
-
-        $rows = DB::query()
-            ->fromSub($qA->unionAll($qB), 't')
-            ->select(
-                't.reference',
-                't.client_name',
-                DB::raw('MAX(t.last_payment_method) as last_payment_method'),
-                DB::raw('MAX(t.last_payment_date) as last_payment_date'),
-                DB::raw('MAX(t.cheque_lcn_reference) as cheque_lcn_reference'),
-                't.sale_date',
-                't.is_controled',
-                't.total_ttc',
-                't.statut_paiement',
-                DB::raw('MAX(t.creance_amount) as creance_amount')
-            )
-            ->groupBy('t.reference', 't.client_name', 't.sale_date', 't.is_controled', 't.total_ttc', 't.statut_paiement')
-            ->get();
-
+            )->get();
         $array = json_decode(json_encode($rows), true);
         foreach ($array as &$r) {
             $r['statut_paiement'] = ucfirst(__('ventes.' . $r['statut_paiement']));
         }
         unset($r);
 
-        return ['rows' => $array];
+        $total_paiements = collect($rows)->sum('total_paiement_today');
+        return [
+            'rows' => $array,
+            'total_paiements' => $total_paiements,
+        ];
     }
 
     // 4) Trésorerie (entrées/sorties/solde du jour)
@@ -300,42 +273,120 @@ class RapportJournalierController extends Controller
         $date = $request->get('date') ?: Carbon::today()->format('Y-m-d');
         $magasinId = (int)$request->get('magasin_id');
 
-        $total_vente = DB::table('ventes')
-            ->where('magasin_id', $magasinId)
-            ->where('date_document', '=', $date)
+        $total_vente_jour = DB::table('ventes')
+            ->where('magasin_id', $magasinId)->where('date_document', '=',$date)
             ->whereNotNull('pos_session_id')
             ->sum('total_ttc');
 
-        $total_espece = DB::table('paiements')
-            ->where('date_paiement', '=', $date)
-            ->where('magasin_id', $magasinId)
-            ->where('methode_paiement_key', 'especes')
-            ->sum('encaisser');
+        $total_vente_creance = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=',$date)
+            ->where('ventes.date_emission', '<', $date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->sum('ventes.total_ttc');
 
-        $total_cheque = DB::table('paiements')
-            ->where('date_paiement', '=', $date)
-            ->where('magasin_id', $magasinId)
-            ->where('methode_paiement_key', 'cheque')
-            ->sum('encaisser');
+        $total_vente = $total_vente_creance + $total_vente_jour;
+        // Get total cash payments for the session
 
-        $total_lcn = DB::table('paiements')
-            ->where('date_paiement', '=', $date)
-            ->where('magasin_id', $magasinId)
-            ->where('methode_paiement_key', 'lcn')
-            ->sum('encaisser');
 
+        $total_espece_jour = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=', $date)
+            ->where('ventes.date_emission', '=', $date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->where('paiements.methode_paiement_key', 'especes')
+            ->sum('paiements.encaisser');
+
+        $total_espece_creance = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=',$date)
+            ->where('ventes.date_emission', '<', $date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->where('paiements.methode_paiement_key', 'especes')
+            ->sum('paiements.encaisser');
+
+        $total_espece = $total_espece_creance + $total_espece_jour;
+
+        $total_cheque_jour = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=',$date )
+            ->where('ventes.date_emission', '=', $date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->where('paiements.methode_paiement_key', 'cheque')
+            ->sum('paiements.encaisser');
+
+        $total_cheque_creance = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=', $date)
+            ->where('ventes.date_emission', '<', $date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->where('paiements.methode_paiement_key', 'cheque')
+            ->sum('paiements.encaisser');
+
+        $total_cheque = $total_cheque_creance + $total_cheque_jour;
+
+        $total_lcn_jour = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=', $date)
+            ->where('ventes.date_emission', '=', $date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->where('paiements.methode_paiement_key', 'lcn')
+            ->sum('paiements.encaisser');
+
+        $total_lcn_creance = DB::table('paiements')
+            ->join('ventes', function ($join) {
+                $join->on('ventes.id', '=', 'paiements.payable_id')
+                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
+            })
+            ->where('paiements.date_paiement', '=', $date)
+            ->where('ventes.date_emission', '<',$date)
+            ->where('paiements.magasin_id', $magasinId)
+            ->where('paiements.methode_paiement_key', 'lcn')
+            ->sum('paiements.encaisser');
+
+        $total_lcn = $total_lcn_creance + $total_lcn_jour;
+
+        // Get total expenses for the session
         $total_depenses = DB::table('depenses')
-            ->where('date_operation', '=', $date)
+            ->where('date_operation', '=',$date)
             ->where('magasin_id', $magasinId)
             ->sum('montant');
-
+        // Calculate remaining cash
+        $reste_en_caisse = $total_espece - $total_depenses;
         return [
+            'total_vente_jour' => (float)$total_vente_jour,
+            'total_vente_creance' => (float)$total_vente_creance,
             'total_vente' => (float)$total_vente,
+            'total_espece_jour' => (float)$total_espece_jour,
+            'total_espece_creance' => (float)$total_espece_creance,
             'total_espece' => (float)$total_espece,
+            'total_cheque_jour' => (float)$total_cheque_jour,
+            'total_cheque_creance' => (float)$total_cheque_creance,
             'total_cheque' => (float)$total_cheque,
+            'total_lcn_jour' => (float)$total_lcn_jour,
+            'total_lcn_creance' => (float)$total_lcn_creance,
             'total_lcn' => (float)$total_lcn,
             'total_depenses' => (float)$total_depenses,
-            'reste_en_caisse' => (float)$total_espece - (float)$total_depenses,
+            'reste_en_caisse' => (float)$reste_en_caisse,
+
         ];
     }
 }
