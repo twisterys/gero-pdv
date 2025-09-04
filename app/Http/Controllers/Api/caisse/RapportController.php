@@ -338,22 +338,15 @@ class RapportController extends Controller
         // - plus ventes that are not fully paid yet (regardless of a payment today)
         // We union both sets and compute remaining amount per sale.
 
-        $today = Carbon::today()->format('Y-m-d');
-
         // Query A: ventes with a payment today (classic behavior)
-        $qA = Paiement::where('date_paiement', '=', $today)
-            ->where('paiements.magasin_id', $magasin_id)
-            ->join('ventes', function ($join) {
+        $creances = Paiement::where('date_paiement', '=', Carbon::today()->format('Y-m-d'))
+            ->where('paiements.magasin_id', $magasin_id)->join('ventes', function ($join) {
                 $join->on('ventes.id', '=', 'paiements.payable_id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })
-            ->join('clients', 'ventes.client_id', '=', 'clients.id')
-            ->where('ventes.date_emission', '<=', $today)
+            })->join('clients', 'ventes.client_id', '=', 'clients.id')
+            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
             ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
-            ->whereNotNull('ventes.pos_session_id')
-            ->where('ventes.magasin_id', $magasin_id)
-            ->select(
-                'ventes.id as vente_id',
+            ->whereNotNull('ventes.pos_session_id')->select(
                 'ventes.reference',
                 'clients.nom as client_name',
                 'methodes_paiement.nom as last_payment_method',
@@ -364,50 +357,7 @@ class RapportController extends Controller
                 'ventes.total_ttc',
                 'ventes.statut_paiement',
                 DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            );
-
-        // Query B: ventes not fully paid (exclude fully paid/settled) regardless of payment today
-        $qB = DB::table('ventes')
-            ->leftJoin('clients', 'ventes.client_id', '=', 'clients.id')
-            ->leftJoin('paiements', function ($join) {
-                $join->on('paiements.payable_id', '=', 'ventes.id')
-                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })
-            ->whereNotNull('ventes.pos_session_id')
-            ->where('ventes.magasin_id', $magasin_id)
-            ->where('ventes.date_emission', '<=', $today)
-            ->whereNotIn('ventes.statut_paiement', ['paye', 'solde'])->where('date_document', '=', $today)
-            ->select(
-                'ventes.id as vente_id',
-                'ventes.reference',
-                'clients.nom as client_name',
-                DB::raw('NULL as last_payment_method'),
-                DB::raw('NULL as last_payment_date'),
-                DB::raw('NULL as cheque_lcn_reference'),
-                'ventes.date_emission as sale_date',
-                'ventes.is_controled',
-                'ventes.total_ttc',
-                'ventes.statut_paiement',
-                DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            );
-
-        // Union and group by vente to avoid duplicates, preferring data from Query A when available
-        $creances = DB::query()
-            ->fromSub($qA->unionAll($qB), 't')
-            ->select(
-                't.reference',
-                't.client_name',
-                DB::raw('MAX(t.last_payment_method) as last_payment_method'),
-                DB::raw('MAX(t.last_payment_date) as last_payment_date'),
-                DB::raw('MAX(t.cheque_lcn_reference) as cheque_lcn_reference'),
-                't.sale_date',
-                't.is_controled',
-                't.total_ttc',
-                't.statut_paiement',
-                DB::raw('MAX(t.creance_amount) as creance_amount')
-            )
-            ->groupBy('t.reference', 't.client_name', 't.sale_date', 't.is_controled', 't.total_ttc', 't.statut_paiement')
-            ->get();
+            )->get();
 
 
         // Convert the creances to an array for easier manipulation
