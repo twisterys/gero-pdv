@@ -75,20 +75,18 @@ class RapportJournalierController extends Controller
     private function computeAC(Request $request): array
     {
         $date = $request->get('date') ?: Carbon::today()->format('Y-m-d');
-        $magasinId = (int)$request->get('magasin_id');
+        $magasinId = (int) $request->get('magasin_id');
+        $type_document = PosService::getValue('type_vente') ?? 'bc';
 
-        $rapport = VenteLigne::whereHas('vente', function ($q) use ($magasinId, $date) {
+        // --- Step 1: Fetch sales data (no paiements join to avoid duplication) ---
+        $salesData = VenteLigne::whereHas('vente', function ($q) use ($magasinId, $date, $type_document) {
             $q->where('magasin_id', $magasinId)
                 ->where('date_document', '=', $date)
-                ->where('type_document', PosService::getValue('type_vente') ?? 'bc')
+                ->where('type_document', $type_document)
                 ->whereNotNull('pos_session_id');
         })
             ->join('articles', 'articles.id', '=', 'vente_lignes.article_id')
             ->join('ventes', 'ventes.id', '=', 'vente_lignes.vente_id')
-            ->leftJoin('paiements', function ($join) {
-                $join->on('paiements.payable_id', '=', 'ventes.id')
-                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })
             ->join('clients', 'clients.id', '=', 'ventes.client_id')
             ->select(
                 'clients.nom',
@@ -96,8 +94,7 @@ class RapportJournalierController extends Controller
                 'articles.designation',
                 'article_id',
                 DB::raw('SUM(vente_lignes.quantite) as quantite'),
-                DB::raw('SUM(vente_lignes.total_ttc) as total_ttc'),
-                DB::raw('COALESCE(SUM(paiements.encaisser), 0) as montant')
+                DB::raw('SUM(vente_lignes.total_ttc) as total_ttc')
             )
             ->groupBy('clients.id', 'clients.nom', 'article_id', 'articles.designation')
             ->get();
@@ -106,23 +103,30 @@ class RapportJournalierController extends Controller
         $articles = [];
         $matrix = [];
         $totals = [];
-        foreach ($rapport as $r) {
-            $c = $r['nom'];
-            $a = $r['designation'];
+
+        // --- Step 2: Process sales data ---
+        foreach ($salesData as $r) {
+            $c = $r->nom;
+            $a = $r->designation;
+
             if (!isset($clients[$c])) {
                 $clients[$c] = true;
-                $totals[$c] = ['total_ttc' => 0, 'total_paye' => 0];
+                $totals[$c] = ['total_ttc' => 0, 'total_paye' => 0, 'total_creance' => 0];
             }
+
             if (!isset($articles[$a])) {
                 $articles[$a] = true;
             }
+
             $matrix[$c][$a] = [
-                'quantite' => floor($r['quantite']) == $r['quantite'] ? (int)$r['quantite'] : (float)$r['quantite'],
-                'total_ttc' => (float)$r['total_ttc']
+                'quantite' => floor($r->quantite) == $r->quantite ? (int) $r->quantite : (float) $r->quantite,
+                'total_ttc' => (float) $r->total_ttc,
             ];
-            $totals[$c]['total_ttc'] += (float)$r['total_ttc'];
+
+            $totals[$c]['total_ttc'] += (float) $r->total_ttc;
         }
 
+        // --- Step 3: Aggregate payments separately ---
         $clientPayments = DB::table('ventes')
             ->join('clients', 'clients.id', '=', 'ventes.client_id')
             ->leftJoin('paiements', function ($join) {
@@ -131,7 +135,7 @@ class RapportJournalierController extends Controller
             })
             ->where('ventes.magasin_id', $magasinId)
             ->where('ventes.date_document', '=', $date)
-            ->where('ventes.type_document', PosService::getValue('type_vente') ?? 'bc')
+            ->where('ventes.type_document', $type_document)
             ->whereNotNull('ventes.pos_session_id')
             ->select('clients.nom', DB::raw('COALESCE(SUM(paiements.encaisser), 0) as total_paye'))
             ->groupBy('clients.id', 'clients.nom')
@@ -139,18 +143,20 @@ class RapportJournalierController extends Controller
 
         foreach ($clientPayments as $p) {
             if (isset($totals[$p->nom])) {
-                $totals[$p->nom]['total_paye'] = (float)$p->total_paye;
+                $totals[$p->nom]['total_paye'] = (float) $p->total_paye;
             }
         }
 
-        $grand_total_ttc = 0;
-        $grand_total_paye = 0;
-        $grand_total_creance = 0;
-        foreach ($totals as $c => $t) {
-            $grand_total_ttc += $t['total_ttc'];
-            $grand_total_paye += $t['total_paye'];
-            $grand_total_creance += ($t['total_ttc'] - $t['total_paye']);
+        // --- Step 4: Compute créances ---
+        foreach ($totals as $c => &$t) {
+            $t['total_creance'] = $t['total_ttc'] - $t['total_paye'];
         }
+        unset($t);
+
+        // --- Step 5: Grand totals ---
+        $grand_total_ttc = array_sum(array_column($totals, 'total_ttc'));
+        $grand_total_paye = array_sum(array_column($totals, 'total_paye'));
+        $grand_total_creance = array_sum(array_column($totals, 'total_creance'));
 
         return [
             'clients' => array_keys($clients),
