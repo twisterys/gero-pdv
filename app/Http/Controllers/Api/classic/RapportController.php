@@ -81,17 +81,20 @@ class RapportController extends Controller
         if (!$o_pos_session->ouverte) {
             return response('Cette session n\'est pas ouverte ! ', 500);
         }
-        // Récupérer les données de vente pour le magasin et la date spécifiés
-        $rapport = VenteLigne::whereHas('vente', function ($query) use ($request, $o_pos_session) {
-            $query->where('magasin_id', $o_pos_session->magasin_id)->where('date_document', '=', Carbon::today()->format('Y-m-d'))
-                ->where('type_document', PosService::getValue('type_vente') ?? 'bc');
+
+        $magasin_id = $o_pos_session->magasin_id;
+        $today = Carbon::today()->format('Y-m-d');
+        $type_document = PosService::getValue('type_vente') ?? 'bc';
+
+        // --- Step 1: Get correct sales data (quantities and totals) without joining payments ---
+        // This query now accurately sums sales lines without duplication.
+        $salesData = VenteLigne::whereHas('vente', function ($query) use ($magasin_id, $today, $type_document) {
+            $query->where('magasin_id', $magasin_id)
+                ->where('date_document', '=', $today)
+                ->where('type_document', $type_document);
         })
             ->join('articles', 'articles.id', '=', 'vente_lignes.article_id')
             ->join('ventes', 'ventes.id', '=', 'vente_lignes.vente_id')
-            ->leftJoin('paiements', function ($join) {
-                $join->on('paiements.payable_id', '=', 'ventes.id')
-                    ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })
             ->join('clients', 'clients.id', '=', 'ventes.client_id')
             ->select(
                 'clients.nom',
@@ -99,10 +102,9 @@ class RapportController extends Controller
                 'articles.designation',
                 'article_id',
                 DB::raw('SUM(vente_lignes.quantite) as quantite'),
-                DB::raw('SUM(vente_lignes.total_ttc) as total_ttc'),
-                DB::raw('COALESCE(SUM(paiements.encaisser), 0) as montant')
+                DB::raw('SUM(vente_lignes.total_ttc) as total_ttc')
             )
-            ->groupBy('clients.id', 'clients.nom', 'article_id', 'articles.designation','ventes.magasin_id')
+            ->groupBy('clients.id', 'clients.nom', 'article_id', 'articles.designation')
             ->get();
 
         $clients = [];
@@ -110,43 +112,45 @@ class RapportController extends Controller
         $matrixData = [];
         $clientTotals = [];
 
-        foreach ($rapport as $item) {
-            $clientName = $item['nom'];
-            $clientId = $item['client_id'];
-            $articleRef = $item['designation'];
+        // --- Step 2: Process the sales data ---
+        foreach ($salesData as $item) {
+            $clientName = $item->nom;
+            $articleRef = $item->designation;
 
-            if (!isset($clients[$clientName])) {
+            // Initialize client if not seen before
+            if (!isset($clientTotals[$clientName])) {
                 $clients[$clientName] = true;
                 $clientTotals[$clientName] = [
                     'total_ttc' => 0,
-                    'total_paye' => 0,
+                    'total_paye' => 0, // Default to 0, will be filled by the next query
                     'total_creance' => 0,
                 ];
             }
+
             if (!isset($articles[$articleRef])) {
                 $articles[$articleRef] = true;
             }
 
-            // Directly populate matrix data
+            // Populate matrix data with sales info
             $matrixData[$clientName][$articleRef] = [
-                'quantite' => floor($item['quantite']) == $item['quantite'] ? (int)$item['quantite'] : $item['quantite'],
-                'total_ttc' => $item['total_ttc']
+                'quantite' => floor($item->quantite) == $item->quantite ? (int)$item->quantite : $item->quantite,
+                'total_ttc' => $item->total_ttc
             ];
 
-            // Add to client totals
-            $clientTotals[$clientName]['total_ttc'] += $item['total_ttc'];
+            // Add to client's total turnover
+            $clientTotals[$clientName]['total_ttc'] += $item->total_ttc;
         }
 
-        // Calculate total paid amount for each client (avoiding double counting)
+        // --- Step 3: Get total paid amounts for each client  ---
         $clientPayments = DB::table('ventes')
             ->join('clients', 'clients.id', '=', 'ventes.client_id')
             ->leftJoin('paiements', function ($join) {
                 $join->on('paiements.payable_id', '=', 'ventes.id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
             })
-            ->where('ventes.magasin_id', $o_pos_session->magasin_id)
-            ->where('ventes.date_document', '=', Carbon::today()->format('Y-m-d'))
-            ->where('ventes.type_document', PosService::getValue('type_vente') ?? 'bc')
+            ->where('ventes.magasin_id', $magasin_id)
+            ->where('ventes.date_document', '=', $today)
+            ->where('ventes.type_document', $type_document)
             ->whereNotNull('ventes.pos_session_id')
             ->select(
                 'clients.nom',
@@ -155,20 +159,22 @@ class RapportController extends Controller
             ->groupBy('clients.id', 'clients.nom')
             ->get();
 
+        // --- Step 4: Merge payment data and calculate debt (créance) ---
         foreach ($clientPayments as $payment) {
             if (isset($clientTotals[$payment->nom])) {
-                $clientTotals[$payment->nom]['total_paye'] = $payment->total_paye;
+                $clientTotals[$payment->nom]['total_paye'] = (float) $payment->total_paye;
             }
         }
 
-        // Compute total_creance per client = total_ttc - total_paye
         foreach ($clientTotals as $name => $totals) {
-            $clientTotals[$name]['total_creance'] = ($totals['total_ttc'] ?? 0) - ($totals['total_paye'] ?? 0);
+            $clientTotals[$name]['total_creance'] = $totals['total_ttc'] - $totals['total_paye'];
         }
 
+        // --- Step 5: Final data preparation for the view ---
         $clientNames = array_keys($clients);
         $articleRefs = array_keys($articles);
 
+        // Pad the matrix with zeros for clients who didn't buy a specific article
         foreach ($clientNames as $client) {
             foreach ($articleRefs as $article) {
                 if (!isset($matrixData[$client][$article])) {
@@ -180,15 +186,10 @@ class RapportController extends Controller
             }
         }
 
-        // Calcul des totaux globaux
-        $grand_total_ttc = 0;
-        $grand_total_paye = 0;
-        $grand_total_creance = 0;
-        foreach ($clientTotals as $totals) {
-            $grand_total_ttc += $totals['total_ttc'];
-            $grand_total_paye += $totals['total_paye'];
-            $grand_total_creance += $totals['total_creance'];
-        }
+        // Calculate grand totals for the footer
+        $grand_total_ttc = array_sum(array_column($clientTotals, 'total_ttc'));
+        $grand_total_paye = array_sum(array_column($clientTotals, 'total_paye'));
+        $grand_total_creance = array_sum(array_column($clientTotals, 'total_creance'));
 
         return response()->json([
             'clients' => $clientNames,
@@ -202,7 +203,6 @@ class RapportController extends Controller
             ]
         ]);
     }
-
     /**
      * Generate a supplier-article purchase report in matrix format.
      *
