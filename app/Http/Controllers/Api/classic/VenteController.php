@@ -177,6 +177,12 @@ class VenteController extends Controller
                 'i_montant' => $vente_ttc,
                 'i_session_id' => $o_pos_session->id,
             ];
+            // -------------------------------------------------------
+            if (!$request->filled('credit')){
+                PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement_data, $o_pos_session->magasin_id, $o_pos_session->id);
+            }
+            ReferenceService::incrementCompteur($type);
+            DB::commit();
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
@@ -186,12 +192,6 @@ class VenteController extends Controller
                     $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
-            // -------------------------------------------------------
-            if (!$request->filled('credit')){
-                PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement_data, $o_pos_session->magasin_id, $o_pos_session->id);
-            }
-            ReferenceService::incrementCompteur($type);
-            DB::commit();
             // ------------------ ### Response ### ------------------
             $repsonse = ['message' => $o_vente->reference . ' ajoutée avec succès ! ', 'template' => $template_rendered ?? null];
             return response($repsonse, 200);

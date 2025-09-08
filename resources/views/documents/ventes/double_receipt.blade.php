@@ -127,9 +127,14 @@
 </tr>
 </thead>';
         foreach ($o_vente->lignes as $ligne){
+            $quantite = number_format($ligne->quantite, 2, '.', ' ');
+            // Supprimer uniquement .00 à la fin
+            if (preg_match('/\.00$/', $quantite)) {
+                $quantite = preg_replace('/\.00$/', '', $quantite);
+            }
             $table.= '<tr style="border-bottom: 1px dotted #eee;">
             <td style="padding: 5px; font-size: 11px;">'.$ligne->article->reference.' | '.$ligne->nom_article.'</td>
-            <td style="padding: 5px; text-align:center; font-size: 11px;">'.$ligne->quantite.'</td>
+            <td style="padding: 5px; text-align:center; font-size: 11px;">'.$quantite.'</td>
             <td style="padding: 5px; text-align:right; font-size: 11px;">'.number_format($ligne->ht,2,'.',' ').'</td>
             <td style="padding: 5px; text-align:right; font-size: 11px;">'.number_format($ligne->quantite * $ligne->ht,2,'.',' ').'</td>
             </tr>';
@@ -152,9 +157,10 @@
     $nom_revendeur = auth()->check() ? auth()->user()->name : 'N/A';
 
     $functions =[
-            '[Date_et_heure]'=>now()->toDateTimeString(),
+            '[Date_et_heure]'=>now()->format('d/m/Y H:i'),
             '[Tableau]'=> lignes_table($o_vente),
             '[Reference]'=> $o_vente->reference,
+            '[Client]'=> $o_vente->client->nom,
             '[Magasin_adresse]'=>$o_vente->magasin->adresse,
             '[Magasin]'=>$o_vente->magasin->nom,
             '[Total_HT]'=>  number_format($o_vente->total_ht + $o_vente->total_reduction,2,'.',' ').' MAD',
