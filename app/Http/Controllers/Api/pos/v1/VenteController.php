@@ -255,7 +255,7 @@ class VenteController extends Controller
                 if (PosService::getValue('double_ticket_template')) {
                     $template_rendered = view('documents.ventes.double_receipt', compact('o_vente', 'template'))->render();
                 } else {
-                    $template_rendered = view('documents.ventes.receiptt', compact('o_vente', 'template'))->render();
+                    $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
 
@@ -343,7 +343,7 @@ class VenteController extends Controller
                 if (PosService::getValue('double_ticket_template')) {
                     $template_rendered = view('documents.ventes.double_receipt', compact('o_vente', 'template'))->render();
                 } else {
-                    $template_rendered = view('documents.ventes.receiptt', compact('o_vente', 'template'))->render();
+                    $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
 
@@ -386,7 +386,7 @@ class VenteController extends Controller
     {
         $o_vente = Vente::findOrFail($id);
         $template = PosService::getValue('ticket_template');
-        return $template_rendered = view('documents.ventes.receiptt', compact('o_vente', 'template'))->render();
+        return $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
     }
 
     /**
