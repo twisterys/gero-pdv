@@ -43,6 +43,7 @@
                                         <th style="max-width: 150px">Référence</th>
                                         <th>Date</th>
                                         <th>Magasin</th>
+                                        <th>Statut</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
@@ -71,6 +72,9 @@
             },
             {
                 data: 'magasin.nom',name:'magasin.nom'
+            },
+            {
+                data: 'statut',name:'statut'
             },
             {
                 data: 'actions',name:'actions'
