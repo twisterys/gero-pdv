@@ -208,4 +208,5 @@ return [
     'rebut.liste'=>'Liste',
     'rebut.sauvegarder'=>'Ajout',
     'rebut.afficher'=>'Affichage',
+    'rebut.rollback'=>'Rollback',
 ];

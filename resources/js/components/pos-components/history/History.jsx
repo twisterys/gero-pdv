@@ -13,6 +13,47 @@ export const History = ({reduction}) => {
     const [tab, setTab] = useState('ventes');
     const [rebuts, setRebuts] = useState([]);
 
+    const rollbackRebut = (id) => {
+        openConfirm({
+            title: 'Annulation du rebut',
+            message: "Voulez-vous vraiment annuler ce rebut ? Cette action rétablira le stock.",
+            confirmText: 'Oui, annuler',
+            cancelText: 'Non',
+            onConfirm: () => {
+                axios
+                    .post(`rebuts/${id}/rollback`, { session_id: __session_id })
+                    .then(() => {
+                        toastr.success('Rebut annulé avec succès');
+                        fetchHistory();
+                    })
+                    .catch(err => {
+                        const msg = err?.response?.data?.message || "Erreur lors de l'annulation";
+                        toastr.error(msg);
+                    })
+                    .finally(() => {
+                        closeConfirm();
+                    });
+            },
+        });
+    };
+
+    const [confirmState, setConfirmState] = useState({
+        title: 'Confirmation',
+        message: '',
+        confirmText: 'Confirmer',
+        cancelText: 'Annuler',
+        onConfirm: null,
+    });
+
+    const openConfirm = (opts = {}) => {
+        setConfirmState(prev => ({ ...prev, ...opts }));
+        setTimeout(() => { $("#pos-confirm-modal").modal("show"); }, 0);
+    };
+
+    const closeConfirm = () => {
+        $("#pos-confirm-modal").modal("hide");
+    };
+
     const populateVentes = () => {
         if (ventes.length > 0){
             return ventes.map((item) => {
@@ -164,8 +205,23 @@ export const History = ({reduction}) => {
                                                 <div className="card shadow-sm">
                                                     <div className="card-body">
                                                         <div className="d-flex align-items-center justify-content-between mb-2">
-                                                            <div className="fw-semibold">{r.reference}</div>
-                                                            <small className="text-muted">Quantité rebutée</small>
+                                                            <div>
+                                                                <div className="fw-semibold">{r.reference}</div>
+                                                                {r.statut === 'Rebut annulé' && (
+                                                                    <span className="badge bg-secondary">Annulé</span>
+                                                                )}
+                                                            </div>
+                                                            <div>
+                                                                {r.statut !== 'Rebut annulé' && (
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        onClick={() => rollbackRebut(r.id)}
+                                                                        title="Annuler le rebut"
+                                                                    >
+                                                                        <i className="mdi mdi-undo"></i> Annuler
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                         <ul className="list-unstyled mb-0">
                                                             {(r.lignes || []).map((l, idx) => (
@@ -189,6 +245,38 @@ export const History = ({reduction}) => {
                              </div>
                             <p>Ouverture de session: {__ouverture}</p>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="modal fade" id="pos-confirm-modal" tabIndex="-1" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">{confirmState.title}</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <p className="mb-0">{confirmState.message}</p>
+                        </div>
+                        <div className="modal-footer d-flex justify-content-end">
+                            <button type="button" className="btn btn-light" data-bs-dismiss="modal">
+                                {confirmState.cancelText}
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => {
+                                    if (typeof confirmState.onConfirm === 'function') {
+                                        confirmState.onConfirm();
+                                    } else {
+                                        closeConfirm();
+                                    }
+                                }}
+                            >
+                                <i className="mdi mdi-undo me-1"></i>
+                                {confirmState.confirmText}
+                            </button>
                         </div>
                     </div>
                 </div>

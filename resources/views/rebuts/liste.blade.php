@@ -78,6 +78,7 @@
         ];
         const __dataTable_ajax_link = "{{ route('rebuts.liste') }}";
         const __dataTable_id = "#datatable";
+        const __sort_column = "2"
 
     </script>
     <script src="{{asset('js/dataTable_init.js')}}"></script>

@@ -202,6 +202,8 @@ const endpoints = {
     rebuts: {
         create: (data: any) => api.post('/rebut', data),
         list:   () => api.get('/rebuts'), // session_id ajouté automatiquement
+        rollback: (id: number) => api.post(`/rebuts/${id}/rollback`),
+
     },
 };
 

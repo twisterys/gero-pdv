@@ -68,13 +68,14 @@ class RebutController extends Controller
     public function liste(Request $request)
     {
         $sessionId = $request->get('session_id');
+        $posSession = PosSession::find($sessionId);
         if (!$sessionId) {
             return response()->json([]);
         }
 
         // On récupère les entêtes Rebut de la session
-        $rebuts = Rebut::where('pos_session_id', $sessionId)
-            ->orderByDesc('id')
+        $rebuts = Rebut::where('magasin_id', $posSession->magasin_id)
+            ->orderByDesc('created_at')
             ->get();
 
         // Pour chaque Rebut, on extrait les transactions de stock liées (articles + quantités)
@@ -101,10 +102,42 @@ class RebutController extends Controller
                 'id' => $rebut->id,
                 'reference' => $rebut->reference,
                 'date_operation' => $rebut->date_operation,
+                'statut' => $rebut->statut, // <— ajouter
                 'lignes' => $lines,
             ];
         });
 
         return response()->json($payload);
+    }
+
+
+    public function rollback($id, Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $rebut = Rebut::findOrFail($id);
+            // Optionnel: s’assurer que le rebut appartient à la session en cours
+            if ($request->has('session_id') && $rebut->pos_session_id && (int)$rebut->pos_session_id !== (int)$request->get('session_id')) {
+                return response()->json(['message' => 'Rebut non lié à la session active'], 403);
+            }
+
+            // Ne pas re-rollback si déjà annulé
+            if ($rebut->statut === 'Rebut annulé') {
+                return response()->json(['message' => 'Rebut déjà annulé'], 200);
+            }
+
+            StockService::stock_revert(Rebut::class, $rebut->id);
+            $rebut->statut = 'Rebut annulé';
+            $rebut->save();
+
+            DB::commit();
+            return response()->json(['message' => 'Rebut annulé avec succès.']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Erreur lors de l’annulation du rebut',
+                'error' => $e->getMessage(),
+            ], 422);
+        }
     }
 }

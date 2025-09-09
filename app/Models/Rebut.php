@@ -14,6 +14,7 @@ class Rebut extends Model
         'reference',
         'magasin_id',
         'pos_session_id',
+        'statut',
     ];
 
     public const DECLENCHEUR = 'Rebut';
@@ -35,5 +36,9 @@ class Rebut extends Model
     public function posSession(): BelongsTo
     {
         return $this->belongsTo(PosSession::class);
+    }
+    public function stock_transaction()
+    {
+        return $this->morphMany(TransactionStock::class, 'stockable');
     }
 }

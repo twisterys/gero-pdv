@@ -234,11 +234,11 @@ $("#side-menu").metisMenu(), $("#vertical-menu-btn").on("click", function (e) {
 
 $(document).on('click', '.rollback', function () {
     Swal.fire({
-        title: "Annuler l'inventaire ?",
+        title: "Faire un rollback ?",
         text: "Vous ne pourrez pas revenir en arrière !",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Oui, annuler cet inventaire!",
+        confirmButtonText: "Oui, annuler cette opération !",
         buttonsStyling: false,
         customClass: {
             confirmButton: 'btn btn-soft-danger mx-2', cancelButton: 'btn btn-soft-secondary mx-2',

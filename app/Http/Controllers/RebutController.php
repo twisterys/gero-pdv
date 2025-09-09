@@ -23,15 +23,28 @@ class RebutController extends Controller
             $table->addColumn('actions',function ($row){
                 $crudRoutePart = 'rebuts';
                 $show = 'afficher';
+                $rollback ='rollback';
                 $id = $row->id;
-                return view(
-                    'partials.__datatable-action',
-                    compact(
-                        'crudRoutePart',
-                        'show',
-                        'id',
-                    )
-                );
+                if ($row->statut !== "Rebut annulé") {
+                    return view(
+                        'partials.__datatable-action',
+                        compact(
+                            'crudRoutePart',
+                            'rollback',
+                            'show',
+                            'id',
+                        )
+                    );
+                } else {
+                    return view(
+                        'partials.__datatable-action',
+                        compact(
+                            'crudRoutePart',
+                            'show',
+                            'id',
+                        )
+                    );
+                }
 
             });
             $table->editColumn('date_operation', function ($row) {
@@ -87,6 +100,7 @@ class RebutController extends Controller
         $magasin = Magasin::findOrFail($request->get('magasin_id'));
 
         $rebut = new Rebut();
+        $rebut->statut = "Rebut réussi";
         $rebut->date_operation = Carbon::now();
         $rebut->magasin_id = $magasin->id;
         $rebut->reference = $request->get('i_reference');
@@ -108,6 +122,31 @@ class RebutController extends Controller
             return redirect()->back()->with('error', 'Une erreur inattendue s\'est produite : ' . $e->getMessage());
         }
         return redirect()->route('rebuts.afficher',$rebut->id)->with('success', "Rebut effectué avec succès.");
+    }
+
+
+    public function rollback($id){
+        $this->guard_custom(['rebut.rollback']);
+        if (\request()->ajax()) {
+            DB::beginTransaction();
+            try {
+                $o_rebut = Rebut::findOrFail($id);
+                if ($o_rebut) {
+                    StockService::stock_revert(Rebut::class, $o_rebut->id);
+                    $o_rebut->statut = "Rebut annulé";
+                    $o_rebut->save();
+                    DB::commit();
+                    return response('Rebut annulé avec succès.', 200);
+                } else {
+                    return response('Erreur', 404);
+                }
+            }catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Une erreur inattendue s\'est produite : ' . $e->getMessage());
+            }
+
+        }
+        abort(404);
     }
 
 }

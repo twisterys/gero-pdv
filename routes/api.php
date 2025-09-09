@@ -95,6 +95,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         Route::post('/rebut', 'RebutController@sauvegarder');
         Route::get('/rebuts', 'RebutController@liste');
+        Route::post('/rebuts/{id}/rollback', 'RebutController@rollback');
+
     });
 
     Route::group(['prefix' => 'v-commercial', 'namespace' => 'App\Http\Controllers\Api\commercial'], function () {
@@ -164,6 +166,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         Route::post('/rebut', 'RebutController@sauvegarder');
         Route::get('/rebuts', 'RebutController@liste');
+        Route::post('/rebuts/{id}/rollback', 'RebutController@rollback');
+
     });
 
     Route::group(['prefix' => 'v-caisse', 'namespace' => 'App\Http\Controllers\Api\caisse'], function () {
@@ -209,6 +213,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
         Route::post('/rebut', 'RebutController@sauvegarder');
         Route::get('/rebuts', 'RebutController@liste');
+        Route::post('/rebuts/{id}/rollback', 'RebutController@rollback');
+
 
     });
     Route::group(['prefix' => 'pos'], function () {
@@ -268,6 +274,8 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
 
             Route::post('/rebut', 'RebutController@sauvegarder');
             Route::get('/rebuts', 'RebutController@liste');
+            Route::post('/rebuts/{id}/rollback', 'RebutController@rollback');
+
 
         });
     });

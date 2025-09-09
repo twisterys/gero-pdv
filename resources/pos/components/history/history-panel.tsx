@@ -3,6 +3,7 @@ import {endpoints} from '../../services/api';
 import {formatNumber} from "../../utils/formats";
 import { useAuth } from '../auth/auth-provider';
 import { useSettingsStore } from '../../stores/settings-store';
+import { toast } from 'react-toastify';
 
 
 // Print a block of HTML without opening a new window by using a hidden iframe
@@ -343,9 +344,45 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
         id: number;
         reference: string;
         date_operation: string;
+        statut?: string;
         lignes: { article_id: number; article: string; quantity: number }[];
     }>>([]);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmTitle, setConfirmTitle] = useState<string>('Confirmation');
+    const [confirmMessage, setConfirmMessage] = useState<string>('');
+    const [onConfirm, setOnConfirm] = useState<(() => void) | null>(null);
 
+    const openConfirm = (opts: { title?: string; message?: string; onConfirm?: () => void }) => {
+        setConfirmTitle(opts.title || 'Confirmation');
+        setConfirmMessage(opts.message || 'Voulez-vous continuer ?');
+        setOnConfirm(() => opts.onConfirm || null);
+        setConfirmOpen(true);
+    };
+    const closeConfirm = () => {
+        setConfirmOpen(false);
+        setOnConfirm(null);
+    };
+
+    const handleRollback = async (id: number) => {
+        try {
+            await endpoints.rebuts.rollback(id);
+            toast.success('Rebut annulé avec succès');
+            await load(); // recharge la liste
+        } catch (e: any) {
+            const msg = e?.response?.data?.message || "Erreur lors de l'annulation";
+            toast.error(msg);
+        } finally {
+            closeConfirm();
+        }
+    };
+
+    const confirmRollback = (id: number) => {
+        openConfirm({
+            title: 'Annulation du rebut',
+            message: "Voulez-vous vraiment annuler ce rebut ? Cette action rétablira le stock.",
+            onConfirm: () => handleRollback(id),
+        });
+    };
     const load = async () => {
         setLoading(true);
         setError(null);
@@ -465,8 +502,33 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                             {rebuts.map((r: any) => (
                                 <div key={r.id} className="rounded-lg border border-gray-200 bg-white p-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <div className="font-medium text-[#3b5461]">{r.reference}</div>
-                                        <div className="text-xs text-gray-500">Quantité rebutée</div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-medium text-[#3b5461]">{r.reference}</div>
+                                            {r.statut && (
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200">
+                                                {r.statut}
+                                              </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {/* Info label */}
+                                            <div className="text-xs text-gray-500">Quantité rebutée</div>
+                                            {/* Rollback button, only if not already annulé */}
+                                            {(!r.statut || r.statut !== 'Rebut annulé') && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => confirmRollback(r.id)}
+                                                    className="inline-flex items-center px-2 py-1 text-xs rounded-md border border-rose-200 text-rose-600 hover:bg-rose-50"
+                                                    title="Annuler le rebut"
+                                                >
+                                                    {/* undo icon */}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="mr-1">
+                                                        <path fill="currentColor" d="M12.949 5.636V3L7 8l5.949 5V9.364C17.243 9.364 20 12.121 20 16c0 1.212-.29 2.351-.803 3.349C20.7 18.139 22 15.732 22 13c0-4.971-4.029-9-9.051-9z"/>
+                                                    </svg>
+                                                    Annuler
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                     <ul className="divide-y divide-gray-100">
                                         {r.lignes.map((l: any, idx: number) => (
@@ -506,7 +568,8 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                         ))}
                     </div>
                 )}
-            </div>            <VenteDetailsModal
+            </div>
+            <VenteDetailsModal
                 isOpen={showDetailsOpen}
                 onClose={() => {
                     setShowDetailsOpen(false);
@@ -514,6 +577,39 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                 }}
                 item={selectedItem}
             />
+            {/* Confirm Dialog */}
+            {confirmOpen && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40" onClick={closeConfirm} />
+                    <div className="relative bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl overflow-hidden">
+                        <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+                            <h5 className="text-[#3b5461] font-semibold">{confirmTitle}</h5>
+                            <button onClick={closeConfirm} aria-label="Close" className="text-gray-500 hover:text-gray-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59L7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-5">
+                            <p className="text-sm text-gray-700">{confirmMessage}</p>
+                        </div>
+                        <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-end gap-2">
+                            <button
+                                onClick={closeConfirm}
+                                className="px-4 py-2 text-sm rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                onClick={() => { if (onConfirm) onConfirm(); }}
+                                className="px-4 py-2 text-sm rounded-md bg-rose-600 hover:bg-rose-700 text-white"
+                            >
+                                Confirmer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
