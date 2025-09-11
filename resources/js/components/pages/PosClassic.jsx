@@ -48,6 +48,8 @@ function PosClassic() {
         setSearchValue("");
     };
 
+    const [cumulativePaid, setCumulativePaid] = useState(0);
+
     // search by reference
     const validateSearch = (event) => {
         event.target.setAttribute("disabled", "true");
@@ -191,8 +193,12 @@ function PosClassic() {
                     setIsLoading(false);
                     $("#paiement-modal").modal("hide");
 
+                    // Mettre à jour le cumul avec le paiement qui vient d’être ajouté
+                    const newCumulative = parseFloat((cumulativePaid || 0)) + parseFloat(paiement.i_montant || 0);
+                    setCumulativePaid(newCumulative);
+
                     // Calculate remaining balance
-                    const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(2);
+                    const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(2);
 
                     // If there's still a remaining balance, ask if they want to add another payment
                     if (parseFloat(remainingBalance) > 0) {
@@ -323,8 +329,11 @@ function PosClassic() {
 
                         // Store the current sale information
                         const venteId = response.data.vente_id;
-                        const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(2);
+                        // Initialiser le cumul avec le premier paiement
+                        const newCumulative = parseFloat(paiement.i_montant || 0);
+                        setCumulativePaid(newCumulative);
 
+                        const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(2);
                         Swal.fire({
                             icon: "success",
                             title: "Paiement partiel enregistré !",
@@ -534,6 +543,7 @@ function PosClassic() {
             i_compte_id: "",
             vente_id: null,
         });
+        setCumulativePaid(0);
     };
 
     useEffect(() => {

@@ -361,6 +361,11 @@ class VenteController extends Controller
                     'solde' => $vente_ttc,
                 ]);
             }
+
+            $paiement = $request->get('paiement');
+            $paiement['i_date_paiement'] = now()->format('d/m/Y');
+            PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
+            ReferenceService::incrementCompteur($type);
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
@@ -370,11 +375,6 @@ class VenteController extends Controller
                     $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
-
-            $paiement = $request->get('paiement');
-            $paiement['i_date_paiement'] = now()->format('d/m/Y');
-            PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
-            ReferenceService::incrementCompteur($type);
             DB::commit();
             // ------------------ ### Response ### ------------------
             $repsonse = [
@@ -423,6 +423,9 @@ class VenteController extends Controller
             }
 
             $o_vente = Vente::findOrFail($request->get('vente_id'));
+            $paiement = $request->get('paiement');
+            $paiement['i_date_paiement'] = now()->format('d/m/Y');
+            PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
 
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
@@ -433,10 +436,6 @@ class VenteController extends Controller
                     $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
-
-            $paiement = $request->get('paiement');
-            $paiement['i_date_paiement'] = now()->format('d/m/Y');
-            PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             DB::commit();
             // ------------------ ### Response ### ------------------
             $repsonse = [
