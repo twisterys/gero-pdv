@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Listeners\BackupEventSubscriber;
 use App\Models\TransactionStock;
 use App\Observers\TrasnsactionStockObserver;
 use Illuminate\Auth\Events\Registered;
