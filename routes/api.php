@@ -15,7 +15,14 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-
+Route::group([
+    'prefix' => 'download',
+    'namespace' => 'App\Http\Controllers\Api\management',
+], function () {
+    Route::prefix('backup')->group(function () {
+        Route::get('/{filename}', 'BackUpController@download');
+    });
+});
 
 Route::group([
     'prefix' => 'v-management',

@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Services\BackupLink\BackupLinkGeneratorService;
 use App\Services\LogService;
-use App\Listeners\BackupEventSubscriber;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class RunTenantBackupJob implements ShouldQueue
@@ -36,21 +36,92 @@ class RunTenantBackupJob implements ShouldQueue
      * Execute the backup job.
      */
     public function handle(
-        BackupLinkGeneratorService $linkGeneratorService,
-        BackupEventSubscriber $backupEventSubscriber
+        BackupLinkGeneratorService $linkGeneratorService
     ): void {
         try {
+            // Run local and remote backup
+            $this->runLocalBackup();
             $diskName = $this->configureDisk();
-            $this->setBackupContext();
-            $this->runBackup($diskName);
+            $driver = $this->getDriver();
+            $this->runRemoteBackup($diskName);
 
+            // If both are successful, generate link and send success callback
             $link = $this->generateDownloadLink($linkGeneratorService);
-            $this->sendSuccessCallback($backupEventSubscriber, $link);
+
+            if($link){
+                $backupExists = Storage::disk($diskName)->exists($this->backupName);
+                if (!$backupExists) {
+                    $localBackupExists = Storage::disk('local_storage')->exists($this->backupName);
+
+                    if (!$localBackupExists) {
+                        throw new Exception("No backup was found localy or remotely");
+                    }
+
+                    $this->sendCallback('success', [
+                        'backup_id' => $this->backupId,
+                        'filename' => $this->backupName,
+                        'message' => 'La sauvegarde a bien été créée localement, mais le transfert vers le stockage distant a échoué.',
+                        'path' => url('api/download/backup/' . $this->backupName),
+                        'driver' => 'local'
+                    ]);
+                }
+
+                // delete local backup after successful remote backup
+                Storage::disk('local_storage')->delete($this->backupName);
+                $this->sendCallback('success', [
+                    'backup_id' => $this->backupId,
+                    'filename' => $this->backupName,
+                    'path' => $link,
+                    'driver' => $driver
+                ]);
+            }
 
         } catch (Exception $e) {
-            $this->handleBackupFailure($e);
+
+            LogService::logException($e);
+
+            // Check if local backup file exists
+            $localBackupExists = Storage::disk('local_storage')->exists($this->backupName);
+            if ($localBackupExists) {
+                // If local backup exists, send success callback with local path
+                $this->sendCallback('success', [
+                    'backup_id' => $this->backupId,
+                    'filename' => $this->backupName,
+                    'message' => 'Sauvegarde créée localement mais l\'envoi vers le stockage distant a échoué : ' . $e->getMessage(),
+                    'path' => url('api/download/backup/' . $this->backupName),
+                    'driver' => 'local'
+                ]);
+                return;
+            }
+            $this->sendCallback('error', [
+                'backup_id' => $this->backupId,
+                'message' => $e->getMessage(),
+                'filename' => $this->backupName,
+            ]);
+
         }
     }
+
+    /**
+     * Run local backup command to create the backup file.
+     * @throws Exception
+     */
+    private function runLocalBackup(): void
+    {
+        tenancy()->find($this->tenantId)->run(function () {
+            $output = Artisan::call('backup:run', [
+                '--filename' => $this->backupName,
+                '--only-db' => true,
+                '--only-to-disk' => 'local_storage',
+            ]);
+            // Check if the backup command output indicates success
+            if (str_contains(Artisan::output(), 'Backup failed') || $output !== 0) {
+                throw new Exception('Local backup command reported failure: ' . Artisan::output());
+            }
+        });
+    }
+
+
 
     /**
      * Configure the storage disk based on driver type.
@@ -92,46 +163,21 @@ class RunTenantBackupJob implements ShouldQueue
     }
 
     /**
-     * Set backup context in application container and config.
-     */
-    private function setBackupContext(): void
-    {
-        app()->instance('current_backup_id', $this->backupId);
-        app()->instance('current_backup_filename', $this->backupName);
-
-        config([
-            'current_backup_id' => $this->backupId,
-            'current_backup_filename' => $this->backupName
-        ]);
-    }
-
-    /**
      * Execute the backup command within tenant context.
      */
-    private function runBackup(string $diskName): void
+    private function runRemoteBackup(string $diskName): void
     {
-        try {
-            tenancy()->find($this->tenantId)->run(function () use ($diskName){
-                $output = Artisan::call('backup:run', [
-                    '--filename' => $this->backupName,
-                    '--only-to-disk' => $diskName,
-                ]);
+        tenancy()->find($this->tenantId)->run(function () use ($diskName){
+            $output = Artisan::call('backup:run', [
+                '--filename' => $this->backupName,
+                '--only-to-disk' => $diskName,
+            ]);
 
-                // Check if the backup command output indicates success
-                if (str_contains(Artisan::output(), 'Backup failed') || $output !== 0) {
-                    throw new Exception('Backup command reported failure: ' . Artisan::output());
-                }
-            });
-
-            // Verify the backup file exists
-            $backupExists = Storage::disk($diskName)->exists($this->backupName);
-            if (!$backupExists) {
-                throw new Exception("Backup file {$this->backupName} was not created on {$diskName}");
+            // Check if the backup command output indicates success
+            if (str_contains(Artisan::output(), 'Backup failed') || $output !== 0) {
+                throw new Exception('Remote backup command reported failure: ' . Artisan::output());
             }
-        } catch (\Exception $e) {
-            // Rethrow the exception to be caught by the main try-catch block
-            throw new Exception("Backup operation failed: " . $e->getMessage(), 0, $e);
-        }
+        });
     }
 
     /**
@@ -173,43 +219,6 @@ class RunTenantBackupJob implements ShouldQueue
     }
 
     /**
-     * Send success callback with backup details.
-     */
-    private function sendSuccessCallback(BackupEventSubscriber $subscriber, string $link): void
-    {
-        if (empty($link)) {
-            $subscriber->sendCallback('error', [
-                'filename' => $this->backupName,
-                'status' => 'Failed to generate link',
-            ]);
-        } else {
-            $subscriber->sendCallback('success', [
-                'filename' => $this->backupName,
-                'path' => $link,
-                'status' => 'success',
-            ]);
-        }
-    }
-
-    /**
-     * Handle backup failure by logging and sending error callback.
-     * @throws Exception
-     */
-    private function handleBackupFailure(Exception $e): void
-    {
-        LogService::logException($e);
-
-        $subscriber = new BackupEventSubscriber();
-        $subscriber->sendCallback('error', [
-            'backup_id' => $this->backupId,
-            'message' => $e->getMessage(),
-            'filename' => $this->backupName,
-        ]);
-
-        throw new Exception($e->getMessage(), $e->getCode(), $e);
-    }
-
-    /**
      * Get the storage driver from configuration.
      */
     private function getDriver(): string
@@ -225,6 +234,58 @@ class RunTenantBackupJob implements ShouldQueue
     {
         if (!in_array($driver, self::SUPPORTED_DRIVERS, true)) {
             throw new Exception("Unsupported storage driver: {$driver}");
+        }
+    }
+
+    /**
+     * Envoie le statut au serveur de contrôle.
+     */
+    private function sendCallback(string $status, array $data = [])
+    {
+        $backupId = $data['backup_id'] ;
+        if (!$backupId) {
+            LogService::logException(new \Exception("Unable to send backup callback: backup_id not found."));
+            return false;
+        }
+        $filename = $status === "success" ? $data['filename'] : null;
+        $path = $status === "success" ? $data['path'] : null;
+        $message = $data['message'] ?? null;
+        $driver = $data['driver'] ?? null;
+
+        try {
+            $apiToken = env('INTERNAL_API_TOKEN');
+            $callbackUrl = config('backup.callback_url');
+
+            if (empty($apiToken) || empty($callbackUrl)) {
+                LogService::logException(new \Exception("Missing API token or callback URL for backup callback"));
+                return false;
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiToken,
+            ])->post($callbackUrl, [
+                'backup_id' => $backupId,
+                'status' => $status,
+                'filename' => $filename,
+                'path' => $path,
+                'message' => $message,
+                'driver' => $driver,
+            ]);
+
+            if (!$response->successful()) {
+                LogService::logException(new \Exception("Backup callback failed with status: " . $response->status()));
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            LogService::logException($e, [
+                'message' => 'Failed to send backup callback to Gero Control',
+                'backup_id' => $backupId,
+                'status' => $status,
+                'filename' => $filename,
+            ]);
+            return false;
         }
     }
 }

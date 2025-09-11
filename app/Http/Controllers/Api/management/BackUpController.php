@@ -7,7 +7,7 @@ use App\Jobs\RunTenantBackupJob;
 use App\Models\Tenant;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 
 class BackUpController extends Controller
 {
@@ -60,5 +60,14 @@ class BackUpController extends Controller
         return response()->json([
             'results' => $results,
         ]);
+    }
+
+
+    public function download($filename)
+    {
+        $localBackupExists = Storage::disk('local_storage')->exists($filename);
+        if ($localBackupExists) {
+            return Storage::disk('local_storage')->download($filename);
+        }
     }
 }

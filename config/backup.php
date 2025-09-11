@@ -153,6 +153,7 @@ return [
             'disks' => [
                 'google_storage', // For Google Drive
                 'sftp_storage', // For SFTP
+                'local_storage', // For local storage
             ],
         ],
 
