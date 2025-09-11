@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Session;
@@ -183,6 +184,8 @@ class VenteController extends Controller
             }
             ReferenceService::incrementCompteur($type);
             DB::commit();
+            $o_vente->refresh();
+
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
@@ -192,6 +195,7 @@ class VenteController extends Controller
                     $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
+
             // ------------------ ### Response ### ------------------
             $repsonse = ['message' => $o_vente->reference . ' ajoutée avec succès ! ', 'template' => $template_rendered ?? null];
             return response($repsonse, 200);
@@ -366,6 +370,10 @@ class VenteController extends Controller
             $paiement['i_date_paiement'] = now()->format('d/m/Y');
             PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             ReferenceService::incrementCompteur($type);
+            DB::commit();
+
+            $o_vente->refresh();
+
             // ------------------ ### Receipt ### ------------------
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
@@ -375,7 +383,7 @@ class VenteController extends Controller
                     $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
-            DB::commit();
+
             // ------------------ ### Response ### ------------------
             $repsonse = [
                 'message' => $o_vente->reference . ' ajoutée avec succès ! ',
@@ -426,8 +434,10 @@ class VenteController extends Controller
             $paiement = $request->get('paiement');
             $paiement['i_date_paiement'] = now()->format('d/m/Y');
             PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
-
+            DB::commit();
             // ------------------ ### Receipt ### ------------------
+            $o_vente->refresh();
+
             if (PosService::getValue('ticket')) {
                 $template = PosService::getValue('ticket_template');
                 if (PosService::getValue('double_ticket_template')) {
@@ -436,7 +446,7 @@ class VenteController extends Controller
                     $template_rendered = view('documents.ventes.receipt', compact('o_vente', 'template'))->render();
                 }
             }
-            DB::commit();
+
             // ------------------ ### Response ### ------------------
             $repsonse = [
                 'message' => 'Paiement ajouté avec succès à ' . $o_vente->reference . ' !',

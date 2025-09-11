@@ -249,6 +249,7 @@ function PosClassic() {
                                 confirmButton: "btn btn-lg btn-soft-success mx-2",
                             },
                         });
+
                         resetAll();
                         if (response.data.template != null) {
                             PrintElem(response.data.template);
