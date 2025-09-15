@@ -183,7 +183,7 @@
                                     </tr>
                                 @endforeach
                                 <tr class="fw-bold bg-light">
-                                    <td colspan="8" >Total des ventes</td>
+                                    <td colspan="9" >Total des paiements</td>
                                     <td colspan="2" class="text-end">{{ number_format($cr['total_paiements'] ?? 0, 2, ',', ' ') }}</td>
                                 </tr>
                                 </tbody>
@@ -196,57 +196,62 @@
             </div>
 
             {{-- Trésorerie (alignée POS Parfum) --}}
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                    <tr>
-                        <th>Description</th>
-                        <th class="text-end">Jour</th>
-                        <th class="text-end">Créance</th>
-                        <th class="text-end">Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Total ventes</td>
-                        <td colspan="2"></td>
-                        <td class="text-end">{{ number_format($tr['total_vente_jour'] ?? 0, 2, ',', ' ') }}</td>
-                    </tr>
-                    <tr>
-                        <td>Espèces</td>
-                        <td class="text-end">{{ number_format($tr['total_espece_jour'] ?? 0, 2, ',', ' ') }}</td>
-                        <td class="text-end">{{ number_format($tr['total_espece_creance'] ?? 0, 2, ',', ' ') }}</td>
-                        <td class="text-end">{{ number_format($tr['total_espece'] ?? 0, 2, ',', ' ') }}</td>
-                    </tr>
-                    <tr>
-                        <td>Chèques</td>
-                        <td class="text-end">{{ number_format($tr['total_cheque_jour'] ?? 0, 2, ',', ' ') }}</td>
-                        <td class="text-end">{{ number_format($tr['total_cheque_creance'] ?? 0, 2, ',', ' ') }}</td>
-                        <td class="text-end">{{ number_format($tr['total_cheque'] ?? 0, 2, ',', ' ') }}</td>
-                    </tr>
 
-                    <tr>
-                        <td>LCN</td>
-                        <td class="text-end">{{ number_format($tr['total_lcn_jour'] ?? 0, 2, ',', ' ') }}</td>
-                        <td class="text-end">{{ number_format($tr['total_lcn_creance'] ?? 0, 2, ',', ' ') }}</td>
-                        <td class="text-end">{{ number_format($tr['total_lcn'] ?? 0, 2, ',', ' ') }}</td>
-                    </tr>
-                    <tr>
-                        <td>Dépenses</td>
-                        <td colspan="2"></td>
-                        <td class="text-end text-danger">{{ number_format($tr['total_depenses'] ?? 0, 2, ',', ' ') }}</td>
-                    </tr>
-                    <tr class="fw-bold table-info">
-                        <td>Reste en caisse</td>
-                        <td colspan="2"></td>
-                        <td class="text-end {{ ($tr['reste_en_caisse'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
-                            {{ number_format($tr['reste_en_caisse'] ?? 0, 2, ',', ' ') }}
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="card mb-3">
+                <div class="card-header"><strong>Trésorerie</strong></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-end">Jour</th>
+                                <th class="text-end">Créance</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Total ventes</td>
+                                <td colspan="2"></td>
+                                <td class="text-end">{{ number_format($tr['total_vente_jour'] ?? 0, 2, ',', ' ') }}</td>
+                            </tr>
+                            <tr>
+                                <td>Espèces</td>
+                                <td class="text-end">{{ number_format($tr['total_espece_jour'] ?? 0, 2, ',', ' ') }}</td>
+                                <td class="text-end">{{ number_format($tr['total_espece_creance'] ?? 0, 2, ',', ' ') }}</td>
+                                <td class="text-end">{{ number_format($tr['total_espece'] ?? 0, 2, ',', ' ') }}</td>
+                            </tr>
+                            <tr>
+                                <td>Chèques</td>
+                                <td class="text-end">{{ number_format($tr['total_cheque_jour'] ?? 0, 2, ',', ' ') }}</td>
+                                <td class="text-end">{{ number_format($tr['total_cheque_creance'] ?? 0, 2, ',', ' ') }}</td>
+                                <td class="text-end">{{ number_format($tr['total_cheque'] ?? 0, 2, ',', ' ') }}</td>
+                            </tr>
+
+                            <tr>
+                                <td>LCN</td>
+                                <td class="text-end">{{ number_format($tr['total_lcn_jour'] ?? 0, 2, ',', ' ') }}</td>
+                                <td class="text-end">{{ number_format($tr['total_lcn_creance'] ?? 0, 2, ',', ' ') }}</td>
+                                <td class="text-end">{{ number_format($tr['total_lcn'] ?? 0, 2, ',', ' ') }}</td>
+                            </tr>
+                            <tr>
+                                <td>Dépenses</td>
+                                <td colspan="2"></td>
+                                <td class="text-end text-danger">{{ number_format($tr['total_depenses'] ?? 0, 2, ',', ' ') }}</td>
+                            </tr>
+                            <tr class="fw-bold table-info">
+                                <td>Reste en caisse</td>
+                                <td colspan="2"></td>
+                                <td class="text-end {{ ($tr['reste_en_caisse'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
+                                    {{ number_format($tr['reste_en_caisse'] ?? 0, 2, ',', ' ') }}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
 
-        </div>
-    </div>
 @endsection

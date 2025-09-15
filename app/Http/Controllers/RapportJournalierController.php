@@ -244,7 +244,7 @@ class RapportJournalierController extends Controller
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
             })->join('clients', 'ventes.client_id', '=', 'clients.id')
             ->join('magasins', 'magasins.id', '=', 'ventes.magasin_id')
-            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
+            ->where('ventes.date_emission', '<', $date)
             ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
             ->select(
                 'ventes.reference',
