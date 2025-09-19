@@ -16,7 +16,6 @@ use App\Models\Tag;
 use App\Models\TransactionStock;
 use App\Models\Transfert;
 use App\Models\Vente;
-use App\Services\MonnaieService;
 use App\Services\PosService;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
