@@ -326,6 +326,14 @@
                                                                 <td>Tableau des articles</td>
                                                             </tr>
                                                             <tr>
+                                                                <td><code>[Tableau:ref,nom,qte,prix,total]</code></td>
+                                                                <td>
+                                                                    Personnaliser les colonnes du tableau d'articles (ordre inclus).<br>
+                                                                    Séparez les colonnes par une virgule ou un | (ex: <code>[Tableau:ref|nom|qte|prix|total]</code>).<br>
+                                                                    Colonnes disponibles: <code>art</code> (Réf | Article), <code>ref</code>, <code>nom</code>, <code>qte</code>, <code>prix</code>, <code>reduction</code>, <code>tva</code>, <code>total</code>.
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <td><code>[Reference]</code></td>
                                                                 <td>Référence du document de vente</td>
                                                             </tr>
@@ -340,6 +348,10 @@
                                                             <tr>
                                                                 <td><code>[Total_HT]</code></td>
                                                                 <td>Le total HT de vente</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><code>[Total_Reduction]</code></td>
+                                                                <td>Le total des réductions appliquées</td>
                                                             </tr>
                                                             <tr>
                                                                 <td><code>[Total_TVA]</code></td>

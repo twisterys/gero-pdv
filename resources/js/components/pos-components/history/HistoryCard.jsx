@@ -21,20 +21,22 @@ export const HistoryCard = ({ item, setHistory }) => {
     }
     return (
         <a
-            className="col-12"
+            className="col-12 mb-3"
             key={item.id}
             data-bs-dismiss="offcanvas"
+            style={{cursor:'pointer'}}
+            onClick={() => {
+                setHistory(item);
+                setTimeout(() => {
+                    $("#history-modal").modal("show");
+                }, 500);
+            }}
         >
-            <div className="card py-0 border flex-row">
-                <div className="card-body py-2"
-                     onClick={() => {
-                         setHistory(item);
-                         setTimeout(() => {
-                             $("#history-modal").modal("show");
-                         }, 500);
-                     }}>
+            <div className="card py-0 border shadow-sm flex-row mb-0">
+                <div className="card-body py-2 "
+                     >
                     <div className="d-flex justify-content-between align-items-center">
-                        <h5 className="text-black-50 col-4 m-0">{item.reference}</h5>
+                        <h5 className="text-black-50 col-4 m-0">{item.reference} ({item.client_nom}) </h5>
                         <h5 className="text-black-50 col-4 m-0">{item.time}</h5>
                         <h5 className="m-0 col-4 text-end">{item.total}</h5>
                     </div>
