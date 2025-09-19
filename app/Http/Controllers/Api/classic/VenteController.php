@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Client;
 use App\Models\Compte;
 use App\Models\Depense;
+use App\Models\Magasin;
 use App\Models\PosSession;
 use App\Models\Vente;
 use App\Models\VenteLigne;
@@ -169,7 +170,9 @@ class VenteController extends Controller
                     'solde' => $vente_ttc,
                 ]);
             }
-            $o_compte = Compte::where('principal', 1)->first() ?? Compte::first();
+            $magasin = Magasin::where('id', $o_pos_session->magasin_id )->first();
+            $o_compte = ($magasin && $magasin->compte_id) ? Compte::where('id', $magasin->compte_id)->first() : Compte::first();
+
             $paiement_data = [
                 'i_date_paiement' => now()->format('d/m/Y'),
                 'i_compte_id' => $o_compte->id,

@@ -31,6 +31,18 @@
                 </select>
             </div>
 
+            <div class="col-12 mb-3">
+                <label class="form-label required" for="compte_id">Caisse par défaut</label>
+                <select class="form-select" id="compte_id" name="compte_id">
+                    @foreach($comptes as $compte)
+                        <option value="{{ $compte->id }}" {{ (isset($compte_id) && $compte_id == $compte->id) ? 'selected' : '' }}>
+                            {{ $compte->nom }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+
 
         </div>
     </div>

@@ -27,6 +27,7 @@ class Magasin extends Model
         'nom',
         'adresse',
         'type_local',
+        'compte_id',
     ];
 
     public function ventes(){
@@ -37,4 +38,11 @@ class Magasin extends Model
         $type = PosService::getValue('type_retour');
         return $this->hasMany(Vente::class)->whereNotNull('pos_session_id')->where('type_document',$type);
     }
+
+    public function compte()
+    {
+        return $this->belongsTo(Compte::class, 'compte_id');
+    }
+
+
 }
