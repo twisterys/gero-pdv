@@ -1,75 +1,3 @@
-// Variables
-
-//
-// custom-variables
-//
-
-// Vertical Sidebar - Default Light
-$sidebar-bg: #ffffff;
-$sidebar-menu-item-color: #6c757d;
-$sidebar-menu-sub-item-color: #6c757d;
-$sidebar-menu-item-icon-color: #495057;
-$sidebar-menu-item-hover-color: $green;
-$sidebar-menu-item-active-color: $green;
-$sidebar-width: 240px;
-$sidebar-collapsed-width: 70px;
-$sidebar-width-sm: 160px;
-
-// Vertical Sidebar - Dark
-$sidebar-dark-bg: #1c1f31; //2c313a
-$sidebar-dark-menu-item-color: #8f93a4;
-$sidebar-dark-menu-sub-item-color: #8f93a4;
-$sidebar-dark-menu-item-icon-color: #8f93a4;
-$sidebar-dark-menu-item-hover-color: #ffffff;
-$sidebar-dark-menu-item-active-color: #3b5461;
-$sidebar-menu-title-color: #3b5461 ;
-
-// Topbar - Deafult Light
-$header-height: 70px;
-$header-bg: #ffffff;
-$header-item-color: #6c757d;
-
-// Topbar - Dark
-$header-dark-bg: #3b5461;
-$header-dark-item-color: rgba($white, 0.6);
-
-// Topbar Search
-$topbar-search-bg: #f3f3f9;
-
-// Footer
-$footer-height: 60px;
-$footer-bg: #ffffff;
-$footer-color: #74788d;
-$footer-border: #dee2e6;
-
-// Horizontal nav
-$topnav-bg: #fff;
-
-// Right Sidebar
-$rightbar-width: 280px;
-
-// Brand
-$navbar-brand-box-width: 240px;
-
-// Display
-$display-none: none;
-$display-block: block;
-
-// Boxed layout width
-$boxed-layout-width: 1300px;
-$boxed-body-bg: #f2f5f7;
-
-// Font Weight
-$font-weight-medium: 500;
-$font-weight-semibold: 600;
-$card-title-desc: #98a6ad;
-
-// apex charts
-$apex-grid-color: #f8f9fa;
-
-// close dark
-$btn-close-bg-dark:          url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$black}'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
-
 
 // Variables
 //
@@ -105,36 +33,47 @@ $grays: (
 );
 // fusv-enable
 
-$blue: #3b5461;
-$indigo: #564ab1;
-$purple: #777edd;
-$pink: #ff679b;
-$red: #f1556c;
-$orange: #f1734f;
-$yellow: #f9bc0b;
-$green: #0acf97;
-$teal: #050505;
-$cyan: #2d7bf4;
+// Brand oranges
+$orange-primary: #ea580c; // 🔑 professional orange (main brand, top bar, buttons)
+$orange-accent: #f97316;  // accent/hover
+$orange-light:  #fb923c;  // lighter shade for backgrounds or subtle elements
 
-// scss-docs-start colors-map
+// Supporting palette
+$blue: #2563eb;   // info
+$indigo: #4f46e5; // secondary accent
+$purple: #9333ea; // creative highlight
+$pink: #ec4899;   // softer warm accent
+$red: #dc2626;    // danger (darker, professional red)
+$yellow: #f59e0b; // muted yellow (warning)
+$green: #16a34a;  // success (balanced green)
+$teal: #0d9488;   // teal accent
+$cyan: #0891b2;   // info alt
+
+// Neutral grays (stable, corporate feel)
+$white: #ffffff;
+$gray-200: #e5e7eb;
+$gray-600: #4b5563;
+$gray-800: #1f2937;
+
+// Colors map
 $colors: (
-  "blue": $blue,
-  "indigo": $indigo,
-  "purple": $purple,
-  "pink": $pink,
-  "red": $red,
-  "orange": $orange,
-  "yellow": $yellow,
-  "green": $green,
-  "teal": $teal,
-  "cyan": $cyan,
-  "white": $white,
-  "gray": $gray-600,
-  "gray-dark": $gray-800,
+    "orange": $orange-primary,
+    "blue": $blue,
+    "indigo": $indigo,
+    "purple": $purple,
+    "pink": $pink,
+    "red": $red,
+    "yellow": $yellow,
+    "green": $green,
+    "teal": $teal,
+    "cyan": $cyan,
+    "white": $white,
+    "gray": $gray-600,
+    "gray-dark": $gray-800,
 );
-// scss-docs-end colors-map
 
-$primary: $blue;
+// Brand theme
+$primary: $orange-primary;  // main professional orange
 $secondary: $gray-600;
 $success: $green;
 $info: $cyan;
@@ -144,18 +83,17 @@ $purple: $purple;
 $light: $gray-200;
 $dark: $gray-800;
 
-// scss-docs-start theme-colors-map
 $theme-colors: (
-  "primary": $primary,
-  "secondary": $secondary,
-  "success": $success,
-  "info": $info,
-  "warning": $warning,
-  "danger": $danger,
-  "purple": $purple,
-  "pink": $pink,
-  "light": $light,
-  "dark": $dark,
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "purple": $purple,
+    "pink": $pink,
+    "light": $light,
+    "dark": $dark,
 );
 // scss-docs-end theme-colors-map
 
@@ -1427,3 +1365,77 @@ $kbd-color: $white;
 $kbd-bg: $gray-900;
 
 $pre-color: $gray-900;
+
+
+
+//
+// custom-variables
+//
+
+// Vertical Sidebar - Default Light
+$sidebar-bg: #ffffff;
+$sidebar-menu-item-color: #6c757d;
+$sidebar-menu-sub-item-color: #6c757d;
+$sidebar-menu-item-icon-color: #495057;
+$sidebar-menu-item-hover-color: $primary;
+$sidebar-menu-item-active-color: $primary;
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 70px;
+$sidebar-width-sm: 160px;
+
+// Vertical Sidebar - Dark
+$sidebar-dark-bg: #1c1f31; //2c313a
+$sidebar-dark-menu-item-color: #8f93a4;
+$sidebar-dark-menu-sub-item-color: #8f93a4;
+$sidebar-dark-menu-item-icon-color: #8f93a4;
+$sidebar-dark-menu-item-hover-color: #ffffff;
+$sidebar-dark-menu-item-active-color: #3b5461;
+$sidebar-menu-title-color: #3b5461 ;
+
+// Topbar - Deafult Light
+$header-height: 70px;
+$header-bg: #ffffff;
+$header-item-color: #6c757d;
+
+// Topbar - Dark
+$header-dark-bg: $primary;
+$header-dark-item-color: rgba($white, 0.6);
+
+// Topbar Search
+$topbar-search-bg: #f3f3f9;
+
+// Footer
+$footer-height: 60px;
+$footer-bg: #ffffff;
+$footer-color: #74788d;
+$footer-border: #dee2e6;
+
+// Horizontal nav
+$topnav-bg: #fff;
+
+// Right Sidebar
+$rightbar-width: 280px;
+
+// Brand
+$navbar-brand-box-width: 240px;
+
+// Display
+$display-none: none;
+$display-block: block;
+
+// Boxed layout width
+$boxed-layout-width: 1300px;
+$boxed-body-bg: #f2f5f7;
+
+// Font Weight
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$card-title-desc: #98a6ad;
+
+// apex charts
+$apex-grid-color: #f8f9fa;
+
+// close dark
+$btn-close-bg-dark:          url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$black}'><path d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/></svg>");
+
+

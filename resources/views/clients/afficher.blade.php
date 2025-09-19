@@ -124,7 +124,7 @@
                             <a class="nav-link active p-3" data-bs-toggle="tab" href="#ventes-impaye"
                                role="tab">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-file text-success me-3"></i>
+                                    <i class="fa fa-file me-3"></i>
                                     <h5 class="m-0">Ventes impayés ({{$o_client->ventesImpaye()->count()}})</h5>
                                 </div>
                             </a>
@@ -137,7 +137,7 @@
                                    href="#ventes-{{$type}}"
                                    role="tab">
                                     <div class="d-flex align-items-center">
-                                        <i class="fa fa-chart-line text-success me-3"></i>
+                                        <i class="fa fa-chart-line me-3"></i>
                                         <h5 class="m-0"> @lang('ventes.'.$type.'s')
                                             ({{$o_client->ventes()->where('type_document',$type)->whereRaw('Year(date_emission) = '.session()->get('exercice'))->count()}})</h5>
                                     </div>
@@ -148,7 +148,7 @@
                             <a class="nav-link  p-3" data-bs-toggle="tab" href="#contacts"
                                role="tab">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-users text-success me-3"></i>
+                                    <i class="fa fa-users me-3"></i>
                                     <h5 class="m-0">Contacts ({{$o_client->contacts()->count()}})</h5>
                                 </div>
                             </a>
@@ -157,7 +157,7 @@
                             <a class="nav-link  p-3" data-bs-toggle="tab" href="#events"
                                role="tab">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-users text-success me-3"></i>
+                                    <i class="fa fa-users me-3"></i>
                                     <h5 class="m-0">Activités ({{$o_client->events()->count()}})</h5>
                                 </div>
                             </a>

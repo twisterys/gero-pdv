@@ -173,7 +173,7 @@
 
 
                         <h5>Déscription :</h5>
-                        <div class="bg-soft-light text-primary rounded w-100 h-100 p-3">
+                        <div class="bg-soft-light rounded w-100 h-100 p-3">
                             {{$o_article->description ?? 'Acune déscription'}}
                         </div>
                     </div>

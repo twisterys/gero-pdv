@@ -239,7 +239,7 @@
                             <a class="nav-link active p-3" data-bs-toggle="tab" href="#articles"
                                role="tab">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-boxes text-success me-3"></i>
+                                    <i class="fa fa-boxes me-3"></i>
                                     <h5 class="m-0">Articles</h5>
                                 </div>
                             </a>
@@ -249,7 +249,7 @@
                                 <a class="nav-link p-3" data-bs-toggle="tab" href="#paiements"
                                    role="tab">
                                     <div class="d-flex align-items-center">
-                                        <i class="fa fa-cash-register text-success me-3"></i>
+                                        <i class="fa fa-cash-register me-3"></i>
                                         <h5 class="m-0">Paiements ({{$o_achat->paiements()->count()}})</h5>
                                     </div>
                                 </a>
@@ -261,7 +261,7 @@
                                 <a class="nav-link  p-3" data-bs-toggle="tab" href="#pieces_jointes"
                                    role="tab">
                                     <div class="d-flex align-items-center">
-                                        <i class="fa fa-paperclip text-success me-3"></i>
+                                        <i class="fa fa-paperclip me-3"></i>
                                         <h5 class="m-0">Pièces jointes ({{$o_achat->piecesJointes()->count()}})
                                         </h5>
                                     </div>
@@ -339,7 +339,7 @@
                             @if ($o_achat->note)
                                 <div class="col-12 pt-2">
                                     <div class="d-flex align-items-center">
-                                        <i class="fa fa-pen text-success me-3"></i>
+                                        <i class="fa fa-pen text-primary me-3"></i>
                                         <h5 class="m-0">Note</h5>
                                     </div>
                                     <hr class="border">
