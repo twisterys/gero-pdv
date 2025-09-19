@@ -46,6 +46,9 @@ return [
     'vente.historique'=>'Historique',
     'vente.relancer'=>'Relancer',
     'vente.date'=>'Saisie des dates',
+    'vente.controler'=>'Contrôler',
+    'vente.piece_jointe_attacher'=>'Attacher une piece jointe',
+    'vente.piece_jointe_supprimer'=>'Supprimer une piece jointe',
     /**
      * Permissions de model achat
      */
@@ -209,4 +212,16 @@ return [
     'rebut.sauvegarder'=>'Ajout',
     'rebut.afficher'=>'Affichage',
     'rebut.rollback'=>'Rollback',
+
+
+    /**
+     * Permissions des promesses
+     */
+
+    'promesse'=>'Gestion des promesses',
+    'promesse.liste'=>'Liste',
+    'promesse.sauvegarder'=>'Ajout',
+    'promesse.supprimer'=>'Suppression',
+    'promesse.respecter'=>'Respecter',
+    'promesse.rompre'=>'Rompre',
 ];

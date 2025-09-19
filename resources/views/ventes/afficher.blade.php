@@ -28,6 +28,7 @@
                                 <button class="btn btn-primary actions-mobile" ><i class="fa fa-bars"></i></button>
                             </div>
                             <div class="pull-right d-md-block flex-wrap gap-md-0 gap-2 actions-target-mobile">
+                                @can('vente.controler')
                                 @if($is_controled && $o_vente->is_controled)
                                     <button class="btn btn-soft-dark mx-1" disabled>
                                         <i class="fa fa-check-circle"></i> Contrôlée
@@ -38,30 +39,46 @@
                                         <i class="fa fa-check-circle"></i> Contrôler
                                     </button>
                                 @endif
+                                @endcan
 
-
-
+                                @can('vente.mettre_a_jour')
+                                @if($o_vente->statut === 'brouillon' )
                                 <a @if($o_vente->statut !== 'validé')href="{{route('ventes.modifier',[$type,$o_vente->id])}}"
                                    @endif class="btn btn-soft-warning mx-1 @if($o_vente->statut === 'validé') disabled @endif "><i
                                         class="fa fa-edit"></i> Modifier </a>
+                                @endif
+
+                                @endcan
+
                                 @if($o_vente->statut === 'brouillon')
+                                    @can('vente.valider')
                                     <button data-href="{{route('ventes.validation_modal',[$type,$o_vente->id])}}"
                                             id="validation-btn" class="btn btn-soft-success mx-1"><i
                                             class="fa fa-check"></i> Valider
                                     </button>
+                                    @endcan
                                 @endif
                                 @if($o_vente->statut === 'validé')
+                                    @can('vente.devalider')
                                     <button data-href="{{route('ventes.devalidation_modal',[$type,$o_vente->id])}}"
                                             id="devalidation-btn" class="btn btn-soft-secondary mx-1"><i
                                             class="fa fa-times"></i> Dévalider
                                     </button>
+                                    @endcan
                                 @endif
+                                    @can('vente.telecharger')
                                 <a target="__blank" href="{{route('ventes.telecharger',[$type,$o_vente->id])}}"
                                    class="btn btn-soft-danger mx-1"><i class="fa fa-file-pdf"></i> Télécharger </a>
-                                <button id="conversion-btn"
-                                        data-href="{{route('ventes.conversion_modal',[$type,$o_vente->id])}}"
-                                        class="btn btn-soft-purple mx-1"><i class="fa fa-sync-alt"></i> Convertir
-                                </button>
+                                    @endcan
+                                    @if($o_vente->statut === 'validé')
+                                        @can('vente.convertir')
+                                        <button id="conversion-btn"
+                                                data-href="{{route('ventes.conversion_modal',[$type,$o_vente->id])}}"
+                                                class="btn btn-soft-purple mx-1"><i class="fa fa-sync-alt"></i> Convertir
+                                        </button>
+                                        @endcan
+                                    @endif
+
                                 @if($o_vente->type_document === 'dv')
                                     <button id="statut-com-btn"
                                             data-href="{{route('ventes.statut_com_modal',[$type,$o_vente->id])}}"
@@ -71,26 +88,31 @@
                                     </button>
                                 @endif
 
-                                @if(in_array($type,$payabale_types))
+                                @if(in_array($type,$payabale_types) && $o_vente->statut_paiement !== 'paye')
+                                    @can('promesse.sauvegarder')
                                     <button id="promesse-btn"
                                             @if($o_vente->solde != "0") data-href="{{route('ventes.promesse_modal',[$type,$o_vente->id])}}"
                                             @else disabled @endif class="btn btn-soft-secondary mx-1">
                                         <i class="fa fa-piggy-bank"></i>
                                         Promesse
                                     </button>
+                                    @endcan
+                                    @can('paiement.vente')
                                     <button id="paiement-btn"
                                             @if($o_vente->solde != '0' )data-href="{{route('ventes.paiement_modal',[$type,$o_vente->id])}}"
                                             @else disabled @endif class="btn btn-soft-info mx-1"><i
                                             class="fa fa-cash-register"></i> Payer
                                     </button>
+                                        @endcan
 
                                 @endif
 
+                                @can('vente.cloner')
                                 <button id="clone-btn"
                                         data-href="{{route('ventes.clone_modal',[$type,$o_vente->id])}}"
                                         class="btn btn-soft-primary mx-1"><i class="fa fa-clone"></i> Cloner
                                 </button>
-
+                                @endcan
 {{--                                <form method="post" action="{{route('ventes.cloner',[$type,$o_vente->id])}}"--}}
 {{--                                      class="d-inline">--}}
 {{--                                    @csrf--}}
@@ -100,6 +122,7 @@
 {{--                                </form>--}}
 
                                 <div class="dropdown d-inline-block">
+                                    @can('vente.historique')
                                     <button data-href="{{ route('ventes.history_modal', [$type, $o_vente->id]) }}"
                                             id="history-btn"
                                             class="btn right-bar-toggle waves-effect btn-soft-info mx-1"
@@ -110,6 +133,7 @@
                                             onclick="loadData(this)">
                                         <i class="fas fa-history"></i> Historique
                                     </button>
+                                    @endcan
                                 </div>
                                 @if($o_vente->type_document ==='av')
                                     <button class="btn btn-warning" data-bs-target="#solde-modal"
@@ -117,6 +141,7 @@
                                         <i class="fa fa-money-bill"></i> Solder une facture
                                     </button>
                                 @endif
+                                @can('vente.supprimer')
                                 @if($o_vente->statut !== 'validé')
                                     <button id="supprimer-btn"
                                             data-url="{{route('ventes.supprimer',[$type,$o_vente->id])}}"
@@ -124,7 +149,9 @@
                                             class="fa fa-trash-alt"></i> Supprimer
                                     </button>
                                 @endif
+                                @endcan
 
+                                @can('vente.relancer')
                                 @if(in_array($type, ['dv', 'fa', 'fp'])
                                             && $o_vente->solde > 0
                                             && $o_vente->statut === "validé"
@@ -135,6 +162,7 @@
                                         class="fa fa-paper-plane"></i> Relancer
                                     </button>
                                 @endif
+                                @endcan
                             </div>
                         </div>
                         <hr class="border">
@@ -350,6 +378,7 @@
                                     </div>
                                 </a>
                             </li>
+                            @can('promesse.liste')
                             <li class="nav-item">
                                 <a class="nav-link p-3" data-bs-toggle="tab" href="#promesses"
                                    role="tab">
@@ -359,6 +388,7 @@
                                     </div>
                                 </a>
                             </li>
+                            @endcan
                         @endif
                         @if($globals->pieces_jointes)
                             <li class="nav-item">
@@ -532,6 +562,7 @@
                                    </div>
                                 </div>
                             </div>
+                            @can('promesse.liste')
                             <div class="tab-pane p-3" id="promesses" role="tabpanel">
                                 <div class="col-12 pt-2">
                                     <hr class="border">
@@ -555,17 +586,22 @@
                                                     <td style="width: 1%;white-space: nowrap" >
 
                                                         @if($promesse->statut === null)
+                                                            @can('promesse.respecter')
                                                             <button type="button"
                                                                     data-url="{{route('promesse.respecter',$promesse->id)}}"
                                                                     class="btn btn-soft-success btn-sm __promesse_respecter-btn" data-bs-toggle="tooltip" data-bs-title="Réspécter">
                                                                 <i
                                                                     class="fa fa-check"></i></button>
+                                                            @endcan
+                                                        @can('promesse.rompre')
                                                             <button type="button" data-url="{{route('promesse.rompre',$promesse->id)}}"
                                                                     class="btn btn-soft-warning btn-sm __promesse_rompre-btn" data-bs-toggle="tooltip" data-bs-title="Rompre">
                                                                 <i
                                                                     class="fa fa-times"></i></button>
 
+                                                            @endcan
                                                         @endif
+                                                        @can('promesse.supprimer')
                                                         <form method="post"
                                                               action="{{route('promesse.supprimer',$promesse->id)}}"
                                                               class="d-inline">
@@ -576,6 +612,7 @@
                                                                 <i
                                                                     class="fa fa-trash"></i></button>
                                                         </form>
+                                                            @endcan
                                                     </td>
                                                 </tr>
                                             @empty
@@ -589,14 +626,17 @@
                                     </div>
                                 </div>
                             </div>
+                            @endcan
                         @endif
                         @if($globals->pieces_jointes)
                             <div class="tab-pane p-3" id="pieces_jointes" role="tabpanel">
                                 <div class="col-12 pt-2">
                                     <div class="d-flex justify-content-end mb-2">
+                                        @can('vente.piece_jointe_attacher')
                                         <button class="btn btn-soft-success" data-bs-toggle="modal" data-bs-target="#pieceJointeModal">+
                                             Attacher une pièce jointe
                                         </button>
+                                            @endcan
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-bordered">
@@ -616,6 +656,7 @@
                                                             <i class="fa fa-eye"></i>
                                                         </a>
 
+                                                        @can('vente.piece_jointe_supprimer')
                                                         <form method="post"
                                                               action="{{route('ventes.supprimer.piece_jointe',[$type,$piece->id])}}"
                                                               class="d-inline">
@@ -626,6 +667,7 @@
                                                                 <i
                                                                     class="fa fa-trash"></i></button>
                                                         </form>
+                                                        @endcan
                                                     </td>
                                                 </tr>
                                             @empty
