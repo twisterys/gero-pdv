@@ -90,14 +90,14 @@ type TabKey = 'ventes' | 'retours' | 'depenses' | 'rebuts';
 
 
 
-const ItemRow: React.FC<{ item: any; onClick?: () => void; onPrint?: () => void; printing?: boolean }> = ({item, onClick, onPrint, printing}) => {
+const ItemRow: React.FC<{ item: Vente|any; onClick?: () => void; onPrint?: () => void; printing?: boolean }> = ({item, onClick, onPrint, printing}) => {
     return (
         <div
             onClick={onClick}
             className="flex items-center justify-between py-2 border-b border-gray-100 text-sm hover:bg-gray-50 rounded-md px-2 cursor-pointer"
         >
             <div className="flex flex-col">
-                <span className="font-medium text-[#3b5461]">{item.reference ?? '—'}</span>
+                <span className="font-medium text-[#3b5461]">{item.reference ?? '—'} {item.client_nom && `(${item.client_nom})`}</span>
                 <span className="text-gray-500">{item.time}</span>
             </div>
             <div className="flex items-center gap-2">
