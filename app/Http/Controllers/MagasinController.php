@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CategorieDepense;
+use App\Models\Compte;
 use App\Models\Magasin;
 use App\Services\LimiteService;
 use Illuminate\Support\Facades\DB;
@@ -17,8 +18,9 @@ class MagasinController extends Controller
     {
         $this->guard_custom(['parametres.magasins']);
         $reference = 'LC-' . Magasin::count()+1;
-        $magasins = Magasin::all();
-        return view("parametres.magasins.liste",compact('magasins', 'reference'));
+        $magasins = Magasin::with('compte')->get();
+        $comptes = Compte::all();
+        return view("parametres.magasins.liste", compact('magasins', 'reference', 'comptes'));
     }
 
     public function sauvegarder(Request $request)
@@ -32,6 +34,7 @@ class MagasinController extends Controller
             'nom' => 'required',
             'adresse' => 'required',
             'type_local' => 'required',
+            'compte_id' => 'required|exists:comptes,id'
         ];
 
         $validated = $request->validate($validationRules);
@@ -65,6 +68,7 @@ class MagasinController extends Controller
             'nom' => 'required',
             'adresse' => 'required',
             'type_local' => 'required',
+            'compte_id' => 'required|exists:comptes,id',
         ];
         $validated = $request->validate($validationRules);
         $o_magasin = Magasin::findOrFail($id);
@@ -79,12 +83,14 @@ class MagasinController extends Controller
         $this->guard_custom(['parametres.magasins']);
 
         $o_magasin = Magasin::where('id', $id)->first();
+        $comptes = Compte::all();
         if ($o_magasin) {
             $nom = $o_magasin->nom;
             $adresse = $o_magasin->adresse;
             $reference = $o_magasin->reference;
             $type_local = $o_magasin->type_local;
-            return view('parametres.magasins.modifier', compact('nom', 'reference', 'adresse', 'id', 'type_local'));
+            $compte_id = $o_magasin->compte_id;
+            return view('parametres.magasins.modifier', compact('comptes','nom', 'reference', 'adresse', 'id', 'type_local', 'compte_id'));
         }
         abort(404);
     }

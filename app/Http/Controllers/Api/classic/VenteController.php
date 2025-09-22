@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Client;
 use App\Models\Compte;
 use App\Models\Depense;
+use App\Models\Magasin;
 use App\Models\PosSession;
 use App\Models\Vente;
 use App\Models\VenteLigne;
@@ -22,10 +23,12 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Session;
+use Spatie\Activitylog\Models\Activity;
 
 class VenteController extends Controller
 {
@@ -169,7 +172,9 @@ class VenteController extends Controller
                     'solde' => $vente_ttc,
                 ]);
             }
-            $o_compte = Compte::where('principal', 1)->first() ?? Compte::first();
+            $magasin = Magasin::where('id', $o_pos_session->magasin_id )->first();
+            $o_compte = ($magasin && $magasin->compte_id) ? Compte::where('id', $magasin->compte_id)->first() : Compte::first();
+
             $paiement_data = [
                 'i_date_paiement' => now()->format('d/m/Y'),
                 'i_compte_id' => $o_compte->id,
@@ -184,6 +189,28 @@ class VenteController extends Controller
             }
             ReferenceService::incrementCompteur($type);
             DB::commit();
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Création')
+                ->withProperties([
+                    'subject_type' => Vente::class,
+                    'subject_id' => $o_vente->id,
+                    'subject_reference' => $o_vente->reference,
+                ])
+                ->log('Création de ' . __('ventes.' . $type) . ' ' . ($o_vente->reference ?? '-') . ' (POS)');
+
+            if (!$request->filled('credit')){
+                activity()
+                    ->causedBy(Auth::user())
+                    ->event('Paiement')
+                    ->withProperties([
+                        'subject_type' => Vente::class,
+                        'subject_id' => $o_vente->id,
+                        'subject_reference' => $o_vente->reference,
+                    ])
+                    ->log('Paiement du montant ' . number_format($paiement_data['i_montant'], 2, ',', ' ') . ' MAD (POS)');
+            }
+
             $o_vente->refresh();
 
             // ------------------ ### Receipt ### ------------------
@@ -372,6 +399,26 @@ class VenteController extends Controller
             ReferenceService::incrementCompteur($type);
             DB::commit();
 
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Création')
+                ->withProperties([
+                    'subject_type' => Vente::class,
+                    'subject_id' => $o_vente->id,
+                    'subject_reference' => $o_vente->reference,
+                ])
+                ->log('Création de ' . __('ventes.' . $type) . ' ' . ($o_vente->reference ?? '-') . ' (POS)');
+
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Paiement')
+                ->withProperties([
+                    'subject_type' => Vente::class,
+                    'subject_id' => $o_vente->id,
+                    'subject_reference' => $o_vente->reference,
+                ])
+                ->log('Paiement du montant ' . number_format($paiement['i_montant'], 2, ',', ' ') . ' MAD (POS)');
+
             $o_vente->refresh();
 
             // ------------------ ### Receipt ### ------------------
@@ -435,6 +482,15 @@ class VenteController extends Controller
             $paiement['i_date_paiement'] = now()->format('d/m/Y');
             PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             DB::commit();
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Paiement')
+                ->withProperties([
+                    'subject_type' => Vente::class,
+                    'subject_id' => $o_vente->id,
+                    'subject_reference' => $o_vente->reference,
+                ])
+                ->log('Paiement du montant ' . number_format($paiement['i_montant'], 2, ',', ' ') . ' MAD (POS)');
             // ------------------ ### Receipt ### ------------------
             $o_vente->refresh();
 

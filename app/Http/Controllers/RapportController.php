@@ -1111,4 +1111,68 @@ class RapportController extends Controller
 
         return view("rapports.annuel",compact('vente_ca','depense_ca_ht', 'depense_ca', 'first_day_of_the_year','cumulated_achat_creance','cumulated_vente_creance','vente_ca_ht','vente_recette', 'vente_creance', 'achat_creance', 'achat_recette', 'achat_ca', 'achat_ca_ht'));
     }
+
+
+    public function categorie_depense(Request $request)
+    {
+        $this->guard_custom(['rapport.*']);
+        $exercice_date = session()->get('exercice');
+        $date_picker_start = Carbon::now()->setYear($exercice_date)->firstOfYear()->format('d/m/Y');
+        $date_picker_end = Carbon::now()->setYear($exercice_date)->lastOfYear()->format('d/m/Y');
+
+        // Par défaut utiliser l'année complète
+        $range = [
+            Carbon::now()->setYear($exercice_date)->firstOfYear()->toDateString(),
+            Carbon::now()->setYear($exercice_date)->lastOfYear()->toDateString()
+        ];
+
+        // Si une date est fournie, l'utiliser
+        if ($request->has('i_date') && !empty($request->get('i_date'))) {
+            $selectedDateRange = $request->get('i_date');
+            $start_date = Carbon::createFromFormat('d/m/Y', trim(explode(' - ', $selectedDateRange)[0]))->toDateString();
+            $end_date = Carbon::createFromFormat('d/m/Y', trim(explode(' - ', $selectedDateRange)[1]))->toDateString();
+            $range = [$start_date, $end_date];
+        }
+
+        $depenses = \App\Models\Depense::with('categorie')
+            ->whereBetween('date_operation', $range)
+            ->get();
+
+        $grouped = [];
+        foreach ($depenses as $depense) {
+            $cat = $depense->categorie ? $depense->categorie->nom : 'Sans catégorie';
+            if (!isset($grouped[$cat])) {
+                $grouped[$cat] = [
+                    'total_ttc' => 0,
+                    'total_impot' => 0,
+                    'total_ht' => 0,
+                    'nombre_encaisse' => 0,
+                ];
+            }
+            $ttc = $depense->montant + ($depense->montant * ($depense->taxe ?? 0) / 100);
+            $impot = $depense->montant * ($depense->taxe ?? 0) / 100;
+            $grouped[$cat]['total_ttc'] += $ttc;
+            $grouped[$cat]['total_impot'] += $impot;
+            $grouped[$cat]['total_ht'] += $depense->montant;
+            if ($depense->statut_paiement === 'paye') {
+                $grouped[$cat]['nombre_encaisse'] += 1;
+            }
+        }
+
+        $total_ttc = array_sum(array_column($grouped, 'total_ttc'));
+        $chart_data = [];
+        foreach ($grouped as $cat => $data) {
+            $chart_data[$cat] = $total_ttc > 0 ? round($data['total_ttc'] * 100 / $total_ttc, 2) : 0;
+        }
+
+        $grouped = collect($grouped)->sortByDesc('total_ttc');
+        $chart_data = collect($chart_data);
+
+        return view('rapports.categorie_depense', compact('grouped', 'chart_data', 'date_picker_start', 'date_picker_end'));
+    }
+
+
+
+
 }
+

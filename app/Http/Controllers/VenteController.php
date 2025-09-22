@@ -917,7 +917,7 @@ class VenteController extends Controller
      */
     public function promesse(Request $request, string $type, int $id): Application|Response|\Illuminate\Contracts\Foundation\Application|ResponseFactory
     {
-        $this->guard_custom(['paiement.vente']);
+        $this->guard_custom(['promesse.sauvegarder']);
         $payable_modules = ModuleService::getPayabaleTypes();
         if (!in_array($type, $payable_modules)) {
             return response(__('ventes.' . $type) . " n'est pas payable !", 404);
@@ -1416,6 +1416,7 @@ class VenteController extends Controller
      */
     public function controle($type, $id)
     {
+        $this->guard_custom(['vente.controler']);
         try {
 
             $vente = Vente::findOrFail($id);
@@ -1449,7 +1450,7 @@ class VenteController extends Controller
 
     public function attacher_piece_jointe(Request $request, $type, $id)
     {
-        $this->guard_custom(['vente.modifier']);
+        $this->guard_custom(['vente.piece_jointe_attacher']);
         if (!GlobalSetting::first()->pieces_jointes) {
             abort(404);
         }
@@ -1500,6 +1501,8 @@ class VenteController extends Controller
 
 
     public function supprimer_piece_jointe($type, $id){
+        $this->guard_custom(['vente.piece_jointe_supprimer']);
+
         $o_piece_jointe = PieceJointe::findOrFail($id);
         if (!$o_piece_jointe) {
             abort(404);

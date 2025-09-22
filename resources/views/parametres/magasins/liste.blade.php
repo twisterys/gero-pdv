@@ -27,6 +27,7 @@
                         <tr>
                             <th>Référence</th>
                             <th>Nom</th>
+                            <th>Caisse par defaut</th>
                             {{--                <th>Adresse</th>--}}
                             <th>Type</th>
                             <th>Actif</th>
@@ -38,7 +39,7 @@
                             <tr>
                                 <th scope="row">{{ $magasin->reference }}</th>
                                 <td> {{ $magasin->nom }}   </td>
-                                {{--                    <td> {{ $magasin->adresse }}   </td>--}}
+                                <td> {{ $magasin->compte?->nom ?? '-' }} </td>                                {{--                    <td> {{ $magasin->adresse }}   </td>--}}
                                 <td>{{$magasin->type_local_name}}</td>
                                 <td>
 
@@ -102,6 +103,19 @@
                                     <option value="2">Dépôt seulement</option>
                                 </select>
                             </div>
+
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label required" for="compte_id">Caisse par défaut</label>
+                                <select class="form-select" id="compte_id" name="compte_id">
+                                    @foreach($comptes as $compte)
+                                        <option value="{{ $compte->id }}">
+                                            {{ $compte->nom }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
 
 
                         </div>
