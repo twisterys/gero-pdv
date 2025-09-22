@@ -116,67 +116,150 @@
 <body>
 
 @php
-    function lignes_table($o_vente){
+    function lignes_table($o_vente, $cols = null){
+        // Define allowed columns and their headers and cell renderers
+        $defaultCols = ['art','qte','prix','total'];
+        if (!$cols || !is_array($cols) || count($cols) === 0) {
+            $cols = $defaultCols;
+        }
+        // Normalize columns
+        $normalized = [];
+        foreach ($cols as $c) {
+            $c = strtolower(trim($c));
+            if ($c !== '') $normalized[] = $c;
+        }
+        $cols = $normalized;
+
+        // Map for headers and alignments
+        $headers = [
+            'art'        => ['label' => 'Art',     'align' => 'left'],
+            'ref'        => ['label' => 'Réf',     'align' => 'left'],
+            'nom'        => ['label' => 'Article', 'align' => 'left'],
+            'qte'        => ['label' => 'Qte',     'align' => 'center'],
+            'prix'       => ['label' => 'Prix',    'align' => 'right'],
+            'reduction'  => ['label' => 'Réduc.',  'align' => 'right'],
+            'reduc'      => ['label' => 'Réduc.',  'align' => 'right'],
+            'tva'        => ['label' => 'TVA',     'align' => 'right'],
+            'total'      => ['label' => 'S.Total', 'align' => 'right'],
+        ];
+
+        // Start table
         $table = '<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">';
-        $table.='<thead>
-<tr style="border-bottom: 1px solid #ddd;">
-    <th style="text-align:left; padding: 5px; font-size: 12px; font-weight: bold;">Art</th>
-    <th style="text-align:center; padding: 5px; font-size: 12px; font-weight: bold;">Qte</th>
-    <th style="text-align:right; padding: 5px; font-size: 12px; font-weight: bold;">Prix</th>
-    <th style="text-align:right; padding: 5px; font-size: 12px; font-weight: bold;">S.Total</th>
-</tr>
-</thead>';
+        $table .= '<thead><tr style="border-bottom: 1px solid #ddd;">';
+        foreach ($cols as $col) {
+            if (!isset($headers[$col])) { continue; }
+            $align = $headers[$col]['align'];
+            $label = $headers[$col]['label'];
+            $table .= '<th style="text-align:'.$align.'; padding: 5px; font-size: 12px; font-weight: bold;">'.$label.'</th>';
+        }
+        $table .= '</tr></thead>';
+
+        // Rows
         foreach ($o_vente->lignes as $ligne){
+            // Format quantity: remove trailing .00
             $quantite = number_format($ligne->quantite, 2, '.', ' ');
-            // Supprimer uniquement .00 à la fin
             if (preg_match('/\.00$/', $quantite)) {
                 $quantite = preg_replace('/\.00$/', '', $quantite);
             }
-            $table.= '<tr style="border-bottom: 1px dotted #eee;">
-            <td style="padding: 5px; font-size: 11px;">'.$ligne->article->reference.' | '.$ligne->nom_article.'</td>
-            <td style="padding: 5px; text-align:center; font-size: 11px;">'.$quantite.'</td>
-            <td style="padding: 5px; text-align:right; font-size: 11px;">'.number_format($ligne->ht,2,'.',' ').'</td>
-            <td style="padding: 5px; text-align:right; font-size: 11px;">'.number_format($ligne->quantite * $ligne->ht,2,'.',' ').'</td>
-            </tr>';
+            $table .= '<tr style="border-bottom: 1px dotted #eee;">';
+            foreach ($cols as $col) {
+                switch ($col) {
+                    case 'art':
+                        $cell = (($ligne->article?->reference) ?? '') . ' | ' . ($ligne->nom_article ?? '');
+                        $align = 'left';
+                        break;
+                    case 'ref':
+                        $cell = $ligne->article?->reference ?? '';
+                        $align = 'left';
+                        break;
+                    case 'nom':
+                        $cell = $ligne->nom_article ?? '';
+                        $align = 'left';
+                        break;
+                    case 'qte':
+                        $cell = $quantite;
+                        $align = 'center';
+                        break;
+                    case 'prix':
+                        $unit_ht = isset($ligne->ht) ? $ligne->ht : ($ligne->ht_unitaire ?? 0);
+                        $cell = number_format($unit_ht, 2, '.', ' ');
+                        $align = 'right';
+                        break;
+                    case 'reduction':
+                    case 'reduc':
+                        $unit_reduc = $ligne->reduction_unitaire ?? 0;
+                        $cell = number_format($unit_reduc, 2, '.', ' ');
+                        $align = 'right';
+                        break;
+                    case 'tva':
+                        // Prefer total TVA for the line if available; else compute from rate
+                        $total_tva = $ligne->total_tva ?? null;
+                        if ($total_tva === null) {
+                            $rate = ($ligne->taxe ?? 0) / 100;
+                            $qty = $ligne->quantite ?? 0;
+                            $unit_ht = isset($ligne->ht) ? $ligne->ht : ($ligne->ht_unitaire ?? 0);
+                            $unit_reduc = $ligne->reduction_unitaire ?? 0;
+                            $total_tva = ($qty * max($unit_ht - $unit_reduc, 0)) * $rate;
+                        }
+                        $cell = number_format($total_tva, 2, '.', ' ');
+                        $align = 'right';
+                        break;
+                    case 'total':
+                        $unit_ht = isset($ligne->ht) ? $ligne->ht : ($ligne->ht_unitaire ?? 0);
+                        $cell = number_format(($ligne->quantite ?? 0) * $unit_ht, 2, '.', ' ');
+                        $align = 'right';
+                        break;
+                    default:
+                        continue 2; // skip unknown column
+                }
+                $table .= '<td style="padding: 5px; text-align:'.$align.'; font-size: 11px;">'.$cell.'</td>';
+            }
+            $table .= '</tr>';
         }
 
-        $table.= '</table>';
+        $table .= '</table>';
         return $table;
     }
 
-    // Calculate total paid amount from all payments
-    $total_paye = 0;
-    foreach ($o_vente->paiements as $paiement) {
-        $total_paye += $paiement->encaisser;
-    }
+        // Calculate total paid amount from all payments
+        $total_paye = 0;
+        foreach ($o_vente->paiements as $paiement) {
+            $total_paye += $paiement->encaisser;
+        }
 
-    // Calculate remaining amount (solde)
-    $montant_restant = $o_vente->solde;
+        $montant_restant = $o_vente->solde;
 
-    // Get reseller name from authenticated user
-    $nom_revendeur = auth()->check() ? auth()->user()->name : 'N/A';
+        $nom_revendeur = auth()->check() ? auth()->user()->name : 'N/A';
 
-    $functions =[
-            '[Date_et_heure]'=>now()->format('d/m/Y H:i'),
-            '[Tableau]'=> lignes_table($o_vente),
-            '[Reference]'=> $o_vente->reference,
-            '[Client]'=> $o_vente->client->nom,
-            '[Magasin_adresse]'=>$o_vente->magasin->adresse,
-            '[Magasin]'=>$o_vente->magasin->nom,
-            '[Total_HT]'=>  number_format($o_vente->total_ht + $o_vente->total_reduction,2,'.',' ').' MAD',
-            '[Total_TVA]'=>  number_format($o_vente->total_tva,2,'.',' ').' MAD',
-            '[Total_TTC]'=>  number_format($o_vente->total_ttc,2,'.',' ').' MAD',
-            '[Montant_Paye]'=> number_format($total_paye,2,'.',' ').' MAD',
-            '[Montant_Restant]'=> number_format($montant_restant,2,'.',' ').' MAD',
-            '[Nom_Revendeur]'=> $nom_revendeur,
-        ];
+        $functions =[
+                '[Date_et_heure]'=>now()->format('d/m/Y H:i'),
+                '[Tableau]'=> lignes_table($o_vente),
+                '[Reference]'=> $o_vente->reference,
+                '[Client]'=> $o_vente->client->nom,
+                '[Magasin_adresse]'=>$o_vente->magasin->adresse,
+                '[Magasin]'=>$o_vente->magasin->nom,
+                '[Total_HT]'=>  number_format($o_vente->total_ht + $o_vente->total_reduction,2,'.',' ').' MAD',
+                '[Total_TVA]'=>  number_format($o_vente->total_tva,2,'.',' ').' MAD',
+                '[Total_Reduction]'=>  number_format($o_vente->total_reduction,2,'.',' ').' MAD',
+                '[Total_TTC]'=>  number_format($o_vente->total_ttc,2,'.',' ').' MAD',
+                '[Montant_Paye]'=> number_format($total_paye,2,'.',' ').' MAD',
+                '[Montant_Restant]'=> number_format($montant_restant,2,'.',' ').' MAD',
+                '[Nom_Revendeur]'=> $nom_revendeur,
+            ];
+
+        // Allow custom columns in [Tableau:col1,col2,...] or [Tableau:col1|col2|...]
+        $template_processed = preg_replace_callback('/\[Tableau:([^\]]+)\]/', function($m) use ($o_vente) {
+            $raw = preg_split('/[,|]/', $m[1]);
+            $cols = array_filter(array_map(function($c){ return strtolower(trim($c)); }, $raw));
+            return lignes_table($o_vente, $cols);
+        }, $template);
 @endphp
 
 <div class="page">
     <!-- Première moitié (Copie client) -->
     <div class="half-page">
 
-        {!! str_replace(array_keys($functions),$functions,$template) !!}
+        {!! str_replace(array_keys($functions),$functions,$template_processed ?? $template) !!}
 
     </div>
 
@@ -185,7 +268,7 @@
     <div class="half-page">
 
 
-        {!! str_replace(array_keys($functions),$functions,$template) !!}
+        {!! str_replace(array_keys($functions),$functions,$template_processed ?? $template) !!}
 
     </div>
 </div>
