@@ -1,4 +1,28 @@
 {
+  "_ClientSelect-3VUKcBbG.js": {
+    "file": "assets/ClientSelect-3VUKcBbG.js",
+    "name": "ClientSelect",
+    "imports": [
+      "_axios-DGPLTa3G.js",
+      "_RapportsPage-DjCaQwbC.js"
+    ]
+  },
+  "_ClientSelect-B4uaqQKf.js": {
+    "file": "assets/ClientSelect-B4uaqQKf.js",
+    "name": "ClientSelect",
+    "imports": [
+      "_axios-DGPLTa3G.js",
+      "_RapportsPage-BgelHpJR.js"
+    ]
+  },
+  "_ClientSelect-BnLe2QLd.js": {
+    "file": "assets/ClientSelect-BnLe2QLd.js",
+    "name": "ClientSelect",
+    "imports": [
+      "_axios-DGPLTa3G.js",
+      "_RapportsPage-BO1HJQn3.js"
+    ]
+  },
   "_ClientSelect-CVdw3FTK.js": {
     "file": "assets/ClientSelect-CVdw3FTK.js",
     "name": "ClientSelect",
@@ -46,6 +70,14 @@
       "_axios-DGPLTa3G.js"
     ]
   },
+  "_RapportsPage-BO1HJQn3.js": {
+    "file": "assets/RapportsPage-BO1HJQn3.js",
+    "name": "RapportsPage",
+    "imports": [
+      "_react-select.esm-B9Exsq2_.js",
+      "_axios-DGPLTa3G.js"
+    ]
+  },
   "_RapportsPage-BRTCLKDN.js": {
     "file": "assets/RapportsPage-BRTCLKDN.js",
     "name": "RapportsPage",
@@ -56,6 +88,14 @@
   },
   "_RapportsPage-Bd2loqGd.js": {
     "file": "assets/RapportsPage-Bd2loqGd.js",
+    "name": "RapportsPage",
+    "imports": [
+      "_react-select.esm-B9Exsq2_.js",
+      "_axios-DGPLTa3G.js"
+    ]
+  },
+  "_RapportsPage-BgelHpJR.js": {
+    "file": "assets/RapportsPage-BgelHpJR.js",
     "name": "RapportsPage",
     "imports": [
       "_react-select.esm-B9Exsq2_.js",
@@ -80,6 +120,14 @@
   },
   "_RapportsPage-DSU6aX4y.js": {
     "file": "assets/RapportsPage-DSU6aX4y.js",
+    "name": "RapportsPage",
+    "imports": [
+      "_react-select.esm-B9Exsq2_.js",
+      "_axios-DGPLTa3G.js"
+    ]
+  },
+  "_RapportsPage-DjCaQwbC.js": {
+    "file": "assets/RapportsPage-DjCaQwbC.js",
     "name": "RapportsPage",
     "imports": [
       "_react-select.esm-B9Exsq2_.js",
@@ -385,15 +433,15 @@
     ]
   },
   "resources/js/components/pages/PosCaisse.jsx": {
-    "file": "assets/PosCaisse-FM0vOYuz.js",
+    "file": "assets/PosCaisse-DUw3WBXx.js",
     "name": "PosCaisse",
     "src": "resources/js/components/pages/PosCaisse.jsx",
     "isEntry": true,
     "imports": [
       "_axios-DGPLTa3G.js",
-      "_ClientSelect-CVdw3FTK.js",
+      "_ClientSelect-BnLe2QLd.js",
       "_RebutModal-Y7NrsVb-.js",
-      "_RapportsPage-DSU6aX4y.js",
+      "_RapportsPage-BO1HJQn3.js",
       "_react-select.esm-B9Exsq2_.js"
     ],
     "assets": [
@@ -402,41 +450,41 @@
     ]
   },
   "resources/js/components/pages/PosClassic.jsx": {
-    "file": "assets/PosClassic-CQ_xM2Dx.js",
+    "file": "assets/PosClassic-Dkvn-h_y.js",
     "name": "PosClassic",
     "src": "resources/js/components/pages/PosClassic.jsx",
     "isEntry": true,
     "imports": [
       "_axios-DGPLTa3G.js",
-      "_ClientSelect-CVdw3FTK.js",
+      "_ClientSelect-BnLe2QLd.js",
       "_Searchbar-yD1Qilc2.js",
       "_RebutModal-Y7NrsVb-.js",
-      "_RapportsPage-DSU6aX4y.js",
+      "_RapportsPage-BO1HJQn3.js",
       "_lodash-DPFj6O-k.js",
       "_react-select.esm-B9Exsq2_.js"
     ]
   },
   "resources/js/components/pages/PosCommercial.jsx": {
-    "file": "assets/PosCommercial-DvsWnTSs.js",
+    "file": "assets/PosCommercial-zTh0ABaN.js",
     "name": "PosCommercial",
     "src": "resources/js/components/pages/PosCommercial.jsx",
     "isEntry": true,
     "imports": [
       "_axios-DGPLTa3G.js",
-      "_RapportsPage-DSU6aX4y.js",
+      "_RapportsPage-BO1HJQn3.js",
       "_Searchbar-yD1Qilc2.js",
       "_react-select.esm-B9Exsq2_.js"
     ]
   },
   "resources/js/components/pages/PosParfums.jsx": {
-    "file": "assets/PosParfums-2iKokBxY.js",
+    "file": "assets/PosParfums-RBMUj676.js",
     "name": "PosParfums",
     "src": "resources/js/components/pages/PosParfums.jsx",
     "isEntry": true,
     "imports": [
       "_axios-DGPLTa3G.js",
       "_Numpad-CmKoywxK.js",
-      "_RapportsPage-DSU6aX4y.js",
+      "_RapportsPage-BO1HJQn3.js",
       "_Searchbar-yD1Qilc2.js",
       "_RebutModal-Y7NrsVb-.js",
       "_react-select.esm-B9Exsq2_.js"
