@@ -97,7 +97,7 @@ const ItemRow: React.FC<{ item: Vente|any; onClick?: () => void; onPrint?: () =>
             className="flex items-center justify-between py-2 border-b border-gray-100 text-sm hover:bg-gray-50 rounded-md px-2 cursor-pointer"
         >
             <div className="flex flex-col">
-                <span className="font-medium text-[#3b5461]">{item.reference ?? '—'} {item.client_nom && `(${item.client_nom})`}</span>
+                <span className="font-medium text-gray-900">{item.reference ?? '—'} {item.client_nom && `(${item.client_nom})`}</span>
                 <span className="text-gray-500">{item.time}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ const ItemRow: React.FC<{ item: Vente|any; onClick?: () => void; onPrint?: () =>
                     title="Imprimer le ticket"
                     onClick={(e) => { e.stopPropagation(); onPrint && onPrint(); }}
                     disabled={printing}
-                    className={`inline-flex items-center justify-center w-8 h-8 rounded-md ${printing ? 'bg-gray-200 text-gray-400' : 'bg-gray-100 text-[#3b5461] hover:bg-gray-200'}`}
+                    className={`inline-flex items-center justify-center w-8 h-8 rounded-md ${printing ? 'bg-gray-200 text-gray-400' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                 >
                     {printing ? (
                         <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2v4a1 1 0 0 1-2 0V2a1 1 0 1 1 2 0m0 16v4a1 1 0 0 1-2 0v-4a1 1 0 1 1 2 0M4.222 4.222l2.828 2.829A1 1 0 0 1 5.636 8L2.808 5.172a1 1 0 0 1 1.414-1.414M18.364 16a1 1 0 0 1 1.414 0l2.828 2.829a1 1 0 0 1-1.414 1.414L18.364 17.414A1 1 0 0 1 18.364 16M2 12h4a1 1 0 1 1 0 2H2a1 1 0 1 1 0-2m16 0h4a1 1 0 1 1 0 2h-4a1 1 0 1 1 0-2M4.222 19.778A1 1 0 0 1 2.808 18.364l2.828-2.828A1 1 0 0 1 7.05 16.95l-2.828 2.828a1 1 0 0 1-1.414 0M18.364 8a1 1 0 0 1 0-1.414l2.828-2.829a1 1 0 1 1 1.414 1.414L19.778 8A1 1 0 0 1 18.364 8"/></svg>
@@ -136,7 +136,7 @@ const DepenseCard: React.FC<{ item: any }> = ({item}) => {
             {/* Header: Ref and Date chips */}
             <div className="flex items-center justify-between mb-3">
         <span
-            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#3b5461]/10 text-[#3b5461]">
+            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-gray-900">
           {reference}
         </span>
                 {date && (
@@ -225,7 +225,7 @@ const VenteDetailsModal: React.FC<{ isOpen: boolean; onClose: () => void; item: 
                 <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
                     <div className="flex items-center gap-2">
                         <span className={typeBadge}>{typeLabel}</span>
-                        <h5 className="text-lg font-semibold text-[#3b5461]">{reference}</h5>
+                        <h5 className="text-lg font-semibold text-gray-900">{reference}</h5>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className={statutBadge}>{statut}</span>
@@ -279,7 +279,7 @@ const VenteDetailsModal: React.FC<{ isOpen: boolean; onClose: () => void; item: 
                         </div>
                         <div className="flex items-center">
                             <div
-                                className="rounded bg-violet-50 text-violet-600 p-2 w-[44px] h-[44px] flex items-center justify-center">
+                                className="rounded bg-indigo-50 text-indigo-600 p-2 w-[44px] h-[44px] flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
                                     <path fill="currentColor"
                                           d="M4 20h16v2H4zm1-2h14.01l-2.363-6.85A4.002 4.002 0 0 0 12.838 9H11.16a4.002 4.002 0 0 0-3.81 2.15zM13 4h-2v3h2zm-1 9a2 2 0 1 0 0-4a2 2 0 0 0 0 4"/>
@@ -294,7 +294,7 @@ const VenteDetailsModal: React.FC<{ isOpen: boolean; onClose: () => void; item: 
 
                     <div className="mt-5 overflow-auto rounded border border-gray-100">
                         <table className="w-full min-w-[720px]">
-                            <thead className="bg-[#3b5461] text-white sticky top-0">
+                            <thead className="bg-primary text-white sticky top-0">
                             <tr>
                                 <th className="text-left px-3 py-2">Produit</th>
                                 <th className="text-left px-3 py-2">Quantité</th>
@@ -464,10 +464,10 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
     return (
         <div className="w-full h-full flex flex-col">
             <div className="flex items-center justify-between mb-3">
-                <h5 className="text-[#3b5461] font-medium">Historique</h5>
+                <h5 className="text-gray-900 font-medium">Historique</h5>
                 <button
                     onClick={load}
-                    className="text-sm px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-[#3b5461]"
+                    className="text-sm px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-900"
                 >
                     Actualiser
                 </button>
@@ -479,7 +479,7 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                         key={key}
                         onClick={() => setActiveTab(key)}
                         className={`mr-2 px-3 py-1 rounded-full text-sm transition-colors ${
-                            activeTab === key ? 'bg-[#3b5461] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            activeTab === key ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                     >
                         {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -503,7 +503,7 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                                 <div key={r.id} className="rounded-lg border border-gray-200 bg-white p-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="font-medium text-[#3b5461]">{r.reference}</div>
+                                            <div className="font-medium text-gray-900">{r.reference}</div>
                                             {r.statut && (
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200">
                                                 {r.statut}
@@ -583,7 +583,7 @@ const HistoryPanel: React.FC<{ sessionId?: string | number }> = ({sessionId}) =>
                     <div className="absolute inset-0 bg-black/40" onClick={closeConfirm} />
                     <div className="relative bg-white w-full max-w-md mx-4 rounded-lg shadow-2xl overflow-hidden">
                         <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                            <h5 className="text-[#3b5461] font-semibold">{confirmTitle}</h5>
+                            <h5 className="text-gray-900 font-semibold">{confirmTitle}</h5>
                             <button onClick={closeConfirm} aria-label="Close" className="text-gray-500 hover:text-gray-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                     <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59L7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.42L12 13.41l4.89 4.9a1 1 0 0 0 1.42-1.41L13.41 12l4.9-4.89a1 1 0 0 0-.01-1.4"/>

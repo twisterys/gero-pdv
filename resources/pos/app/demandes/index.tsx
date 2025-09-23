@@ -10,10 +10,10 @@ import {useSettingsStore} from "../../stores/settings-store";
 
 const Demandes = () => {
     const {
-        demandesExtern, 
-        demandesIntern, 
-        fetchDemandesExtern, 
-        fetchDemandesIntern, 
+        demandesExtern,
+        demandesIntern,
+        fetchDemandesExtern,
+        fetchDemandesIntern,
         isLoading,
         showCreateModal,
         setShowCreateModal
@@ -37,7 +37,7 @@ const Demandes = () => {
                     <Link to="/pos" className=" text-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m4 12l6-6m-6 6l6 6m-6-6h10.5m5.5 0h-2.5"/></svg>
                     </Link>
-                    <h1 className="text-2xl font-semibold text-[#3b5461]">Demandes</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">Demandes</h1>
                 </div>
             </div>
             <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden pb-3">
@@ -49,7 +49,7 @@ const Demandes = () => {
                                     Mes demandes
                                 </h3>
                                 <button
-                                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
+                                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
                                     onClick={() => setShowCreateModal(true)}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M19 12.998h-6v6h-2v-6H5v-2h6v-6h2v6h6z"/></svg>
@@ -117,23 +117,23 @@ const Demandes = () => {
                 </div>
 
             </div>
-            
+
             {/* Create Demande Modal */}
             {showCreateModal && (
                 <div className="fixed inset-0 bg-white z-50">
                     <div className="h-full w-full p-4 flex flex-col">
                         <div className="flex justify-between items-center mb-6">
                             <div className="flex items-center gap-3">
-                                <button 
+                                <button
                                     className="text-primary"
                                     onClick={() => setShowCreateModal(false)}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m4 12l6-6m-6 6l6 6m-6-6h10.5m5.5 0h-2.5"/></svg>
                                 </button>
-                                <h1 className="text-2xl font-semibold text-[#3b5461]">Nouvelle demande</h1>
+                                <h1 className="text-2xl font-semibold text-gray-900">Nouvelle demande</h1>
                             </div>
                         </div>
-                        
+
                         <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden pb-3">
                             <div className="w-full md:w-2/3 bg-white rounded-lg shadow-sm flex">
                                 <DemandeCartLayout />
@@ -149,14 +149,14 @@ const Demandes = () => {
                     </div>
                 </div>
             )}
-            
+
             {/* Show Demande Intern Modal */}
             {demandeIntern && (
                 <div className="fixed inset-0 bg-white z-50">
                     <div className="h-full w-full p-4 flex flex-col">
-                        <MaDemande 
-                            demande={demandeIntern} 
-                            setDemandeShow={() => setDemandeIntern(undefined)} 
+                        <MaDemande
+                            demande={demandeIntern}
+                            setDemandeShow={() => setDemandeIntern(undefined)}
                         />
                     </div>
                 </div>

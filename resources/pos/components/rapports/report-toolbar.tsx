@@ -27,7 +27,7 @@ export default function ReportToolbar({
       <div className="flex items-center gap-2">
         <button
           type="button"
-          className="px-4 py-2 bg-gray-200 text-sm text-[#3b5461] rounded-md hover:bg-gray-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-gray-200 text-sm text-gray-900 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           onClick={onRefresh}
           disabled={isLoading}
           aria-label={refreshLabel}
@@ -40,7 +40,7 @@ export default function ReportToolbar({
         </button>
         <button
           type="button"
-          className="px-4 py-2 bg-gray-200 text-sm text-[#3b5461] rounded-md hover:bg-gray-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-gray-200 text-sm text-gray-900 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           onClick={onPrint}
           disabled={isLoading || !canPrint}
           aria-label={printLabel}

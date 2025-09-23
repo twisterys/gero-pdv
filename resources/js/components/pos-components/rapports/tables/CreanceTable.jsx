@@ -55,7 +55,7 @@ const CreanceTable = ({data, formatDate, formatCurrency}) => {
                     )
                     : (
                         <tr>
-                            <td colSpan="9" className="text-center">
+                            <td colSpan="11" className="text-center">
                                 Aucune créance trouvée
                             </td>
                         </tr>

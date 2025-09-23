@@ -18,7 +18,7 @@ const DemandeCartLayout = () => {
     const [magasinSortie, setMagasinSortie] = useState('');
     const [magasinOptions, setMagasinOptions] = useState<{id: string, nom: string}[]>([]);
     const [isLoadingMagasins, setIsLoadingMagasins] = useState(false);
-    
+
     useEffect(() => {
         const fetchMagasins = async () => {
             setIsLoadingMagasins(true);
@@ -31,7 +31,7 @@ const DemandeCartLayout = () => {
                 setIsLoadingMagasins(false);
             }
         };
-        
+
         fetchMagasins();
     }, []);
 
@@ -135,7 +135,7 @@ const DemandeCartLayout = () => {
                     </button>
                     <button
                         className={`py-3 px-4  text-white rounded-md  transition-colors ${
-                            demandeCart.length === 0 || !magasinSortie ? 'cursor-not-allowed bg-green-400' : 'bg-green-500 hover:bg-green-600'
+                            demandeCart.length === 0 || !magasinSortie ? 'cursor-not-allowed bg-green-400' : 'bg-green-600 hover:bg-green-700'
                         }`}
                         onClick={handleCreateDemande}
                         disabled={demandeCart.length === 0 || !magasinSortie}

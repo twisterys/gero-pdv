@@ -17,7 +17,7 @@ const ClotureButton = () => {
                 cancelButtonText: "Annuler",
                 buttonsStyling: false,
                 customClass: {
-                    confirmButton: "py-2 px-4 bg-green-500 hover:bg-green-600 mx-2 rounded-md text-white",
+                    confirmButton: "py-2 px-4 bg-green-600 hover:bg-green-700 mx-2 rounded-md text-white",
                     cancelButton: "py-2 px-4 bg-gray-500 hover:bg-gray-600 mx-2 rounded-md text-white",
                 },
             }).then((result) => {

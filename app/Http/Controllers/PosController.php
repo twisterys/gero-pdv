@@ -54,6 +54,7 @@ class PosController extends Controller
         $rapport_tr_enabled = DB::table('pos_rapports')->where('cle', 'tr')->value('actif') ?? false;
         $rapport_af_enabled = DB::table('pos_rapports')->where('cle', 'af')->value('actif') ?? false;
         $rapport_cr_enabled = DB::table('pos_rapports')->where('cle', 'cr')->value('actif') ?? false;
+        $rapport_depense_enabled = DB::table('pos_rapports')->where('cle', 'dp')->value('actif') ?? false;
 
         auth()->user()->tokens()->delete();
         return view('pos.pos', compact(
@@ -62,6 +63,7 @@ class PosController extends Controller
             'modifier_prix','is_code_barre','on_reduction','is_price_editable',
             'is_depenses','is_historique','is_demandes', 'rapport_ac_enabled',
             'rapport_as_enabled','rapport_af_enabled','rapport_tr_enabled','rapport_cr_enabled','is_rebut'
+            ,'rapport_depense_enabled'
         ));
     }
     public  function posNew(Request $request)

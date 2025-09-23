@@ -63,12 +63,18 @@ export interface TreasuryRapport {
     total_vente:number,
 }
 
+export interface DepenseItem {
+    categorie: string;
+    montant: number;
+}
+
 interface RapportStore {
     stock:StockRapport[];
     saleByProductAndCLient:SaleByProductAndClientRapport,
     productBySupplier:ProductBySupplierRapport,
     paymentsAndCredit:PaymentsAndCreditRapport[],
     treasury:TreasuryRapport,
+    depenses: DepenseItem[];
     isLoading:boolean;
     isError:boolean;
     error:string|null;
@@ -82,6 +88,7 @@ interface RapportStore {
     getProductBySupplier: () => Promise<void>;
     getPaymentsAndCredit: () => Promise<void>;
     getTreasury: () => Promise<void>;
+    getDepenses: () => Promise<void>;
 }
 
 /**
@@ -133,6 +140,7 @@ export const useRapportsStore = create<RapportStore>((set) => ({
         total_lcn:0,
         total_vente:0,
     },
+    depenses: [],
     isLoading: false,
     isError: false,
     error: null,
@@ -199,6 +207,19 @@ export const useRapportsStore = create<RapportStore>((set) => ({
             set({ treasury: data});
         } catch (e: any) {
             set({ isError: true, error: e?.message || 'Failed to fetch treasury report' });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    getDepenses: async () => {
+        set({ isLoading: true, isError: false, error: null });
+        try {
+            const { data } = await endpoints.rapports.depensesRapport();
+            const rows = Array.isArray(data) ? (data as any) : ([data] as any);
+            set({ depenses: rows });
+        } catch (e: any) {
+            set({ isError: true, error: e?.message || 'Failed to fetch depenses report' });
         } finally {
             set({ isLoading: false });
         }

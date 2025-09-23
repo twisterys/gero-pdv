@@ -14,9 +14,9 @@ const ProductCard = ({product,onClick}:ProductCardProps) => {
                     <img src={product.image} className="w-full h-full object-cover" alt={product.designation}/>
                 </div>
                 <div className="p-3 flex flex-col flex-grow">
-                    <h5 className="font-medium text-[#3b5461]">{product.designation}</h5>
+                    <h5 className="font-medium text-gray-900 line-clamp-1">{product.designation}</h5>
                     <p className="text-gray-400 text-xs">{product.reference} - {product.quantity}{product.unit}</p>
-                    <h6 className="text-[#3b5461] mt-auto font-bold">{formatNumber(product.prix,true)}</h6>
+                    <h6 className="text-primary mt-auto font-bold">{formatNumber(product.prix,true)}</h6>
                 </div>
             </div>
         </div>

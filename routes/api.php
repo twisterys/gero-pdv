@@ -140,6 +140,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
         Route::post('creance-rapport','RapportController@creance_rapport');
         Route::post('tresorie-rapport','RapportController@tresorie_rapport');
+        Route::post('depenses-rapport','RapportController@depenses');
 
         Route::get('clients-liste',  'ClientController@recherche_liste');
 
@@ -267,7 +268,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
             Route::get('articles-clients-rapport','RapportController@article_client_rapport');
             Route::get('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
             Route::get('articles-stock-rapport','RapportController@stock');
-
+            Route::get('depenses-rapport','RapportController@depenses');
 
             // ------------ Depenses ---------------
             Route::post('depense','DepenseController@sauvegarder');

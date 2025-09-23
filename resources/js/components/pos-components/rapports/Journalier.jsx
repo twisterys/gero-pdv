@@ -4,6 +4,8 @@ import ArticlesClientsTable from "./tables/ArticlesClientsTable.jsx";
 import ArticlesFournisseursTable from "./tables/ArticlesFournisseursTable.jsx";
 import CreanceTable from "./tables/CreanceTable.jsx";
 import TresorieTable from "./tables/TresorieTable.jsx";
+import DepenseRapport from "./DepenseRapport.jsx";
+import DepenseTable from "./tables/depenseTable.jsx";
 
 const RapportJournalier = ({
                                onBack,
@@ -14,7 +16,8 @@ const RapportJournalier = ({
         articlesClients: { clients: [], articles: [], data: {} },
         articlesFournisseurs: { fournisseurs: [], articles: [], data: {} },
         creance: [],
-        tresorie: {}
+        tresorie: {},
+        depense: {}
     });
 
     useEffect(() => {
@@ -24,18 +27,20 @@ const RapportJournalier = ({
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const [acResponse, afResponse, crResponse, trResponse] = await Promise.all([
+            const [acResponse, afResponse, crResponse, trResponse,dpResponse] = await Promise.all([
                 axios.post('articles-clients-rapport', { session_id: __session_id }),
                 axios.post('articles-fournisseurs-rapport', { session_id: __session_id }),
                 axios.post('creance-rapport', { session_id: __session_id }),
-                axios.post('tresorie-rapport', { session_id: __session_id })
+                axios.post('tresorie-rapport', { session_id: __session_id }),
+                axios.post('depenses-rapport', { session_id: __session_id })
             ]);
 
             setData({
                 articlesClients: acResponse.data,
                 articlesFournisseurs: afResponse.data,
                 creance: crResponse.data,
-                tresorie: trResponse.data
+                tresorie: trResponse.data,
+                depense: dpResponse.data
             });
         } catch (error) {
             console.error("Error fetching rapport data:", error);
@@ -103,6 +108,17 @@ const RapportJournalier = ({
                                     <CreanceTable
                                         data={data.creance}
                                         formatDate={formatDate}
+                                        formatCurrency={formatCurrency}
+                                    />
+                                </div>
+                            )
+                        }
+                        {
+                            __rapport_depense_enabled == 1 && (
+                                <div className="col-12 mb-4">
+                                    <h4>Rapport des Dépenses</h4>
+                                    <DepenseTable
+                                        data={data.depense}
                                         formatCurrency={formatCurrency}
                                     />
                                 </div>

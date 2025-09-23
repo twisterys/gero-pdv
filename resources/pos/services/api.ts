@@ -196,6 +196,7 @@ const endpoints = {
     articlesFournisseursRapport: () => api.get('/articles-fournisseurs-rapport'),
     articlesClientsRapport: () => api.get('/articles-clients-rapport'),
     articlesStockRapport: () => api.get('/articles-stock-rapport'),
+    depensesRapport: () => api.get('/depenses-rapport'),
   },
 
     // Rebut

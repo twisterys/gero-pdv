@@ -26,6 +26,7 @@ import ProductBySupplier from './app/rapports/product-by-supplier';
 import PaymentsAndCredit from './app/rapports/payments-and-credit';
 import Treasury from './app/rapports/treasury';
 import Daily from './app/rapports/daily';
+import Depenses from './app/rapports/depenses';
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
       { path: 'product-by-supplier', element: <ProductBySupplier /> },
       { path: 'payments-and-credit', element: <PaymentsAndCredit /> },
       { path: 'treasury', element: <Treasury /> },
+      { path: 'depenses', element: <Depenses /> },
       { path: 'daily', element: <Daily /> },
     ],
   },

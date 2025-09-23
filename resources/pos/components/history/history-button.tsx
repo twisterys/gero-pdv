@@ -7,7 +7,7 @@ const HistoryButton = ({setHistoryOpen}: { setHistoryOpen: React.Dispatch<React.
     return (
         <button
             onClick={() => setHistoryOpen(true)}
-            className="px-4 py-2 bg-gray-200 text-[#3b5461] rounded-md hover:bg-gray-300 transition-colors"
+            className="px-4 py-2 bg-gray-200 text-gray-900 rounded-md hover:bg-gray-300 transition-colors"
         >
             <svg className="inline-block mr-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                  viewBox="0 0 24 24">

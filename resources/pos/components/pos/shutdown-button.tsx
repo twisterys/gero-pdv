@@ -50,7 +50,7 @@ const ShutdownButton = () => {
                         buttonsStyling: false,
                         confirmButtonText: "OK",
                         customClass: {
-                            confirmButton: "py-2 px-4 bg-green-500 hover:bg-green-600 mx-2 rounded-md text-white",
+                            confirmButton: "py-2 px-4 bg-green-600 hover:bg-green-700 mx-2 rounded-md text-white",
                         },
                     }).then((result) => {
                         window.location.href = "/";

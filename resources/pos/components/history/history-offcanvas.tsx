@@ -29,7 +29,7 @@ const HistoryOffcanvas: React.FC<HistoryOffcanvasProps> = ({ isOpen, onClose, se
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative h-full w-full sm:w-[520px] bg-white shadow-xl">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-[#3b5461]">Historique</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Historique</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"

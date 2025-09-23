@@ -12,6 +12,7 @@ export default [
         route("product-by-supplier", "rapports/product-by-supplier.tsx"),
         route("payments-and-credit", "rapports/payments-and-credit.tsx"),
         route("treasury", "rapports/treasury.tsx"),
+        route("depenses", "rapports/depenses.tsx"),
         route("daily", "rapports/daily.tsx"),
     ])
 ] satisfies RouteConfig;

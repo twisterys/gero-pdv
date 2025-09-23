@@ -9,7 +9,7 @@ const TypeToggler = () => {
                         className={`absolute top-1 h-10 w-1/2 rounded-xl transition-all duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
                             orderType === 'retour'
                                 ? 'left-[calc(50%-0.25rem)] bg-red-500'
-                                : 'left-1 bg-green-500'
+                                : 'left-1 bg-green-600'
                         }`}
                     ></div>
 

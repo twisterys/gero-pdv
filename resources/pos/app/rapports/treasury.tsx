@@ -57,8 +57,8 @@ export default function TreasuryPage() {
       key: "total_lcn",
       label: "LCN",
       value: treasury.total_lcn,
-      accent: "from-violet-50 to-violet-100 border-violet-200",
-      iconBg: "bg-violet-100 text-violet-700",
+      accent: "from-indigo-50 to-indigo-100 border-indigo-200",
+      iconBg: "bg-indigo-100 text-indigo-700",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="text-gray-500" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v8H3z"/><path fill="currentColor" d="M3 12h18v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" opacity=".5"/></svg>
       )
@@ -95,7 +95,7 @@ export default function TreasuryPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="px-4 py-2 bg-gray-200 text-sm text-[#3b5461] rounded-md hover:bg-gray-300 transition-colors"
+            className="px-4 py-2 bg-gray-200 text-sm text-gray-900 rounded-md hover:bg-gray-300 transition-colors"
             onClick={() => getTreasury()}
             disabled={isLoading}
             aria-label="Actualiser les données de trésorerie"
@@ -109,7 +109,7 @@ export default function TreasuryPage() {
           </button>
           <button
             type="button"
-            className="px-4 py-2 bg-gray-200 text-sm text-[#3b5461] rounded-md hover:bg-gray-300 transition-colors"
+            className="px-4 py-2 bg-gray-200 text-sm text-gray-900 rounded-md hover:bg-gray-300 transition-colors"
             onClick={handlePrint}
             disabled={isLoading || !canPrint}
             aria-label="Imprimer le rapport de trésorerie"

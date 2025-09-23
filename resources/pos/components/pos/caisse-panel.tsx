@@ -322,7 +322,7 @@ const CaissePanel: React.FC = () => {
             <div className="flex flex-col items-center text-center">
               <div className="mb-4">
                 <svg
-                  className="h-12 w-12 text-green-500"
+                  className="h-12 w-12 text-green-600"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -365,7 +365,7 @@ const CaissePanel: React.FC = () => {
                     setTicketTemplate(null);
                     clearLastOrderInfo();
                   }}
-                  className="w-full rounded-md bg-green-600 px-4 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
+                  className="w-full rounded-md bg-green-700 px-4 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
                 >
                   OK
                 </button>
@@ -485,7 +485,7 @@ const CaissePanel: React.FC = () => {
         <div className="bg-gray-100 border-t border-gray-200 p-4 space-y-4">
           <div className="flex justify-between items-center">
             <span className="font-medium text-gray-700">Montant total TTC :</span>
-            <span className="font-bold text-green-600 text-lg">
+            <span className="font-bold text-green-700 text-lg">
              {formatNumber(total,true)}
             </span>
           </div>
@@ -509,7 +509,7 @@ const CaissePanel: React.FC = () => {
             </button>
             <button
               onClick={payer}
-              className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-3 font-medium transition transform hover:scale-[1.02]"
+              className="bg-green-600 hover:bg-green-700 text-white rounded-lg py-3 font-medium transition transform hover:scale-[1.02]"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="inline-block mr-2" width="2em"
                      height="2em" viewBox="0 0 512 512">

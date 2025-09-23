@@ -30,7 +30,7 @@ export function POS() {
                                   strokeWidth="1.5" d="m4 12l6-6m-6 6l6 6m-6-6h10.5m5.5 0h-2.5"/>
                         </svg>
                     </a>
-                    <h1 className="text-2xl font-semibold text-[#3b5461]">Point de vente</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">Point de vente</h1>
                 </div>
                 <div className="flex space-x-3">
                     <ClotureButton/>

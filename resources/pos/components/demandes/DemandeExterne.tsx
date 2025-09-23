@@ -17,10 +17,10 @@ interface QuantityAdjusterProps {
 }
 
 // Component for adjusting quantity
-const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({ 
-  ligne, 
-  onQuantityChange, 
-  disabled = false 
+const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
+  ligne,
+  onQuantityChange,
+  disabled = false
 }) => {
   if (disabled) {
     return <>{+ligne.quantite_livre}</>;
@@ -48,7 +48,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
         aria-label="Quantité à livrer"
       />
       <button
-        className="p-2 bg-green-100 text-green-600 rounded-r-md hover:bg-green-200 transition-colors"
+        className="p-2 bg-green-100 text-green-700 rounded-r-md hover:bg-green-200 transition-colors"
         onClick={() => onQuantityChange(ligne.id, +ligne.quantite_livre + 1)}
         disabled={+ligne.quantite_livre >= +ligne.quantite_stock}
         aria-label="Augmenter la quantité"
@@ -79,20 +79,20 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
     setFetching(true);
     try {
       const response = await printDemande(id);
-      
+
       // Remove existing iframe if it exists
       const existingIframe = document.getElementById("iframe");
       if (existingIframe) {
         existingIframe.remove();
       }
-      
+
       // Create and configure the iframe for printing
       const iframe = document.createElement("iframe");
       iframe.style.display = "none";
       iframe.id = "iframe";
       iframe.srcdoc = response.data;
       document.body.appendChild(iframe);
-      
+
       // Focus and print
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
@@ -107,9 +107,9 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
   const handleQuantityChange = (ligneId: number, newQuantity: number): void => {
     setDemandeData({
       ...demandeData,
-      lignes: demandeData.lignes.map(ligne => 
-        ligne.id === ligneId 
-          ? { ...ligne, quantite_livre: newQuantity } 
+      lignes: demandeData.lignes.map(ligne =>
+        ligne.id === ligneId
+          ? { ...ligne, quantite_livre: newQuantity }
           : ligne
       ),
     });
@@ -130,8 +130,8 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
         <td className="p-3 border-b border-gray-100">{ligne.article} ({ligne.article_reference})</td>
         <td className="p-3 border-b border-gray-100">{+ligne.quantite_demande}</td>
         <td className="p-3 border-b border-gray-100">
-          <QuantityAdjuster 
-            ligne={ligne} 
+          <QuantityAdjuster
+            ligne={ligne}
             onQuantityChange={handleQuantityChange}
             disabled={demande.statut !== 'Nouvelle'}
           />
@@ -188,7 +188,7 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
     <>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <button 
+          <button
             className="text-primary"
             onClick={() => setDemandeShow(null)}
             aria-label="Retour"
@@ -199,7 +199,7 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
           </button>
           <h5 className="ml-2 mb-0 text-xl font-semibold">{demande.reference}</h5>
         </div>
-        <button 
+        <button
           className="p-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-colors"
           onClick={() => handlePrint(demandeData.id)}
           aria-label="Imprimer la demande"
@@ -252,8 +252,8 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
         </div>
         {demande.statut === 'Nouvelle' && (
           <div className="flex items-center gap-2 mt-4">
-            <button 
-              onClick={() => handleRefuseDemande(demandeData.id)} 
+            <button
+              onClick={() => handleRefuseDemande(demandeData.id)}
               className="flex-1 py-2 px-4 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors font-medium"
               aria-label="Refuser la demande"
             >
@@ -262,9 +262,9 @@ export const DemandeExterne: React.FC<DemandeExterneProps> = ({ demande, setDema
               </svg>
               Refuser
             </button>
-            <button 
-              onClick={() => handleLivrerDemande(demandeData.id)} 
-              className="flex-1 py-2 px-4 bg-green-100 text-green-600 rounded-md hover:bg-green-200 transition-colors font-medium"
+            <button
+              onClick={() => handleLivrerDemande(demandeData.id)}
+              className="flex-1 py-2 px-4 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors font-medium"
               aria-label="Livrer la demande"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="inline-block mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

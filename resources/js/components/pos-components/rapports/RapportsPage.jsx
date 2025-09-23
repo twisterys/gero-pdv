@@ -7,6 +7,7 @@ import ArticlesFournisseursRapport from "./ArticlesFournisseursRapport";
 import CreanceRapport from "./CreanceRapport";
 import TresorieRapport from "./TresorieRapport";
 import RapportJournalier from "./Journalier.jsx";
+import DepenseRapport from "./DepenseRapport.jsx";
 
 const RapportsPage = () => {
     const [activeRapport, setActiveRapport] = useState(null);
@@ -15,7 +16,8 @@ const RapportsPage = () => {
         as: { data: [], isLoading: false },
         af: { fournisseurs: [], articles: [], data: {}, isLoading: false },
         cr: { data: [], isLoading: false },
-        tr: { data: {}, isLoading: false }
+        tr: { data: {}, isLoading: false },
+        dp:{data:[],isLoading:false},
     });
 
     // Memoized data access helpers
@@ -24,11 +26,13 @@ const RapportsPage = () => {
     const afData = useMemo(() => rapportsData.af, [rapportsData.af]);
     const crData = useMemo(() => rapportsData.cr.data, [rapportsData.cr.data]);
     const trData = useMemo(() => rapportsData.tr.data, [rapportsData.tr.data]);
+    const dpData = useMemo(() => rapportsData.dp.data, [rapportsData.dp.data]);
     const isLoadingAc = useMemo(() => rapportsData.ac.isLoading, [rapportsData.ac.isLoading]);
     const isLoadingAs = useMemo(() => rapportsData.as.isLoading, [rapportsData.as.isLoading]);
     const isLoadingAf = useMemo(() => rapportsData.af.isLoading, [rapportsData.af.isLoading]);
     const isLoadingCr = useMemo(() => rapportsData.cr.isLoading, [rapportsData.cr.isLoading]);
     const isLoadingTr = useMemo(() => rapportsData.tr.isLoading, [rapportsData.tr.isLoading]);
+    const isLoadingDp = useMemo(() => rapportsData.dp.isLoading, [rapportsData.dp.isLoading]);
 
     // Generic fetch function to reduce duplication
     const fetchData = useCallback((type) => {
@@ -47,7 +51,10 @@ const RapportsPage = () => {
         } else if (type === 'tr') {
             endpoint = 'tresorie-rapport';
             isLoading = isLoadingTr;
-        } else {
+        } else if(type === 'dp'){
+            endpoint = 'depenses-rapport';
+            isLoading = isLoadingDp;
+        }else {
             endpoint = 'articles-stock-rapport';
             isLoading = isLoadingAs;
         }
@@ -85,6 +92,7 @@ const RapportsPage = () => {
     const fetchCrData = useCallback(() => fetchData('cr'), [fetchData]);
     const fetchTrData = useCallback(() => fetchData('tr'), [fetchData]);
     const fetchDataJr = useCallback(() => fetchData('jr'), [fetchData]);
+    const fetchDpData = useCallback(() => fetchData('dp'), [fetchData]);
 
     // Generic print handler
     const handlePrint = useCallback((containerId, title) => {
@@ -164,6 +172,10 @@ const RapportsPage = () => {
         handlePrint('rapport-table-container-tr', 'Rapport de Trésorerie');
     }, [handlePrint]);
 
+    const handlePrintDp = useCallback(()=>{
+        handlePrint('rapport-table-container-dp','Rapport de Dépenses')
+    })
+
     // Open a specific rapport and load data if needed
     const openRapport = useCallback((rapportType) => {
         setActiveRapport(rapportType);
@@ -177,13 +189,17 @@ const RapportsPage = () => {
             fetchCrData();
         } else if (rapportType === 'tr') {
             fetchTrData();
-        }else if (rapportType === 'jr') {
+        }else if(rapportType ==='dp'){
+            fetchDpData();
+        }
+        else if (rapportType === 'jr') {
             fetchAsData();
             fetchAfData();
             fetchCrData();
             fetchTrData();
+            fetchDpData();
         }
-    }, [fetchAcData, fetchAsData, fetchAfData, fetchCrData, fetchTrData]);
+    }, [fetchAcData, fetchAsData, fetchAfData, fetchCrData, fetchTrData,fetchDpData]);
 
     // Memoized number formatter
     const formatNumber = useMemo(() => (
@@ -338,6 +354,26 @@ const RapportsPage = () => {
                                         </button>
                                     </>
                                 )}
+                                {activeRapport === 'dp' && (
+                                    <>
+                                        <button
+                                            className="btn btn-success me-2"
+                                            onClick={handlePrintDp}
+                                            disabled={isLoadingDp}
+                                        >
+                                            <i className="fas fa-print me-1"></i>
+                                            Imprimer
+                                        </button>
+                                        <button
+                                            className="btn btn-primary me-2"
+                                            onClick={fetchDpData}
+                                            disabled={isLoadingDp}
+                                        >
+                                            <i className="fas fa-sync-alt me-1"></i>
+                                            Actualiser
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <div className="modal-body p-4">
@@ -418,7 +454,21 @@ const RapportsPage = () => {
                                             )
                                         }
                                         {
-                                            (__rapport_tr_enabled ||__rapport_cr_enabled || __rapport_af_enabled || __rapport_ac_enabled) == 1 && (
+                                            __rapport_depense_enabled && (
+                                                <div className="col-md-6 mb-4">
+                                                    <div className="card card-rapport h-100" onClick={() => openRapport('dp')}>
+                                                        <div className="card-body d-flex flex-column">
+                                                            <h5 className="card-title">Rapport de Dépenses</h5>
+                                                            <p className="card-text flex-grow-1">
+                                                                Afficher total des Dépenses par catégorie.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                        {
+                                            (__rapport_tr_enabled ||__rapport_cr_enabled || __rapport_af_enabled || __rapport_depense_enabled || __rapport_ac_enabled) == 1 && (
                                                 <div className="col-md-6 mb-4">
                                                     <div className="card card-rapport h-100" onClick={() => openRapport('jr')}>
                                                         <div className="card-body d-flex flex-column">
@@ -484,6 +534,17 @@ const RapportsPage = () => {
                                         onBack={() => setActiveRapport(null)}
                                     />
                                 )}
+                                {
+                                    activeRapport === 'dp' && (
+                                        <DepenseRapport
+                                            data={dpData}
+                                            isLoading={isLoadingDp}
+                                            onPrint={handlePrintDp}
+                                            onRefresh={fetchDpData}
+                                            onBack={() => setActiveRapport(null)}
+                                        />
+                                    )
+                                }
                                 {
                                     activeRapport === 'jr' && (
                                         <RapportJournalier

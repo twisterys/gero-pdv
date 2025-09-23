@@ -98,7 +98,7 @@ const CartTable = ({bottom}:{bottom:RefObject<HTMLDivElement|null>}) => {
                                    <img src={item.product.image} className="w-10 h-10 object-cover rounded"
                                         alt={item.product.designation}/>
                                    <div className="">
-                                       <h5 className="font-medium text-primary ">
+                                       <h5 className="font-medium text-gray-900 ">
                                            {item.product.designation}
                                        </h5>
                                        <p className="text-gray-400 m-0 text-xs">{item.product.reference}</p>
@@ -123,7 +123,7 @@ const CartTable = ({bottom}:{bottom:RefObject<HTMLDivElement|null>}) => {
                                            className="w-16 text-center outline-none rounded-md"
                                        />
                                        <button
-                                           className="bg-primary rounded-full text-white text-center w-8 h-8 cursor-pointer"
+                                           className="bg-green-600 rounded-full text-white text-center w-8 h-8 cursor-pointer"
                                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}>+
                                        </button>
                                    </div>

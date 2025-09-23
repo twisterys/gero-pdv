@@ -19,8 +19,8 @@ const DemandeRow: React.FC<DemandeRowProps> = ({ demande, onViewDemande, onPrint
       <td className="p-3 border-b border-gray-100">{demande.magasin_entree}</td>
       <td className="p-3 border-b border-gray-100">{demande.statut}</td>
       <td className="p-3 border-b border-gray-100">
-        <button 
-          className="p-2 bg-primary text-white rounded-md hover:bg-primary-600 transition-colors mr-2" 
+        <button
+          className="p-2 bg-primary text-white rounded-md hover:bg-primary-600 transition-colors mr-2"
           onClick={() => onViewDemande(demande)}
           aria-label="Voir la demande"
         >
@@ -29,9 +29,9 @@ const DemandeRow: React.FC<DemandeRowProps> = ({ demande, onViewDemande, onPrint
           </svg>
         </button>
         {demande.statut === 'Livrée' && (
-          <button 
-            onClick={() => onPrintDemande(demande.id)} 
-            className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+          <button
+            onClick={() => onPrintDemande(demande.id)}
+            className="p-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             aria-label="Imprimer la demande"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
@@ -76,20 +76,20 @@ export const DemandesExterne: React.FC<DemandesExterneProps> = ({ refresh }) => 
   const printDemande = async (id: number): Promise<void> => {
     try {
       const response = await endpoints.demandes.print(id);
-      
+
       // Remove existing iframe if it exists
       const existingIframe = document.getElementById("iframe");
       if (existingIframe) {
         existingIframe.remove();
       }
-      
+
       // Create and configure the iframe for printing
       const iframe = document.createElement("iframe");
       iframe.style.display = "none";
       iframe.id = "iframe";
       iframe.srcdoc = response.data;
       document.body.appendChild(iframe);
-      
+
       // Focus and print
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
@@ -108,7 +108,7 @@ export const DemandesExterne: React.FC<DemandesExterneProps> = ({ refresh }) => 
         setIsLoading(false);
       }
     };
-    
+
     if (!selectedDemande) {
       loadData();
     }
@@ -124,9 +124,9 @@ export const DemandesExterne: React.FC<DemandesExterneProps> = ({ refresh }) => 
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               </div>
             }>
-              <DemandeExterne 
-                demande={selectedDemande} 
-                setDemandeShow={() => setSelectedDemande(null)} 
+              <DemandeExterne
+                demande={selectedDemande}
+                setDemandeShow={() => setSelectedDemande(null)}
               />
             </Suspense>
           </div>
@@ -146,9 +146,9 @@ export const DemandesExterne: React.FC<DemandesExterneProps> = ({ refresh }) => 
               <LoadingIndicator />
             ) : demandesExtern.length > 0 ? (
               demandesExtern.map((demande) => (
-                <DemandeRow 
+                <DemandeRow
                   key={`demande-externe-${demande.id}`}
-                  demande={demande} 
+                  demande={demande}
                   onViewDemande={setSelectedDemande}
                   onPrintDemande={printDemande}
                 />

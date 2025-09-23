@@ -286,7 +286,7 @@ const CartContent = () => {
                         <div className="flex flex-col items-center text-center">
                             <div className="mb-4">
                                 <svg
-                                    className="h-12 w-12 text-green-500"
+                                    className="h-12 w-12 text-green-600"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
@@ -329,7 +329,7 @@ const CartContent = () => {
                                         setTicketTemplate(null);
                                         clearLastOrderInfo();
                                     }}
-                                    className="w-full rounded-md bg-green-600 px-4 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
+                                    className="w-full rounded-md bg-green-700 px-4 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
                                 >
                                     OK
                                 </button>
@@ -491,7 +491,7 @@ const CartContent = () => {
                                     className={`w-full py-3 px-4 rounded-md text-white font-medium cursor-pointer ${
                                         !client || cart.length === 0
                                             ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-green-500 hover:bg-green-600'
+                                            : 'bg-green-600 hover:bg-green-700'
                                     }`}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="inline-block mr-2" width="2em"
