@@ -71,7 +71,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
         Route::post('creance-rapport','RapportController@creance_rapport');
         Route::post('tresorie-rapport','RapportController@tresorie_rapport');
-
+        Route::post('depenses-rapport','RapportController@depenses');
 
         Route::get('clients-liste',  'ClientController@recherche_liste');
 
@@ -114,6 +114,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
         Route::post('creance-rapport','RapportController@creance_rapport');
         Route::post('tresorie-rapport','RapportController@tresorie_rapport');
+        Route::post('depenses-rapport','RapportController@depenses');
 
         Route::get('clients-liste',  'ClientController@recherche_liste');
 
@@ -189,6 +190,7 @@ Route::group(['middleware' => ['auth:sanctum', InitializeTenancyByDomain::class,
         Route::post('articles-fournisseurs-rapport','RapportController@article_fournisseur_rapport');
         Route::post('creance-rapport','RapportController@creance_rapport');
         Route::post('tresorie-rapport','RapportController@tresorie_rapport');
+        Route::post('depenses-rapport','RapportController@depenses');
 
 
         Route::post('ventes', 'VenteController@sauvegarder');

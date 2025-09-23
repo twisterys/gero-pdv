@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\pos\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Depense;
 use App\Models\Paiement;
 use App\Models\PosSession;
 use App\Models\VenteLigne;
@@ -20,12 +21,12 @@ class RapportController extends Controller
             return response()->json(['error' => 'Session not found'], 404);
         }
 
-        $depenses = DB::table('depenses')
+        $depenses = Depense::where('magasin_id', $o_pos_session->magasin_id)
+            ->whereDate('date_operation', '=', Carbon::today()->format('Y-m-d'))
             ->join('categorie_depense', 'depenses.categorie_depense_id', '=', 'categorie_depense.id')
-            ->where('depenses.magasin_id', $o_pos_session->magasin_id)
-            ->groupBy('depenses.categorie_depense_id', 'categorie_depense.nom')
-            ->select(DB::raw('SUM(depenses.montant) as montant'), 'categorie_depense.nom as categorie')
-            ->get();
+            ->groupBy('categorie_depense_id', 'categorie_depense.nom')
+            ->select(DB::raw('SUM(montant) as montant'), 'categorie_depense.nom as categorie')
+            ->get();        ;
 
         return response()->json($depenses);
     }

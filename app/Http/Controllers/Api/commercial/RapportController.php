@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\commercial;
 
 use App\Http\Controllers\Controller;
+use App\Models\Depense;
 use App\Models\Paiement;
 use App\Models\PosSession;
 use App\Models\Vente;
@@ -450,5 +451,24 @@ class RapportController extends Controller
             'total_depenses' => $total_depenses,
             'reste_en_caisse' => $reste_en_caisse
         ]);
+    }
+
+    public function depenses(Request $request)
+    {
+        // Get the POS session
+        $o_pos_session = PosSession::find($request->get('session_id'));
+
+        if (!$o_pos_session) {
+            return response()->json(['error' => 'Session not found'], 404);
+        }
+
+        $depenses = Depense::where('magasin_id', $o_pos_session->magasin_id)
+            ->whereDate('date_operation', '=', Carbon::today()->format('Y-m-d'))
+            ->join('categorie_depense', 'depenses.categorie_depense_id', '=', 'categorie_depense.id')
+            ->groupBy('categorie_depense_id', 'categorie_depense.nom')
+            ->select(DB::raw('SUM(montant) as montant'), 'categorie_depense.nom as categorie')
+            ->get();
+
+        return response()->json($depenses);
     }
 }

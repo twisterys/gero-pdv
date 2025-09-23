@@ -566,8 +566,9 @@ class RapportController extends Controller
         }
 
         $depenses = Depense::where('magasin_id', $o_pos_session->magasin_id)
-            ->join('categorie_depense', 'depenses.categorie_depense_id', '=', 'categorie_depense.id')  // Assuming `categories` is the name of the table and `id` is the primary key
-            ->groupBy('categorie_depense_id', 'categorie_depense.nom')  // Group by both `categorie_depense_id` and `categories.nom`
+            ->whereDate('date_operation', '=', Carbon::today()->format('Y-m-d'))
+            ->join('categorie_depense', 'depenses.categorie_depense_id', '=', 'categorie_depense.id')
+            ->groupBy('categorie_depense_id', 'categorie_depense.nom')
             ->select(DB::raw('SUM(montant) as montant'), 'categorie_depense.nom as categorie')
             ->get();        ;
 
