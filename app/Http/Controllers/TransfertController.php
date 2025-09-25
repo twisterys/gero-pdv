@@ -82,7 +82,7 @@ class TransfertController extends Controller
         if (!LimiteService::is_enabled('stock')){
             abort(404);
         }
-        $o_magasins = Magasin::all();
+        $o_magasins = auth()->user()->magasins()->get();
         $reference = 'TRF-'.Carbon::now()->format('YmdHis');
         return view('transferts.ajouter', compact('o_magasins', 'reference'));
     }
