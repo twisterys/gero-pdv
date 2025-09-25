@@ -79,7 +79,8 @@ Route::middleware([
                 \App\Models\TransformationLigne::class,
                 'vente_avoir',
                 'woocommerce_imports',
-                'woocommerce_settings'
+                'woocommerce_settings',
+                'stocks'
             ];
 
             foreach ($tables as $table) {
