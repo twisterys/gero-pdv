@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Models\Abonnement;
+use App\Models\Achat;
+use App\Models\Cheque;
+use App\Models\Client;
+use App\Models\Commercial;
+use App\Models\Depense;
+use App\Models\Paiement;
+use App\Models\ReleveBancaire;
+use App\Models\Vente;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\CheckTenantForMaintenanceMode;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -25,10 +34,64 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     CheckTenantForMaintenanceMode::class
 ])->group(function () {
-    Route::get('/faker',function (){
-        \App\Models\Article::factory(100)->create();
-        \App\Models\Fournisseur::factory(10)->create();
-        \App\Models\Achat::factory(100)->withLignes()->create();
+    Route::get('/reset-somelaar', function () {
+        try {
+            DB::transaction(function () {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+                // Define tables to truncate in logical order (child tables first)
+                $tables = [
+                    'ventes_relations',
+                    \App\Models\VenteLigne::class,
+                    \App\Models\AchatLigne::class,
+                    Vente::class,
+                    Achat::class,
+                    Paiement::class,
+                    ReleveBancaire::class,
+                    Client::class,
+                    Commercial::class,
+                    Depense::class,
+                    Cheque::class,
+                    Abonnement::class,
+                ];
+
+                foreach ($tables as $table) {
+                    if (class_exists($table)) {
+                        $table::truncate();
+                    } else {
+                        DB::table($table)->truncate();
+                    }
+                }
+
+                // Reset counters
+                DB::table('compteurs')
+                    ->whereNotIn('type', ['fr', 'art'])
+                    ->update(['compteur' => 1]);
+
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            });
+
+            // Log the reset operation for audit purposes
+            Log::info('Database reset operation completed successfully');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reset successful!',
+                'timestamp' => now()->toDateTimeString()
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('Reset failed: '.$e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Reset failed: '.$e->getMessage(),
+                'timestamp' => now()->toDateTimeString()
+            ], 500);
+        }
     });
 //    Route::get('/', function () {
 //        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
