@@ -8,6 +8,7 @@ use App\Models\Cheque;
 use App\Models\Client;
 use App\Models\Commercial;
 use App\Models\Depense;
+use App\Models\Importation;
 use App\Models\Paiement;
 use App\Models\ReleveBancaire;
 use App\Models\Vente;
@@ -36,40 +37,67 @@ Route::middleware([
 ])->group(function () {
     Route::get('/reset-somelaar', function () {
         try {
-            DB::transaction(function () {
-                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            $tables = [
+                'ventes_relations',
+                \App\Models\VenteLigne::class,
+                \App\Models\AchatLigne::class,
+                Vente::class,
+                Achat::class,
+                Paiement::class,
+                ReleveBancaire::class,
+                Client::class,
+                Commercial::class,
+                Depense::class,
+                Cheque::class,
+                Abonnement::class,
+                \App\Models\TransactionStock::class,
+                \App\Models\Rebut::class,
+                \App\Models\Promesse::class,
+                \App\Models\Event::class,
+                \App\Models\Affaire::class,
+                \App\Models\PosSession::class,
+                \App\Models\Operation::class,
+                \App\Models\DemandeTransfert::class,
+                \App\Models\Transfert::class,
+                \App\Models\TransfertCaisse::class,
+                \App\Models\Inventaire::class,
+                \App\Models\Jalon::class,
+                Importation::class,
+                \App\Models\DemandeTransfertLigne::class,
+                \Spatie\Activitylog\Models\Activity::class,
+                'achats_relations',
+                'abonnement_settings',
+                'authentication_log',
+                'client_contact',
+                'personal_access_tokens',
+                'relance_settings',
+                'renouvellements',
+                'taggables',
+                'tags',
+                \App\Models\Transformation::class,
+                \App\Models\TransformationLigne::class,
+                'vente_avoir',
+                'woocommerce_imports',
+                'woocommerce_settings'
+            ];
 
-                // Define tables to truncate in logical order (child tables first)
-                $tables = [
-                    'ventes_relations',
-                    \App\Models\VenteLigne::class,
-                    \App\Models\AchatLigne::class,
-                    Vente::class,
-                    Achat::class,
-                    Paiement::class,
-                    ReleveBancaire::class,
-                    Client::class,
-                    Commercial::class,
-                    Depense::class,
-                    Cheque::class,
-                    Abonnement::class,
-                ];
-
-                foreach ($tables as $table) {
-                    if (class_exists($table)) {
-                        $table::truncate();
-                    } else {
-                        DB::table($table)->truncate();
-                    }
+            foreach ($tables as $table) {
+                if (class_exists($table)) {
+                    $table::truncate();
+                } else {
+                    DB::table($table)->truncate();
                 }
+            }
 
-                // Reset counters
-                DB::table('compteurs')
-                    ->whereNotIn('type', ['fr', 'art'])
-                    ->update(['compteur' => 1]);
+            // Reset counters
+            DB::table('compteurs')
+                ->whereNotIn('type', ['fr', 'art'])
+                ->update(['compteur' => 1]);
 
-                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            });
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
 
             // Log the reset operation for audit purposes
             Log::info('Database reset operation completed successfully');
@@ -81,18 +109,22 @@ Route::middleware([
             ]);
 
         } catch (\Throwable $e) {
-            Log::error('Reset failed: '.$e->getMessage(), [
+            // Check if there's an active transaction before rolling back
+
+
+            Log::error('Reset failed: ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Reset failed: '.$e->getMessage(),
+                'message' => 'Reset failed: ' . $e->getMessage(),
                 'timestamp' => now()->toDateTimeString()
             ], 500);
         }
     });
+
 //    Route::get('/', function () {
 //        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
 //    });
