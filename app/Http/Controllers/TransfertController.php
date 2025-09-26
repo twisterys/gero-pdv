@@ -83,8 +83,9 @@ class TransfertController extends Controller
             abort(404);
         }
         $o_magasins = auth()->user()->magasins()->get();
+        $o_all_magasins = Magasin::all();
         $reference = 'TRF-'.Carbon::now()->format('YmdHis');
-        return view('transferts.ajouter', compact('o_magasins', 'reference'));
+        return view('transferts.ajouter', compact('o_magasins', 'reference','o_all_magasins'));
     }
 
     public function article_select_modal()

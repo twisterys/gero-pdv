@@ -134,7 +134,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label required me-2" for="au_magasin">Au Magasin</label>
                                     <select class="form-select " id="au_magasin" name="au_magasin" data-parsley-multiple="groups" data-parsley-mincheck="1">
-                                        @foreach($o_magasins as $o_magasin)
+                                        @foreach($o_all_magasins as $o_magasin)
                                             <option value="{{$o_magasin->id}}" >{{ $o_magasin->reference }}</option>
                                         @endforeach
                                     </select>
