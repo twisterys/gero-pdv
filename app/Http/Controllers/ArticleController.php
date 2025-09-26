@@ -40,6 +40,7 @@ class ArticleController extends Controller
      */
     public function liste(Request $request)
     {
+        $this->guard_custom(['article.liste']);
         if ($request->ajax()) {
             $query = Article::with('famille', 'unite', 'stock');
             if( $request->get('code_barre')){
@@ -125,6 +126,7 @@ class ArticleController extends Controller
      */
     public function ajouter()
     {
+        $this->guard_custom(['article.sauvegarder']);
         $article_reference = $this->generer_reference(Carbon::now());
         $taxes = Taxe::all()->toArray();
         $unites = Unite::all()->toArray();
@@ -144,6 +146,7 @@ class ArticleController extends Controller
 
     public function afficher($id)
     {
+        $this->guard_custom(['article.afficher']);
         $o_article = Article::findOrFail($id);
         $globals = GlobalService::get_all_globals();
 
@@ -181,6 +184,7 @@ class ArticleController extends Controller
      */
     public function sauvegarder(ArticleStoreRequest $request)
     {
+        $this->guard_custom(['article.sauvegarder']);
         try {
             DB::beginTransaction();
             $o_article = new Article();
@@ -244,8 +248,7 @@ class ArticleController extends Controller
      */
     public function imprimerCodeBarre($code)
     {
-
-
+        $this->guard_custom(['article.afficher']);
         try {
             $generator = new BarcodeGeneratorPNG();
             $barcode = base64_encode($generator->getBarcode($code, $generator::TYPE_CODE_128));
@@ -272,6 +275,7 @@ class ArticleController extends Controller
      */
     public function modifier(int $id)
     {
+        $this->guard_custom(['article.mettre_a_jour']);
         $o_article = Article::with('famille', 'unite', 'taxe')->find($id);
         if (!$o_article) {
             abort(404);
@@ -298,6 +302,7 @@ class ArticleController extends Controller
      */
     public function mettre_a_jour(ArticleUpdateRequest $request, int $id)
     {
+        $this->guard_custom(['article.mettre_a_jour']);
         $o_article = Article::with('famille', 'unite', 'taxe')->find($id);
         $modifier_reference =  GlobalService::get_modifier_reference();
 
@@ -345,6 +350,7 @@ class ArticleController extends Controller
      */
     public function supprimer($id)
     {
+        $this->guard_custom(['article.supprimer']);
         if (\request()->ajax()) {
             $i_famille = Article::find($id);
             if ($i_famille) {
@@ -358,6 +364,7 @@ class ArticleController extends Controller
 
     public function modal_recherche(Request $request, $type)
     {
+        $this->guard_custom(['article.liste']);
         if ($request->ajax()) {
             $nom = $request->get('search');
             $magasin_id = $request->get('magasin_id');
@@ -367,6 +374,7 @@ class ArticleController extends Controller
     }
     public function article_select_modal(Request $request,$type, $magasin_id )
     {
+        $this->guard_custom(['article.liste']);
         if ($request->ajax()) {
             if ($type === "inventaire"){
                 $articles = Article::with('stock')->where("stockable", "=", "1")->take(6)->get();
@@ -387,11 +395,13 @@ class ArticleController extends Controller
 
     public function load_article_image($file)
     {
+        $this->guard_custom(['article.liste']);
         return $this->load($file);
     }
 
     public function article_select(Request $request)
     {
+        $this->guard_custom(['article.liste']);
         if ($request->ajax()) {
             $search = '%' . $request->get('term') . '%';
             $data = Article::where('designation', 'LIKE', $search)->get(['id', 'designation as text']);
@@ -402,6 +412,7 @@ class ArticleController extends Controller
 
     public function afficher_ajax(Request $request, $id)
     {
+        $this->guard_custom(['article.afficher']);
         $o_article = Article::find($id);
         if ($request->ajax()){
             if (!$o_article) {
@@ -416,6 +427,7 @@ class ArticleController extends Controller
 
 
     public function historique_prix_modal(Request $request){
+        $this->guard_custom(['article.afficher']);
         \Validator::make($request->all(),[
             'client_id'=>'required|exists:clients,id',
             'article_id'=>'required|exists:articles,id'

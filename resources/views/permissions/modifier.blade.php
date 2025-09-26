@@ -151,5 +151,4 @@
         });
         $('#permissions').append(sorted)
     </script>
-    @vite('resources/js/article_create.js')
 @endpush

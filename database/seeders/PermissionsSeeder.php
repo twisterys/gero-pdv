@@ -85,6 +85,31 @@ class PermissionsSeeder extends Seeder
             'depense.mettre_a_jour',
             'depense.supprimer',
             /**
+             * Permissions de model produit: articles
+             */
+            'article.*',
+            'article.liste',
+            'article.afficher',
+            'article.sauvegarder',
+            'article.mettre_a_jour',
+            'article.supprimer',
+            /**
+             * Permissions de model produit: familles
+             */
+            'famille.*',
+            'famille.liste',
+            'famille.sauvegarder',
+            'famille.mettre_a_jour',
+            'famille.supprimer',
+            /**
+             * Permissions de model produit: marques
+             */
+            'marque.*',
+            'marque.liste',
+            'marque.sauvegarder',
+            'marque.mettre_a_jour',
+            'marque.supprimer',
+            /**
              * Permissions de model stock
              */
             'stock.*',

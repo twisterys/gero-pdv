@@ -50,27 +50,34 @@
                         </ul>
                     </li>
                 @endif
-                <li @if(in_array(Request::segment(1),['articles','familles'])) class="mm-active" @endif >
-                    <a href="javascript: void(0);"
-                       class="has-arrow waves-effect @if(in_array(Request::segment(1),['articles','familles'])) mm-active @endif"
-                       aria-expanded="false">
-                        <i class="fa  fas fa-barcode"></i>
-                        <span>Produits</span>
-                    </a>
-                    <ul class="sub-menu mm-collapse @if(in_array(Request::segment(1),['articles','familles'])) mm-show @endif "
-                        aria-expanded="false">
-                        <li @if(Request::segment(1)==='articles') class="mm-active" @endif><a
-                                href="{{ route('articles.liste') }}"
-                                @if(Request::segment(1)==='articles') class="active" @endif >Articles</a></li>
-                        <li @if(Request::segment(1)==='familles') class="mm-active" @endif><a
-                                href="{{ route('familles.liste') }}"
-                                @if(Request::segment(1)==='familles') class="active" @endif >Familles</a></li>
-                        <li @if(Request::segment(1)==='marques') class="mm-active" @endif><a
-                                href="{{ route('marques.liste') }}"
-                                @if(Request::segment(1)==='marques') class="active" @endif >Marques</a></li>
-                        {{--                        <li><a href="#br">Importation</a></li>--}}
-                    </ul>
-                </li>
+                @if(auth()->user()->canAny(['article.liste','famille.liste','marque.liste']))
+                    <li @if(in_array(Request::segment(1),['articles','familles','marques'])) class="mm-active" @endif >
+                        <a href="javascript: void(0);"
+                           class="has-arrow waves-effect @if(in_array(Request::segment(1),['articles','familles','marques'])) mm-active @endif"
+                           aria-expanded="false">
+                            <i class="fa  fas fa-barcode"></i>
+                            <span>Produits</span>
+                        </a>
+                        <ul class="sub-menu mm-collapse @if(in_array(Request::segment(1),['articles','familles','marques'])) mm-show @endif "
+                            aria-expanded="false">
+                            @can('article.liste')
+                                <li @if(Request::segment(1)==='articles') class="mm-active" @endif><a
+                                        href="{{ route('articles.liste') }}"
+                                        @if(Request::segment(1)==='articles') class="active" @endif >Articles</a></li>
+                            @endcan
+                            @can('famille.liste')
+                                <li @if(Request::segment(1)==='familles') class="mm-active" @endif><a
+                                        href="{{ route('familles.liste') }}"
+                                        @if(Request::segment(1)==='familles') class="active" @endif >Familles</a></li>
+                            @endcan
+                            @can('marque.liste')
+                                <li @if(Request::segment(1)==='marques') class="mm-active" @endif><a
+                                        href="{{ route('marques.liste') }}"
+                                        @if(Request::segment(1)==='marques') class="active" @endif >Marques</a></li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endif
                 @if(LimiteService::is_enabled('pos') && auth()->user()->can('pos.*'))
                     <li>
                         <a href="{{route('pos')}}" class=" waves-effect">
@@ -116,16 +123,16 @@
                         </ul>
                     </li>
                 @endcan
-               @if(LimiteService::is_enabled('transformation'))
-                   @can('transformation.liste')
+                @if(LimiteService::is_enabled('transformation'))
+                    @can('transformation.liste')
                         <li @if(in_array(Request::segment(1),['transformations'])) class="mm-active" @endif>
                             <a href="{{route('transformations.liste')}}" aria-expanded="false">
                                 <i class="mdi mdi-switch"></i>
                                 <span>Transformations</span>
                             </a>
                         </li>
-                   @endcan
-               @endif
+                    @endcan
+                @endif
                 @can('depense.liste')
                     <li @if(in_array(Request::segment(1),['depenses'])) class="mm-active" @endif>
                         <a href="{{route('depenses.liste')}}" aria-expanded="false">
@@ -158,12 +165,14 @@
 
 
                 @if(LimiteService::is_enabled('abonnement'))
+                    @can('abonnement.list')
                     <li @if(in_array(Request::segment(1),['abonnements'])) class="mm-active" @endif>
                         <a href="{{route('abonnements.liste')}}" aria-expanded="false">
                             <i class="mdi mdi-repeat"></i>
                             <span>Abonnements</span>
                         </a>
                     </li>
+                        @endcan
                 @endif
 
                 @if(LimiteService::is_enabled('stock') && auth()->user()->canAny(['inventaire.*','transfert_stock.*']))

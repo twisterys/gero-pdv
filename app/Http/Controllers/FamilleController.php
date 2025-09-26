@@ -13,6 +13,7 @@ class FamilleController extends Controller
      */
     public function liste()
     {
+        $this->guard_custom(['famille.liste']);
         if (\request()->ajax()) {
             $query = Famille::select('*');
             $table = DataTables::of($query);
@@ -51,6 +52,7 @@ class FamilleController extends Controller
      */
     public function sauvegarder(Request $request)
     {
+        $this->guard_custom(['famille.sauvegarder']);
         if ($request->ajax()){
             $i_famille = Famille::create([
                 'nom' => $request->get('i_nom'),
@@ -75,6 +77,7 @@ class FamilleController extends Controller
      */
     public function modifier($id)
     {
+        $this->guard_custom(['famille.mettre_a_jour']);
         $i_famille = Famille::find($id);
         if ($i_famille) {
             $name = $i_famille->nom;
@@ -90,6 +93,7 @@ class FamilleController extends Controller
      */
     public function mettre_a_jour(Request $request, $id)
     {
+        $this->guard_custom(['famille.mettre_a_jour']);
         $i_famille = Famille::find($id);
         if ($i_famille) {
             $i_famille->update([
@@ -108,6 +112,7 @@ class FamilleController extends Controller
      */
     public function supprimer($id)
     {
+        $this->guard_custom(['famille.supprimer']);
         if (\request()->ajax()) {
             $i_famille = Famille::find($id);
             if ($i_famille) {
@@ -121,6 +126,7 @@ class FamilleController extends Controller
 
     public function famille_select(Request $request)
     {
+        $this->guard_custom(['famille.liste']);
         if ($request->ajax()) {
             $search = '%' . $request->get('term') . '%';
             $data = Famille::where('nom', 'LIKE', $search)->where('actif', '1')->get(['id', 'nom as text']);

@@ -38,7 +38,6 @@ return [
     'vente.supprimer'=>'Suppression',
     'vente.valider'=>'Validation',
     'vente.devalider'=>'Dévalidation',
-    'vente.devalider'=>'Dévalidation',
     'vente.convertir'=>'Convertion',
     'vente.convertir_mass'=>'Convertion en mass',
     'vente.cloner'=>'Clonage',
@@ -213,10 +212,38 @@ return [
     'rebut.afficher'=>'Affichage',
     'rebut.rollback'=>'Rollback',
 
+        /**
+         * Permissions des produits: articles
+         */
+        'article'=>'Gestion des articles',
+        'article.liste'=>'Liste',
+        'article.afficher'=>'Affichage',
+        'article.sauvegarder'=>'Ajout',
+        'article.mettre_a_jour'=>'Mettre à jour',
+        'article.supprimer'=>'Suppression',
 
-    /**
-     * Permissions des promesses
-     */
+        /**
+         * Permissions des produits: familles
+         */
+        'famille'=>'Gestion des familles',
+        'famille.liste'=>'Liste',
+        'famille.sauvegarder'=>'Ajout',
+        'famille.mettre_a_jour'=>'Mettre à jour',
+        'famille.supprimer'=>'Suppression',
+
+        /**
+         * Permissions des produits: marques
+         */
+        'marque'=>'Gestion des marques',
+        'marque.liste'=>'Liste',
+        'marque.sauvegarder'=>'Ajout',
+        'marque.mettre_a_jour'=>'Mettre à jour',
+        'marque.supprimer'=>'Suppression',
+
+
+        /**
+         * Permissions des promesses
+         */
 
     'promesse'=>'Gestion des promesses',
     'promesse.liste'=>'Liste',

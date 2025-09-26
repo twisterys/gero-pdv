@@ -11,6 +11,7 @@ class MarqueController extends Controller
 {
     public function liste()
     {
+        $this->guard_custom(['marque.liste']);
         if (\request()->ajax()){
             $query = Marque::all();
             $table = DataTables::of($query);
@@ -35,6 +36,7 @@ class MarqueController extends Controller
 
     public function sauvegarder(Request $request)
     {
+           $this->guard_custom(['marque.sauvegarder']);
            $request->validate([
                'nom' => ['required','string','max:255','unique:marques,nom'],
            ]);
