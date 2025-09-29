@@ -35,73 +35,13 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     CheckTenantForMaintenanceMode::class
 ])->group(function () {
-    Route::get('/reset-somelaar', function () {
+    Route::get('/delete-TransfertLines', function () {
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            $tables = [
-                'ventes_relations',
-                \App\Models\VenteLigne::class,
-                \App\Models\AchatLigne::class,
-                Vente::class,
-                Achat::class,
-                Paiement::class,
-                ReleveBancaire::class,
-                Client::class,
-                Commercial::class,
-                Depense::class,
-                Cheque::class,
-                Abonnement::class,
-                \App\Models\TransactionStock::class,
-                \App\Models\Rebut::class,
-                \App\Models\Promesse::class,
-                \App\Models\Event::class,
-                \App\Models\Affaire::class,
-                \App\Models\PosSession::class,
-                \App\Models\Operation::class,
-                \App\Models\DemandeTransfert::class,
-                \App\Models\Transfert::class,
-                \App\Models\TransfertCaisse::class,
-                \App\Models\Inventaire::class,
-                \App\Models\Jalon::class,
-                Importation::class,
-                \App\Models\DemandeTransfertLigne::class,
-                \Spatie\Activitylog\Models\Activity::class,
-                'achats_relations',
-                'abonnement_settings',
-                'authentication_log',
-                'client_contact',
-                'personal_access_tokens',
-                'relance_settings',
-                'renouvellements',
-                'taggables',
-                'tags',
-                \App\Models\Transformation::class,
-                \App\Models\TransformationLigne::class,
-                'vente_avoir',
-                'woocommerce_imports',
-                'woocommerce_settings',
-                'stocks'
-            ];
 
-            foreach ($tables as $table) {
-                if (class_exists($table)) {
-                    $table::truncate();
-                } else {
-                    DB::table($table)->truncate();
-                }
-            }
-
-            // Reset counters
-            DB::table('compteurs')
-                ->whereNotIn('type', ['fr', 'art'])
-                ->update(['compteur' => 1]);
-
+            \App\Models\TransfertLigne::where('id','<=',18)->delete();
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-
-            // Log the reset operation for audit purposes
-            Log::info('Database reset operation completed successfully');
 
             return response()->json([
                 'success' => true,
