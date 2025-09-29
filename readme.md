@@ -104,3 +104,4 @@ Template::create([
 
 - User Guide (How to use the POS): docs/pos/User_Guide.md
 - Developer Guide (Architecture, libraries, coding guidelines): docs/pos/Developer_Guide.md
+- Permissions overview (non-technical): docs/permissions.md

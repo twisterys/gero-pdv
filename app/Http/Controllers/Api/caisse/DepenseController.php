@@ -46,7 +46,7 @@ class DepenseController extends Controller
         ]);
         PaiementService::payer_depense($o_depense->id, [
             'i_date_paiement' => Carbon::now()->format('d/m/Y'),
-            'i_compte_id' => Compte::where('principal', 1)->first()->id,
+            'i_compte_id' => Compte::ofUser()->where('principal', 1)->first()?->id ?? (Compte::ofUser()->first()?->id ?? Compte::first()->id) ,
             'i_method_key' => 'especes',
             'i_note' => null,
             'i_date' => Carbon::now()->format('d/m/Y'),

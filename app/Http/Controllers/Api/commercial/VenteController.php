@@ -171,7 +171,7 @@ class VenteController extends Controller
                     'solde' => $vente_ttc,
                 ]);
             }
-            $o_compte = Compte::where('principal', 1)->first() ?? Compte::first();
+            $o_compte = CCompte::ofUser()->where('principal', 1)->first()?->id ?? (Compte::ofUser()->first()?->id ?? Compte::first()->id) ;
             $paiement_data = [
                 'i_date_paiement' => now()->format('d/m/Y'),
                 'i_compte_id' => $o_compte->id,

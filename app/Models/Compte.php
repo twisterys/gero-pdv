@@ -33,7 +33,27 @@ class Compte extends Model
         return $this->belongsTo(Banque::class);
     }
 
+    public function magasins()
+    {
+        return $this->belongsToMany(Magasin::class, 'compte_magasin', 'compte_id', 'magasin_id');
+    }
+
     public function getSoldeAttribute(){
         return $this->paiements()->selectRaw('sum(encaisser - decaisser) as solde')->first()->solde ?? 0;
+    }
+
+    static function ofUser($user = null)
+    {
+        $user = $user ?: request()->user();
+        if (!$user) {
+            return static::query()->whereRaw('1 = 0');
+        }
+        $magasinIds = $user->magasins()->pluck('magasins.id');
+
+        return static::query()
+            ->whereHas('magasins', function ($q) use ($magasinIds) {
+                $q->whereIn('magasins.id', $magasinIds);
+            })
+            ->distinct();
     }
 }

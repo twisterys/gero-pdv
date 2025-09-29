@@ -1,7 +1,7 @@
 @extends('layouts.main')
 @section('document-title','Magasins')
 @push('styles')
-
+    <link rel="stylesheet" href="{{ asset('libs/select2/css/select2.min.css') }}">
 @endpush
 @section('page')
     <div class="col-12">
@@ -116,7 +116,14 @@
                                 </select>
                             </div>
 
-
+                            <div class="col-12 mb-3">
+                                <label class="form-label" for="compte_ids_create">Comptes associés</label>
+                                <select class="form-select select2-comptes" id="compte_ids_create" name="compte_ids[]" multiple data-placeholder="Sélectionner un ou plusieurs comptes">
+                                    @foreach($comptes as $compte)
+                                        <option value="{{ $compte->id }}">{{ $compte->nom }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
                         </div>
                     </div>
@@ -139,7 +146,9 @@
     </div>
 @endsection
 @push('scripts')
+    <script src="{{ asset('libs/select2/js/select2.min.js') }}"></script>
     <script>
+        // Toggle single active checkbox behavior
         const checkboxes = document.querySelectorAll('.form-check-input');
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', function() {
@@ -154,28 +163,37 @@
 
     <script>
         $(document).ready(function() {
+            // Ajax toggle active
             $('input[type="checkbox"]').on('change', function() {
                 const isChecked = $(this).prop('checked') ? 1 : 0;
                 const id = $(this).data('id');
-                console.log('ID: ' + id + ', Active: ' + isChecked);
                 $.ajax({
                     url: '{{route('magasin.modifier_active')}}',
                     method: 'POST',
                     dataType: 'json',
-                    headers:{
-                        'X-CSRF-Token':__csrf_token
-                    },
-                    data: {
-                        id: id,
-                        active: isChecked
-                    },
-                    success: function(response) {
-                        console.log('Données mises à jour avec succès');
-                    },
-                    error: function(error) {
-                        console.log('Erreur lors de la mise à jour des données');
-                    }
+                    headers:{ 'X-CSRF-Token':__csrf_token },
+                    data: { id: id, active: isChecked }
                 });
+            });
+
+            // Initialize Select2 for the Add modal
+            const $addModal = $('#add-uni-modal');
+            function initSelect2In($parent){
+                $parent.find('.select2-comptes').select2({
+                    width: '100%',
+                    dropdownParent: $parent,
+                    placeholder: $parent.find('.select2-comptes').data('placeholder') || 'Sélectionner',
+                    allowClear: true
+                });
+            }
+            $addModal.on('shown.bs.modal', function(){
+                initSelect2In($addModal);
+            });
+
+            // Initialize Select2 for the Edit modal (content loaded via AJAX)
+            const $editModal = $('#edit-uni-modal');
+            $editModal.on('shown.bs.modal', function(){
+                initSelect2In($editModal);
             });
         });
     </script>

@@ -129,7 +129,7 @@ class DepenseController extends Controller
         $referenceDepanse = ReferenceService::generateReference('dpa');
         $taxes = Taxe::all();
         $categories = CategorieDepense::where('active', '1')->get();
-        $comptes = Compte::all();
+        $comptes = Compte::ofUser()->get();
         $methodes = MethodesPaiement::where('actif',1)->get();
         $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
         $magasins_count = Magasin::where('active', '=', '1')->count();
@@ -306,7 +306,7 @@ class DepenseController extends Controller
         if ($o_depense->solde == 0) {
             return response("Cette dépense dest déja payé !", 403);
         }
-        $comptes = Compte::all();
+        $comptes = Compte::ofUser()->get();
         $methodes = MethodesPaiement::where('actif','=','1')->get();
         $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
         $magasins_count = Magasin::where('active', '=', '1')->count();

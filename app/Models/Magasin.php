@@ -44,5 +44,9 @@ class Magasin extends Model
         return $this->belongsTo(Compte::class, 'compte_id');
     }
 
+    public function comptes()
+    {
+        return $this->belongsToMany(Compte::class, 'compte_magasin', 'magasin_id', 'compte_id');
+    }
 
 }

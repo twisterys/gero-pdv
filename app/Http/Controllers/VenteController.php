@@ -810,7 +810,7 @@ class VenteController extends Controller
         if ($o_vente->solde == 0) {
             return response(__('ventes.' . $type) . " est déja payé !", 403);
         }
-        $comptes = Compte::all();
+        $comptes = Compte::ofUser()->get();
         $methodes = MethodesPaiement::where('actif','=','1')->get();
         $o_magasins = \request()->user()->magasins()->where('active','=','1')->get(['magasin_id as id','nom as text']);
         $magasins_count = Magasin::where('active', '=', '1')->count();

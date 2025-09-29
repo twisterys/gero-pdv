@@ -67,7 +67,7 @@ class ChequeController extends Controller
             })->rawColumns(['actions', 'selectable_td', 'statut']);
             return $table->make(true);
         }
-        $comptes = Compte::where('type', 'banque')->get();
+        $comptes = Compte::ofUser()->where('type', 'banque')->get();
         $banques = Banque::get();
         $statuts = Cheque::STATUTS;
         return view('cheques.encaisser', compact('comptes', 'banques', 'statuts'));
@@ -123,7 +123,7 @@ class ChequeController extends Controller
             })->rawColumns(['actions', 'selectable_td','statut']);
             return $table->make(true);
         }
-        $comptes = Compte::where('type', 'banque')->get();
+        $comptes = Compte::ofUser()->where('type', 'banque')->get();
         $banques = Banque::get();
         $statuts = Cheque::STATUTS;
         return view('cheques.decaisser', compact('comptes', 'banques','statuts'));
@@ -186,7 +186,7 @@ class ChequeController extends Controller
     {
         $this->guard_custom(['cheque.mettre_a_jour']);
         $cheque = Cheque::findOrFail($id);
-        $comptes = Compte::where('type', 'banque')->get();
+        $comptes = Compte::ofUser()->where('type', 'banque')->get();
         $banques = Banque::get();
         return view('cheques.partials.modifier_modal', compact('cheque', 'comptes', 'banques'));
     }

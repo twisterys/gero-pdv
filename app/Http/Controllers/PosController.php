@@ -32,7 +32,7 @@ class PosController extends Controller
         }
         $session = $pos_ouverte;
         $client = Client::where('nom', 'Passager')->first(['id as value', 'nom as label']) ?? Client::first(['id as value', 'nom as label']);
-        $comptes = Compte::all(['id as value', 'nom as label']);
+        $comptes = $pos_ouverte->magasin->comptes()->get(['comptes.id as value', 'nom as label']);
         $methodes = MethodesPaiement::where('actif', 1)->get(['key as value', 'nom as label']);
         $formes_juridique = FormeJuridique::all(['id as value', 'nom as label']);
         $pos_type = PosService::getValue('type_pos');

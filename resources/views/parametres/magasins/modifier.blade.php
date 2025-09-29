@@ -42,6 +42,17 @@
                 </select>
             </div>
 
+            <div class="col-12 mb-3">
+                <label class="form-label" for="compte_ids">Comptes associés</label>
+                <select class="form-select select2-comptes" id="compte_ids" name="compte_ids[]" multiple data-placeholder="Sélectionner un ou plusieurs comptes">
+                    @foreach($comptes as $compte)
+                        <option value="{{ $compte->id }}" {{ (isset($compte_ids) && is_array($compte_ids) && in_array($compte->id, $compte_ids)) ? 'selected' : '' }}>
+                            {{ $compte->nom }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
 
 
         </div>

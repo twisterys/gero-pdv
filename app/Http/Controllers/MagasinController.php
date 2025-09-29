@@ -30,16 +30,31 @@ class MagasinController extends Controller
             session()->flash('warning',"Vous avez atteint le nombre maximum des magasins");
             return redirect()->route('magasin.liste');
         }
-        $validationRules = ['reference' => 'required|max:20|unique:magasins,reference',
+        $validationRules = [
+            'reference' => 'required|max:20|unique:magasins,reference',
             'nom' => 'required',
             'adresse' => 'required',
             'type_local' => 'required',
-            'compte_id' => 'required|exists:comptes,id'
+            'compte_id' => 'required|exists:comptes,id',
+            'compte_ids' => 'nullable|array',
+            'compte_ids.*' => 'integer|exists:comptes,id',
         ];
 
         $validated = $request->validate($validationRules);
+
         try {
-            Magasin::create($validated);
+            DB::transaction(function () use ($validated, $request) {
+                $magasin = Magasin::create($validated);
+                $ids = $request->input('compte_ids', []);
+                // Always include default compte_id in associated comptes
+                if (!empty($validated['compte_id'])) {
+                    $ids[] = (int) $validated['compte_id'];
+                }
+                $ids = array_values(array_unique(array_filter($ids)));
+                if (!empty($ids)) {
+                    $magasin->comptes()->sync($ids);
+                }
+            });
             session()->flash('success', 'Magasin ajouté avec succès');
             return redirect()->route('magasin.liste');
         } catch (Exception $e) {
@@ -64,15 +79,30 @@ class MagasinController extends Controller
     public function mettre_a_jour(Request $request, $id)
     {
         $this->guard_custom(['parametres.magasins']);
-        $validationRules = ['reference' => 'required|max:20|unique:magasins,reference,'.$id,
+        $validationRules = [
+            'reference' => 'required|max:20|unique:magasins,reference,'.$id,
             'nom' => 'required',
             'adresse' => 'required',
             'type_local' => 'required',
             'compte_id' => 'required|exists:comptes,id',
+            'compte_ids' => 'nullable|array',
+            'compte_ids.*' => 'integer|exists:comptes,id',
         ];
         $validated = $request->validate($validationRules);
-        $o_magasin = Magasin::findOrFail($id);
-        $o_magasin->update($validated);
+
+        DB::transaction(function () use ($validated, $id, $request) {
+            $o_magasin = Magasin::findOrFail($id);
+            $o_magasin->update($validated);
+
+            $ids = $request->input('compte_ids', []);
+            // Always include default compte_id in associated comptes
+            if (!empty($validated['compte_id'])) {
+                $ids[] = (int) $validated['compte_id'];
+            }
+            $ids = array_values(array_unique(array_filter($ids)));
+            $o_magasin->comptes()->sync($ids);
+        });
+
         session()->flash('success', 'Magasin mise à jour');
         return redirect()->route('magasin.liste');
     }
@@ -90,7 +120,8 @@ class MagasinController extends Controller
             $reference = $o_magasin->reference;
             $type_local = $o_magasin->type_local;
             $compte_id = $o_magasin->compte_id;
-            return view('parametres.magasins.modifier', compact('comptes','nom', 'reference', 'adresse', 'id', 'type_local', 'compte_id'));
+            $compte_ids = $o_magasin->comptes()->pluck('comptes.id')->toArray();
+            return view('parametres.magasins.modifier', compact('comptes','nom', 'reference', 'adresse', 'id', 'type_local', 'compte_id', 'compte_ids'));
         }
         abort(404);
     }
