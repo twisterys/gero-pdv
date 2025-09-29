@@ -77,8 +77,8 @@ class CompteController extends Controller
     public function liste(Request $request)
     {
         $this->guard_custom(['compte.liste']);
-        $caisses = Compte::where('type','caisse')->get();
-        $banques = Compte::where('type','banque')->get();
+        $caisses = Compte::ofUser()->where('type','caisse')->get();
+        $banques = Compte::ofUser()->where('type','banque')->get();
         return view('comptes.liste',compact('caisses','banques'));
     }
 
