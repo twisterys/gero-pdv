@@ -8,9 +8,14 @@
                 <div class="col">
                     <h4 class="mb-0">Rapport Journalier</h4>
                 </div>
+                <div class="col-auto no-print">
+                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                        <i class="mdi mdi-printer"></i> Imprimer
+                    </button>
+                </div>
             </div>
 
-            <div class="row mt-3 justify-content-start">
+            <div class="row mt-3 justify-content-start no-print">
                 <div class="col-12 col-xl-8 col-lg-9">
                     <form method="post" action="{{ route('rapports.journalier.filtrer') }}" class="row g-3 align-items-end">
                         @csrf
@@ -292,3 +297,18 @@
 
 
             @endsection
+
+@push('styles')
+<style>
+    /* Hide elements marked as no-print when printing */
+    @media print {
+        .no-print { display: none !important; }
+        /* Avoid breaking cards and tables across pages */
+        .card { break-inside: avoid; page-break-inside: avoid; }
+        table { break-inside: avoid; page-break-inside: avoid; }
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
+        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+</style>
+@endpush
