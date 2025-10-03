@@ -194,6 +194,42 @@
                     @endif
                 </div>
             </div>
+            {{-- Dépenses par catégorie --}}
+            <div class="card mb-3">
+                <div class="card-header"><strong>Dépenses par catégorie</strong></div>
+                <div class="card-body">
+                    @if(!empty($depenses))
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th class="text-end">Montant</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse(($depenses['items'] ?? []) as $row)
+                                    <tr>
+                                        <td>{{ $row['categorie'] }}</td>
+                                        <td class="text-end">{{ number_format($row['montant'] ?? 0, 2, ',', ' ') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="text-muted text-center">Aucune dépense</td>
+                                    </tr>
+                                @endforelse
+                                <tr class="fw-bold bg-soft-light">
+                                    <td>Total</td>
+                                    <td class="text-end">{{ number_format($depenses['total'] ?? 0, 2, ',', ' ') }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted text-center mb-0">Aucune donnée</p>
+                    @endif
+                </div>
+            </div>
 
             {{-- Trésorerie (alignée POS Parfum) --}}
 
@@ -254,4 +290,5 @@
                 </div>
             </div>
 
-@endsection
+
+            @endsection

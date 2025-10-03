@@ -60,6 +60,11 @@ class RapportJournalierController extends Controller
         return response()->json($this->computeTR($request));
     }
 
+    public function depenses(Request $request)
+    {
+        return response()->json($this->computeDEP($request));
+    }
+
     private function buildReports(string $date, int $magasin_id): array
     {
         $req = new Request(['date' => $date, 'magasin_id' => $magasin_id]);
@@ -68,6 +73,7 @@ class RapportJournalierController extends Controller
             'af' => $this->computeAF($req),
             'cr' => $this->computeCR($req),
             'tr' => $this->computeTR($req),
+            'depenses' => $this->computeDEP($req),
         ];
     }
 
@@ -393,6 +399,35 @@ class RapportJournalierController extends Controller
             'total_depenses' => (float)$total_depenses,
             'reste_en_caisse' => (float)$reste_en_caisse,
 
+        ];
+    }
+
+    // 5) Dépenses par catégorie (dérivé du Rapport API POS)
+    private function computeDEP(Request $request): array
+    {
+        $date = $request->get('date') ?: Carbon::today()->format('Y-m-d');
+        $magasinId = (int)$request->get('magasin_id');
+
+        $rows = DB::table('depenses')
+            ->whereDate('date_operation', '=', $date)
+            ->where('magasin_id', $magasinId)
+            ->join('categorie_depense', 'depenses.categorie_depense_id', '=', 'categorie_depense.id')
+            ->groupBy('categorie_depense_id', 'categorie_depense.nom')
+            ->select(DB::raw('SUM(montant) as montant'), 'categorie_depense.nom as categorie')
+            ->get();
+
+        $total = (float) ($rows->sum('montant'));
+        // Normalize to array of simple items
+        $items = $rows->map(function ($r) {
+            return [
+                'categorie' => $r->categorie,
+                'montant' => (float)$r->montant,
+            ];
+        })->toArray();
+
+        return [
+            'items' => $items,
+            'total' => $total,
         ];
     }
 }
