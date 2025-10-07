@@ -102,13 +102,16 @@ class ArticleController extends Controller
                 return '<div class="badge" style="background-color:' . $row->famille['couleur'] . '">' . $row->famille["nom"] . '</div>';
             });
             $table->editColumn('prix_vente', function ($row) {
-                return number_format($row->prix_vente, '2', ',', '') . ' MAD';
+                $scale = GlobalService::get_decimal_length();
+                return number_format($row->prix_vente, $scale, ',', '') . ' MAD';
             });
             $table->editColumn('prix_achat', function ($row) {
-                return number_format($row->prix_achat, '2', ',', '') . ' MAD';
+                $scale = GlobalService::get_decimal_length();
+                return number_format($row->prix_achat, $scale, ',', '') . ' MAD';
             });
             $table->editColumn('prix_revient', function ($row) {
-                return number_format($row->prix_revient, '2', ',', '') . ' MAD';
+                $scale = GlobalService::get_decimal_length();
+                return number_format($row->prix_revient, $scale, ',', '') . ' MAD';
             });
             $table->editColumn('created_at', function ($row) {
                 return Carbon::make($row->created_at)->toDateString();
@@ -174,6 +177,10 @@ class ArticleController extends Controller
             $codeBarreHtml = $this->genererCodeBarre($o_article->code_barre);
         }
 
+        $o_article->prix_revient = format_decimal($o_article->prix_revient);
+        $o_article->prix_vente = format_decimal($o_article->prix_vente);
+        $o_article->prix_achat = format_decimal($o_article->prix_achat);
+        $o_article->quantite_alerte = format_decimal($o_article->quantite_alerte);
 
         $globals = GlobalService::get_all_globals();
         return view('articles.afficher', compact('o_article', 'magasins','codeBarreHtml','globals'));
@@ -194,10 +201,10 @@ class ArticleController extends Controller
             $o_article->famille_id = $request->get('i_famille');
             $o_article->description = $request->get('description');
             $o_article->taxe = $request->get('i_taxe');
-            $o_article->prix_vente = $request->get('i_vente_prix');
-            $o_article->prix_achat = $request->get('i_achat_prix');
-            $o_article->prix_revient = $request->get('i_revient_prix');
-            $o_article->quantite_alerte = $request->get('i_quantite_alerte');
+            $o_article->prix_vente = round_number($request->get('i_vente_prix'));
+            $o_article->prix_achat = round_number($request->get('i_achat_prix'));
+            $o_article->prix_revient = round_number($request->get('i_revient_prix'));
+            $o_article->quantite_alerte = round_number($request->get('i_quantite_alerte'));
             $o_article->stockable = $request->get('i_stockable') ?? '0';
             $o_article->marque_id = $request->get('i_marque_id') ?? null;
             $o_article->numero_serie = $request->get('i_numero_serie') ?? null;
@@ -294,6 +301,10 @@ class ArticleController extends Controller
 
         $modifier_reference =  GlobalService::get_modifier_reference();
         $globals = GlobalService::get_all_globals();
+        $o_article->prix_revient = round_number($o_article->prix_revient);
+        $o_article->prix_vente = round_number($o_article->prix_vente);
+        $o_article->prix_achat = round_number($o_article->prix_achat);
+        $o_article->quantite_alerte = round_number($o_article->quantite_alerte);
         return view('articles.modifier', compact('taxes', 'unites', 'o_article','modifier_reference','marques','marque','image','numero_serie','globals'));
     }
 
@@ -317,10 +328,10 @@ class ArticleController extends Controller
             $o_article->famille_id = $request->get('i_famille');
             $o_article->description = $request->get('description');
             $o_article->taxe = $request->get('i_taxe');
-            $o_article->prix_vente = $request->get('i_vente_prix');
-            $o_article->prix_achat = $request->get('i_achat_prix');
-            $o_article->prix_revient = $request->get('i_revient_prix');
-            $o_article->quantite_alerte = $request->get('i_quantite_alerte');
+            $o_article->prix_vente = round_number($request->get('i_vente_prix'));
+            $o_article->prix_achat = round_number($request->get('i_achat_prix'));
+            $o_article->prix_revient = round_number($request->get('i_revient_prix'));
+            $o_article->quantite_alerte = round_number($request->get('i_quantite_alerte'));
             $o_article->stockable = $request->get('i_stockable') ?? '0';
             $o_article->marque_id = $request->get('i_marque_id') ?? null;
             $o_article->numero_serie = $request->get('i_numero_serie') ?? null;

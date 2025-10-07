@@ -12,7 +12,7 @@ class VenteLigne extends Model
     protected $fillable = [
         'nom_article',
         'description',
-        'ht_unitaire',
+        'ht',
         'quantite',
         'taxe',
         'reduction_unitaire',

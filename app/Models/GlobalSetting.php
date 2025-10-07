@@ -14,6 +14,7 @@ class GlobalSetting extends Model
         'code_barre',
         'dashboard',
         'controle',
-        'pieces_jointes'
+        'pieces_jointes',
+        'decimal_length'
     ];
 }

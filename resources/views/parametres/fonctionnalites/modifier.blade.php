@@ -81,6 +81,15 @@
                                         <label for="pieces_jointes" data-on-label="Oui" data-off-label="Non"></label>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        Nombre de chiffres apres la virgule
+                                    </td>
+                                    <td>
+                                        <input name="i_nombre_chiffres_apres_la_virgule" value="{{old('i_nombre_chiffres_apres_la_virgule',$o_global_settings->decimal_length)}}" type="number" id="nombre_chiffres_apres_la_virgule"
+                                               class="form-control">
+                                    </td>
+                                </tr>
 
                             </table>
                         </div>

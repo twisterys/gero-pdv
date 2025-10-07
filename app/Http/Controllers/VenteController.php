@@ -1675,10 +1675,11 @@ class VenteController extends Controller
      */
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $scale = GlobalService::get_decimal_length();
+        $ht = round($ht - $reduction, $scale);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, $scale) * $quantite;
+        return (string) round($ttc, $scale);
     }
 
     /**
@@ -1690,7 +1691,8 @@ class VenteController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        $scale = GlobalService::get_decimal_length();
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, $scale, '.', '');
     }
     /**
      * @param $vente

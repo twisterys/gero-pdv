@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\GlobalService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ArticleUpdateRequest extends FormRequest
@@ -36,8 +37,6 @@ class ArticleUpdateRequest extends FormRequest
             'i_marque_id'=>'nullable|exists:marques,id',
             'i_numero_serie'=>'nullable|string',
             'i_code_barre' => 'nullable|string',
-
-
 
         ];
     }

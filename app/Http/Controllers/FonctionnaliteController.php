@@ -22,6 +22,7 @@ class FonctionnaliteController extends Controller
             'code_barre'=> $request->has('i_code_barre'),
             'controle'=>$request->has('i_controle'),
             'pieces_jointes' => $request->has('i_pieces_jointes'),
+            'decimal_length' => $request->get('i_nombre_chiffres_apres_la_virgule'),
         ]);
         session()->flash('success','Fonctionnalités mise à jour !');
         return redirect()->route('fonctionnalites.sauvegarder');

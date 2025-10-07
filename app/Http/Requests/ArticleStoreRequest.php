@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\GlobalService;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ArticleStoreRequest extends FormRequest
@@ -21,6 +22,7 @@ class ArticleStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $decimal_length = GlobalService::get_decimal_length();
         $rules =[
             'i_reference' => 'required|min:1|max:255|string|unique:articles,reference|without_spaces',
             'i_designation' => 'required|min:1|max:255|string',
@@ -28,9 +30,9 @@ class ArticleStoreRequest extends FormRequest
             'i_famille' => 'nullable|exists:familles,id',
             'description' => 'nullable|string',
             'i_taxe' => 'required|exists:taxes,valeur',
-            'i_vente_prix' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,2})?$/', 'required'],
-            'i_achat_prix' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,2})?$/', 'nullable'],
-            'i_revient_prix' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,2})?$/', 'nullable'],
+            'i_vente_prix' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,'.$decimal_length.'})?$/', 'required'],
+            'i_achat_prix' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,'.$decimal_length.'})?$/', 'nullable'],
+            'i_revient_prix' => ['regex:/^[0-9]{1,9}((.|,)[0-9]{1,'.$decimal_length.'})?$/', 'nullable'],
             'i_image' => 'nullable|image',
             'i_quantite_alerte' => 'nullable|numeric',
             'i_marque_id'=>'nullable|exists:marques,id',
