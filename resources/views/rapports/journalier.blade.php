@@ -9,9 +9,9 @@
                     <h4 class="mb-0">Rapport Journalier</h4>
                 </div>
                 <div class="col-auto no-print">
-                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                    <a href="{{ route('rapports.journalier.plain', ['date' => $date ?? now()->format('Y-m-d'), 'magasin_id' => $magasinId ?? ($magasins[0]->id ?? null)]) }}" class="btn btn-primary ms-2">
                         <i class="mdi mdi-printer"></i> Imprimer
-                    </button>
+                    </a>
                 </div>
             </div>
 

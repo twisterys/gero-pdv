@@ -39,6 +39,17 @@ class RapportJournalierController extends Controller
         return view('rapports.journalier', compact('date', 'magasins', 'magasinId') + $data);
     }
 
+    public function printPlain(Request $request)
+    {
+        // Allow passing date and magasin via query, fallback to defaults
+        $date = $request->get('date') ?: Carbon::today()->format('Y-m-d');
+        $magasinId = (int)($request->get('magasin_id') ?: Magasin::query()->value('id'));
+        $magasins = Magasin::all(['id', 'nom']);
+
+        $data = $this->buildReports($date, $magasinId);
+        return view('rapports.journalier_plain', compact('date', 'magasins', 'magasinId') + $data);
+    }
+
     // Endpoints AJAX optionnels
     public function ac(Request $request)
     {
