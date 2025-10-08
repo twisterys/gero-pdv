@@ -196,6 +196,7 @@ class StockController extends Controller
                     $article = Article::where('designation', $row['designation'])->first();
                 }
                 if ($row['nouvelle_quantite'] !== null) {
+                    $row['nouvelle_quantite'] = round_number($row['nouvelle_quantite']);
                     $magasin_stock = $article->magasin_stock($magasin->id);
                     if ($row['nouvelle_quantite'] > $magasin_stock) {
                         $quantite = $row['nouvelle_quantite'] - $magasin_stock;
@@ -271,6 +272,7 @@ class StockController extends Controller
                 $article = Article::where('id', $row['i_article_id'])->first();
                 if ($row['quantite_new'] !== null) {
                     $magasin_stock = $article->magasin_stock($magasin->id);
+                    $row['quantite_new'] = round_number($row['quantite_new']);
                     if ($row['quantite_new'] > $magasin_stock) {
                         $quantite = $row['quantite_new'] - $magasin_stock;
                         StockService::stock_entre($article->id, $quantite, Carbon::now()->format('Y-m-d'), Inventaire::class, $inventaire->id,$magasin->id);

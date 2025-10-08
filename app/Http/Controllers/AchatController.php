@@ -178,7 +178,7 @@ class AchatController extends Controller
 //            })->editColumn('date_expiration',function ($row){
 //                return $row->date_expiration ? Carbon::make($row->date_expiration)->format('d/m/Y'):null;
             })->editColumn('total_ttc', function ($row) {
-                return ($row->total_ttc ?? 0) . ' MAD';
+                return format_decimal($row->total_ttc ?? 0) . ' MAD';
             })->editColumn('objet', function ($row) {
                 return '<p class="text-truncate text-nowrap m-0 p-0" style="max-width: 250px">' . $row->objet . '</p>';
             })->editColumn('statut', function ($row) {
@@ -307,10 +307,10 @@ class AchatController extends Controller
                     $o_ligne->mode_reduction = $ligne['i_reduction_mode'];
                     $o_ligne->nom_article = $ligne['i_article'];
                     $o_ligne->description = $ligne['i_description'];
-                    $o_ligne->ht = $ligne['i_prix_ht'];
-                    $o_ligne->quantite = $ligne['i_quantite'];
+                    $o_ligne->ht = round_number($ligne['i_prix_ht']);
+                    $o_ligne->quantite = round_number($ligne['i_quantite']);
                     $o_ligne->taxe = $ligne['i_taxe'];
-                    $o_ligne->reduction = $ligne['i_reduction'] ?? 0;
+                    $o_ligne->reduction = round_number($ligne['i_reduction'] ?? 0);
                     $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht ?? 0.00, $reduction ?? 0.00, $o_ligne->taxe ?? 0, $o_ligne->quantite ?? 0);
                     $o_ligne->position = $key;
                     $o_ligne->magasin_id = $ligne['i_magasin_id'] ?? $magasin_id;
@@ -321,11 +321,11 @@ class AchatController extends Controller
                     $achat_ttc += $o_ligne->total_ttc;
                 }
                 $o_achat->update([
-                    'total_ht' => $achat_ht,
-                    'total_tva' => $achat_tva,
-                    'total_reduction' => $achat_reduction,
-                    'total_ttc' => $achat_ttc,
-                    'debit' => $achat_ttc,
+                    'total_ht' => round_number($achat_ht),
+                    'total_tva' => round_number($achat_tva),
+                    'total_reduction' => round_number($achat_reduction),
+                    'total_ttc' => round_number($achat_ttc),
+                    'debit' => round_number($achat_ttc),
                     'credit' => 0
                 ]);
             }
@@ -951,11 +951,10 @@ class AchatController extends Controller
      */
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $scale = GlobalService::get_decimal_length();
-        $ht = round($ht - $reduction, $scale);
+        $ht = round_number($ht - $reduction);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, $scale) * $quantite;
-        return (string) round($ttc, $scale);
+        $ttc = round_number($ht * $tva) * $quantite;
+        return (string) round_number($ttc);
     }
 
     /**
@@ -967,8 +966,7 @@ class AchatController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        $scale = GlobalService::get_decimal_length();
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, $scale, '.', '');
+        return round_number(round_number(($ht - $reduction) * ($tva / 100)) * $quantite);
     }
 
     /**

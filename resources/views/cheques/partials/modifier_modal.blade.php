@@ -47,8 +47,8 @@
         </div>
         <div class="mb-3">
             <label for="update_montant_encaisse" class="form-label">Montant de cheque</label>
-            <input type="number" class="form-control" id="update_montant_encaisse" name="update_montant_encaisse"
-                   value="{{ $cheque->montant }}" required>
+            <input type="number" class="form-control" id="update_montant_encaisse" step="0.00001" name="update_montant_encaisse"
+                   value="{{ round_number($cheque->montant) }}" required>
             <div class="invalid-feedback"></div>
         </div>
         <div class="mb-3">

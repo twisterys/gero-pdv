@@ -3,9 +3,9 @@
         <div class="article-card border-2 border d-flex flex-column align-items-center rounded overflow-hidden h-100  shadow-sm"
             style="cursor: pointer" data-id="{{ $o_article->id }}" data-nom="{{ $o_article->designation }}"
             data-reference="{{ $o_article->reference }}"
-            data-ht="{{ $type == 'vente' ? $o_article->prix_vente : $o_article->prix_achat }}"
+            data-ht="{{ $type == 'vente' ? round_number($o_article->prix_vente) : round_number($o_article->prix_achat) }}"
             data-unite="{{ $o_article->unite_id }}" data-taxe="{{ $o_article->taxe }}"
-            data-quantite-stock="{{ number_format($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite, 2, '.', ' ') }}"
+            data-quantite-stock="{{ round_number($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite) }}"
         >
             <div class="article-card-header mb-1 w-100 overflow-hidden d-flex align-items-center"
                 style="max-height: 100px">
@@ -17,10 +17,10 @@
                 <h6 class="text-capitalize text-center">{{ $o_article->designation }}</h6>
                 <p class="m-0 font-size-12 text-center text-muted">{{ $o_article->reference }}</p>
                 <p class="m-0 font-size-12 text-center text-muted">
-                    {{ number_format($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite, 2, '.', ' ') }}
+                    {{ format_decimal($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite) }}
                     {{ $o_article->unite->nom }}</p>
                 <p class="m-0 text-center fw-bold my1 text-primary">
-                    {{ $type == 'vente' ? $o_article->prix_vente : $o_article->prix_achat }} MAD</p>
+                    {{ $type == 'vente' ? format_decimal($o_article->prix_vente) : format_decimal($o_article->prix_achat) }} MAD</p>
             </div>
         </div>
     </div>

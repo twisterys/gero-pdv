@@ -167,7 +167,7 @@ class ChequeController extends Controller
         Cheque::create([
             'type' => $type,
             'number' => $request->numero_transaction,
-            'montant' => $request->montant_encaisse,
+            'montant' => round_number($request->montant_encaisse),
             'date_emission' => Carbon::createFromFormat('d/m/Y', $request->date_emission),
             'date_echeance' => Carbon::createFromFormat('d/m/Y', $request->date_echeance),
             'statut' => 'en_attente',
@@ -222,7 +222,7 @@ class ChequeController extends Controller
         ])->validate();
 
         $o_cheque->update([
-            'montant' => $request->update_montant_encaisse,
+            'montant' => round_number($request->update_montant_encaisse),
             'date_emission' => Carbon::createFromFormat('d/m/Y', $request->update_date_emission),
             'date_echeance' => Carbon::createFromFormat('d/m/Y', $request->update_date_echeance),
             'banque_id' => $request->update_banque,

@@ -53,6 +53,7 @@
     const __exercice_change_url = "{{ route('exercice.changer') }}";
     {{--const __api_token = '{{Auth::user()->createToken('auth-api')->plainTextToken}}'--}}
     const __exercice = '{{session()->get('exercice')}}';
+    window.__decimal_length = {{ \App\Services\GlobalService::get_decimal_length() }};
 </script>
 
 </html>

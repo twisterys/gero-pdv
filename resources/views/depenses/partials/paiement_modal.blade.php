@@ -34,8 +34,8 @@
         <div class="col-12">
             <label for="montant" class="form-label required">Montant de paiement</label>
             <div class="input-group">
-                <input required class="form-control" step="0.01" min="1" max="{{$o_depense->solde}}" type="number"
-                       value="{{$o_depense->solde}}" name="i_montant" id="montant">
+                <input required class="form-control" step="0.00001" min="1" max="{{round_number($o_depense->solde)}}" type="number"
+                       value="{{round_number($o_depense->solde)}}" name="i_montant" id="montant">
                 <span class="input-group-text">MAD</span>
             </div>
         </div>

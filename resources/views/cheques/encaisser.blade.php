@@ -173,7 +173,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="montant_encaisse" class="form-label required" >Montant encaissé</label>
-                            <input type="number" class="form-control" id="montant_encaisse" name="montant_encaisse"
+                            <input type="number" step="0.00001" class="form-control" id="montant_encaisse" name="montant_encaisse"
                                    required>
                             <div class="invalid-feedback"></div>
                         </div>

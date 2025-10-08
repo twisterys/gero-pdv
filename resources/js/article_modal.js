@@ -1,4 +1,6 @@
 // --------------- Modal Article ---------------
+import {roundNumber} from "./helpers/numbers.js";
+
 let artclfeld_process = false;
 $(document).on("click", ".article_btn", function () {
     if (!artclfeld_process) {
@@ -73,7 +75,7 @@ $(document).on("click", "#confirm_article", function () {
     if ($(".article-card.selected").length > 0) {
         let selected = $(".article-card.selected");
         console.log(selected.data());
-        $(".__row_selected").find(".prix_ht ").val(selected.data("ht"));
+        $(".__row_selected").find(".prix_ht ").val(roundNumber(selected.data("ht")));
         $(".__row_selected")
             .find(".taxe")
             .val(selected.data("taxe"))

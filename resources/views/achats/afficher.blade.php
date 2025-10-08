@@ -195,7 +195,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Montant TTC </span>
-                                <p class="mb-0 h5 text-black text-capitalize">{{ $o_achat->total_ttc }} MAD</p>
+                                <p class="mb-0 h5 text-black text-capitalize">{{ format_decimal($o_achat->total_ttc) }} MAD</p>
                             </div>
                         </div>
                         @if (in_array($type, $payabale_types))
@@ -207,7 +207,7 @@
                                 </div>
                                 <div class="ms-3 ">
                                     <span class="font-weight-bolder font-size-sm">Paiement</span>
-                                    <p class="mb-0 h5 text-black text-capitalize">{{ $o_achat->credit }} MAD</p>
+                                    <p class="mb-0 h5 text-black text-capitalize">{{ format_decimal($o_achat->credit) }} MAD</p>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 col-12 mt-3 d-flex align-items-md-start">
@@ -218,7 +218,7 @@
                                 </div>
                                 <div class="ms-3 ">
                                     <span class="font-weight-bolder font-size-sm">Montant restant</span>
-                                    <p class="mb-0 h5 text-black text-capitalize">{{ $o_achat->debit }} MAD</p>
+                                    <p class="mb-0 h5 text-black text-capitalize">{{ format_decimal($o_achat->debit) }} MAD</p>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 col-12 mt-3 d-flex align-items-md-start">
@@ -301,15 +301,15 @@
                                                 {{ $ligne->nom_article }}
                                                 <p class="m-0">{!! $ligne->description !!}</p>
                                             </td>
-                                            <td class="text-end" style="white-space: nowrap">{{ $ligne->quantite }}
+                                            <td class="text-end" style="white-space: nowrap">{{ format_decimal($ligne->quantite) }}
                                                 {{ $ligne->unite?->nom }}</td>
                                             <td class="text-end" style="white-space: nowrap">
-                                                {{ number_format($ligne->ht, 2, '.', ' ') }} MAD
+                                                {{ format_decimal($ligne->ht) }} MAD
                                             </td>
                                             <td class="text-end" style="white-space: nowrap">{{ $ligne->taxe }} %</td>
-                                            <td class="text-end" style="white-space: nowrap">{{ $ligne->reduction }}
+                                            <td class="text-end" style="white-space: nowrap">{{ format_decimal($ligne->reduction) }}
                                                 {{ $ligne->mode_reduction === 'fixe' ? 'MAD' : '%' }}</td>
-                                            <td class="text-end" style="white-space: nowrap">{{ $ligne->total_ttc }} MAD
+                                            <td class="text-end" style="white-space: nowrap">{{format_decimal( $ligne->total_ttc) }} MAD
                                             </td>
                                         </tr>
                                     @empty
@@ -323,17 +323,17 @@
                                      style="max-width: 500px">
                                     <h5 class="col-md-4 col-6 fw-normal">Total HT</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal" id="total-ht-text">
-                                        {{ $o_achat->total_ht + $o_achat->total_reduction }} MAD</h5>
+                                        {{ format_decimal($o_achat->total_ht + $o_achat->total_reduction) }} MAD</h5>
                                     <h5 class="col-md-4 col-6 fw-normal">Total Réduction</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal" id="total-reduction-text">
-                                        {{ $o_achat->total_reduction }} MAD</h5>
+                                        {{ format_decimal($o_achat->total_reduction) }} MAD</h5>
                                     <h5 class="col-md-4 col-6 fw-normal">Total TVA</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal"
-                                        id="total-tva-text">{{ $o_achat->total_tva }} MAD
+                                        id="total-tva-text">{{ format_decimal($o_achat->total_tva) }} MAD
                                     </h5>
                                     <h5 class="col-md-4 col-6 mb-0 fw-normal">Total TTC</h5>
                                     <h2 class="col-md-8 col-12 mb-0 text-end"
-                                        id="total-ttc-text">{{ $o_achat->total_ttc }} MAD</h2>
+                                        id="total-ttc-text">{{ format_decimal($o_achat->total_ttc) }} MAD</h2>
                                 </div>
                             </div>
                             @if ($o_achat->note)
@@ -367,7 +367,7 @@
                                             @forelse($o_achat->paiements as $paiement)
                                                 <tr>
                                                     <td>{{ $paiement->date_paiement }}</td>
-                                                    <td>{{ $paiement->encaisser == 0 ? $paiement->decaisser : $paiement->encaisser }}
+                                                    <td>{{ format_decimal($paiement->encaisser == 0 ? $paiement->decaisser : $paiement->encaisser) }}
                                                         MAD
                                                     </td>
                                                     <td>{{ $paiement->compte->nom }}</td>

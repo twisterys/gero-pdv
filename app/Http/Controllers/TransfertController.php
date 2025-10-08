@@ -63,6 +63,10 @@ class TransfertController extends Controller
             abort(404);
         }
         $o_transfert = Transfert::findOrFail($id);
+        $o_transfert->lignes->map(function ($ligne){
+            $ligne->qte = format_decimal($ligne->qte);
+           return $ligne ;
+        });
         return \view('transferts.partials.afficher',compact('o_transfert'));
     }
     public function afficher_demande($id){
@@ -168,13 +172,14 @@ class TransfertController extends Controller
             $lignes = $request->get('lignes', []);
             if (count($lignes) > 0) {
                 foreach ($lignes as $key => $ligne) {
+                    $qte = round_number($ligne['i_quantite']);
                     $o_ligne = new TransfertLigne();
                     $o_ligne->article_id = $ligne['i_article_id'];
                     $o_ligne->transfert_id = $o_transfert->id;
-                    $o_ligne->qte = $ligne['i_quantite'];
+                    $o_ligne->qte = $qte;
                     $o_ligne->save();
-                    StockService::stock_entre($ligne['i_article_id'], $ligne['i_quantite'],  Carbon::now()->format('Y-m-d'), Transfert::class, $o_transfert->id,$request->get('au_magasin'));
-                    StockService::stock_sortir($ligne['i_article_id'], $ligne['i_quantite'], Carbon::now()->format('Y-m-d'), Transfert::class, $o_transfert->id,$request->get('magasin-select'));
+                    StockService::stock_entre($ligne['i_article_id'], $qte,  Carbon::now()->format('Y-m-d'), Transfert::class, $o_transfert->id,$request->get('au_magasin'));
+                    StockService::stock_sortir($ligne['i_article_id'], $qte, Carbon::now()->format('Y-m-d'), Transfert::class, $o_transfert->id,$request->get('magasin-select'));
                 }
 
             }

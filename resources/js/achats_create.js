@@ -1,4 +1,5 @@
 import "./article_modal.js";
+import { roundNumber, formatDecimal } from "./helpers/numbers.js";
 
 // Variables
 var table_body = $("#table tbody");
@@ -317,19 +318,9 @@ function insert_delete_btn() {
 function calculateReduction(row) {
     let reducType = row.find(".reduction_mode").val();
     if (reducType === "fixe") {
-        return (
-            Math.round((+row.find(".reduction").val() + Number.EPSILON) * 100) /
-            100
-        );
+        return roundNumber(+row.find(".reduction").val());
     } else {
-        return (
-            Math.round(
-                (+row.find(".prix_ht").val() *
-                    (+row.find(".reduction").val() / 100) +
-                    Number.EPSILON) *
-                    100
-            ) / 100
-        );
+        return roundNumber(+row.find(".prix_ht").val() * (+row.find(".reduction").val() / 100));
     }
 }
 /**
@@ -365,16 +356,16 @@ function calculate_rows() {
         let totalTTC = (ht - reducHT) * ("1." + tvaRate) * quantity;
         row.children("td")
             .eq(5)
-            .text(totalTTC.toFixed(2) + " MAD");
+            .text(formatDecimal(totalTTC) + " MAD");
         total_ht += totalHT;
         total_tva += (ht - reducHT) * ("0." + tvaRate) * quantity;
         total_reduction += reducHT * quantity;
         total_ttc += totalTTC;
     });
-    $("#total-ht-text").text(total_ht.toFixed(2) + " MAD");
-    $("#total-reduction-text").text(total_reduction.toFixed(2) + " MAD");
-    $("#total-tva-text").text(total_tva.toFixed(2) + " MAD");
-    $("#total-ttc-text").text(total_ttc.toFixed(2) + " MAD");
+    $("#total-ht-text").text(formatDecimal(total_ht) + " MAD");
+    $("#total-reduction-text").text(formatDecimal(total_reduction) + " MAD");
+    $("#total-tva-text").text(formatDecimal(total_tva) + " MAD");
+    $("#total-ttc-text").text(formatDecimal(total_ttc) + " MAD");
 }
 
 function checkDétails() {

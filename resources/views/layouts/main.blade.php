@@ -127,6 +127,6 @@
 <script>
     const __csrf_token = '{{csrf_token()}}'
     const __exercice_change_url ="{{route('exercice.changer')}}";
-
+    window.__decimal_length = {{ \App\Services\GlobalService::get_decimal_length() }};
 </script>
 </html>

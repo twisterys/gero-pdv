@@ -191,7 +191,7 @@ class VenteController extends Controller
             })->editColumn('reference', function ($row) {
                 return $row->reference ?? 'Brouillon';
             })->editColumn('total_ttc', function ($row) {
-                return ($row->total_ttc ?? 0) . ' MAD';
+                return (format_decimal($row->total_ttc ?? 0)) . ' MAD';
             })->editColumn('objet', function ($row) {
                 return '<p class="text-truncate text-nowrap m-0 p-0" style="max-width: 250px">' . $row->objet . '</p>';
             })->editColumn('statut', function ($row) {
@@ -349,7 +349,7 @@ class VenteController extends Controller
                     if ($ligne['i_reduction_mode'] === 'fixe') {
                         $reduction = $ligne['i_reduction'];
                     } else if ($ligne['i_reduction_mode'] === 'pourcentage') {
-                        $reduction = round($ligne['i_prix_ht'] * (($ligne['i_reduction'] ?? 0) / 100), 2);
+                        $reduction = round_number($ligne['i_prix_ht'] * (($ligne['i_reduction'] ?? 0) / 100));
                     }
                     $o_ligne = new VenteLigne();
                     $o_ligne->vente_id = $o_vente->id;
@@ -358,11 +358,11 @@ class VenteController extends Controller
                     $o_ligne->mode_reduction = $ligne['i_reduction_mode'];
                     $o_ligne->nom_article = $ligne['i_article'];
                     $o_ligne->description = $ligne['i_description'];
-                    $o_ligne->ht = $ligne['i_prix_ht'];
-                    $o_ligne->revient = $ligne['i_prix_revient'];
-                    $o_ligne->quantite = $ligne['i_quantite'];
+                    $o_ligne->ht = round_number($ligne['i_prix_ht']);
+                    $o_ligne->revient = round_number($ligne['i_prix_revient'] ?? 0);
+                    $o_ligne->quantite = round_number($ligne['i_quantite']);
                     $o_ligne->taxe = $ligne['i_taxe'];
-                    $o_ligne->reduction = $ligne['i_reduction'] ?? 0;
+                    $o_ligne->reduction =round_number( $ligne['i_reduction'] ?? 0);
                     $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht ?? 0.00, $reduction ?? 0.00, $o_ligne->taxe ?? 0, $o_ligne->quantite ?? 0.00);
                     $o_ligne->position = $key;
                     $o_ligne->magasin_id = $lignes['i_magasin_id'] ?? $magasin_id;
@@ -373,11 +373,11 @@ class VenteController extends Controller
                     $vente_ttc += $o_ligne->total_ttc;
                 }
                 $o_vente->update([
-                    'total_ht' => $vente_ht,
-                    'total_tva' => $vente_tva,
-                    'total_reduction' => $vente_reduction,
-                    'total_ttc' => $vente_ttc,
-                    'solde' => $vente_ttc,
+                    'total_ht' => round_number($vente_ht),
+                    'total_tva' => round_number($vente_tva),
+                    'total_reduction' => round_number($vente_reduction),
+                    'total_ttc' => round_number($vente_ttc),
+                    'solde' => round_number($vente_ttc),
                 ]);
             }
             $o_vente->tags()->sync($request->get('balises', []));
@@ -1336,10 +1336,10 @@ class VenteController extends Controller
                     $o_ligne->mode_reduction = $ligne['mode_reduction'];
                     $o_ligne->nom_article = $ligne['nom_article'];
                     $o_ligne->description = $ligne['description'];
-                    $o_ligne->ht = $ligne['ht'];
-                    $o_ligne->quantite = $ligne['quantite'];
+                    $o_ligne->ht =round_number( $ligne['ht']);
+                    $o_ligne->quantite = round_number($ligne['quantite']);;
                     $o_ligne->taxe = $ligne['taxe'];
-                    $o_ligne->reduction = $ligne['reduction'] ?? 0;
+                    $o_ligne->reduction = round_number($ligne['reduction']) ?? 0;
                     $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht ?? 0.00, $reduction ?? 0.00, $o_ligne->taxe ?? 0, $o_ligne->quantite ?? 0);
                     $o_ligne->position = $key;
                     $o_ligne->magasin_id = $ligne['magasin_id'];
@@ -1350,11 +1350,11 @@ class VenteController extends Controller
                     $vente_ttc += $o_ligne->total_ttc;
                 }
                 $o_vente->update([
-                    'total_ht' => $vente_ht,
-                    'total_tva' => $vente_tva,
-                    'total_reduction' => $vente_reduction,
-                    'total_ttc' => $vente_ttc,
-                    'solde' => $vente_ttc,
+                    'total_ht' => round_number($vente_ht),
+                    'total_tva' => round_number($vente_tva),
+                    'total_reduction' => round_number($vente_reduction),
+                    'total_ttc' => round_number($vente_ttc),
+                    'solde' => round_number($vente_ttc),
                 ]);
             }
             $o_vente->document_parent()->attach($ids);
@@ -1675,11 +1675,10 @@ class VenteController extends Controller
      */
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $scale = GlobalService::get_decimal_length();
-        $ht = round($ht - $reduction, $scale);
+        $ht = round_number($ht - $reduction);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, $scale) * $quantite;
-        return (string) round($ttc, $scale);
+        $ttc = round_number($ht * $tva) * $quantite;
+        return (string) round_number($ttc);
     }
 
     /**
@@ -1691,8 +1690,7 @@ class VenteController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        $scale = GlobalService::get_decimal_length();
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, $scale, '.', '');
+        return round_number(($ht - $reduction) * ($tva / 100), 10) * $quantite;
     }
     /**
      * @param $vente

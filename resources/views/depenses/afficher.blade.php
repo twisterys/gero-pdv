@@ -85,7 +85,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Montant</span>
-                                <p class="mb-0 h5 text-black text-capitalize"> {{$o_depense->montant}} MAD</p>
+                                <p class="mb-0 h5 text-black text-capitalize"> {{format_decimal($o_depense->montant)}} MAD</p>
                             </div>
                         </div>
 
@@ -95,7 +95,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Paiement</span>
-                                <p class="mb-0 h5 text-black text-capitalize"> {{$o_depense->encaisser}} MAD</p>
+                                <p class="mb-0 h5 text-black text-capitalize"> {{format_decimal($o_depense->encaisser)}} MAD</p>
                             </div>
                         </div>
 
@@ -106,7 +106,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Montant à payer</span>
-                                <p class="mb-0 h5 text-black text-capitalize">{{$o_depense->solde}} MAD</p>
+                                <p class="mb-0 h5 text-black text-capitalize">{{format_decimal($o_depense->solde)}} MAD</p>
                             </div>
                         </div>
 
@@ -158,7 +158,7 @@
                                     @forelse($o_depense->paiements as $paiement)
                                         <tr>
                                             <td>{{$paiement->date_paiement}}</td>
-                                            <td>{{$paiement->decaisser}} MAD</td>
+                                            <td>{{format_decimal($paiement->decaisser)}} MAD</td>
                                             <td>{{$paiement->compte->nom}}</td>
                                             <td>{{$paiement->methodePaiement->nom}}</td>
                                             <td>{{$paiement->cheque_lcn_reference}}</td>

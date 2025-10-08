@@ -304,7 +304,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Montant TTC </span>
-                                <p class="mb-0 h5 text-black text-capitalize">{{$o_vente->total_ttc}} MAD</p>
+                                <p class="mb-0 h5 text-black text-capitalize">{{format_decimal($o_vente->total_ttc)}} MAD</p>
                             </div>
                         </div>
                         @if(in_array($type,$payabale_types))
@@ -316,7 +316,7 @@
                                 </div>
                                 <div class="ms-3 ">
                                     <span class="font-weight-bolder font-size-sm">Paiement</span>
-                                    <p class="mb-0 h5 text-black text-capitalize">{{$o_vente->encaisser}} MAD</p>
+                                    <p class="mb-0 h5 text-black text-capitalize">{{format_decimal($o_vente->encaisser)}} MAD</p>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 col-12  my-2 d-flex align-items-md-start">
@@ -327,7 +327,7 @@
                                 </div>
                                 <div class="ms-3 ">
                                     <span class="font-weight-bolder font-size-sm">Montant restant</span>
-                                    <p class="mb-0 h5 text-black text-capitalize">{{$o_vente->solde}} MAD</p>
+                                    <p class="mb-0 h5 text-black text-capitalize">{{format_decimal($o_vente->solde)}} MAD</p>
                                 </div>
                             </div>
                             <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 col-12  my-2 d-flex align-items-md-start">
@@ -448,22 +448,22 @@
                                                 <p class="m-0">{!!  $ligne->description !!}</p>
                                             </td>
                                             <td class="text-end"
-                                                style="white-space: nowrap">{{$ligne->quantite}} {{$ligne->unite?->nom}}</td>
+                                                style="white-space: nowrap">{{format_decimal($ligne->quantite)}} {{$ligne->unite?->nom}}</td>
                                             <td class="text-end  @if(!$prix_revient) d-none @endif"
-                                                style="white-space: nowrap">{{$ligne->revient ?? "0.00"}} MAD
+                                                style="white-space: nowrap">{{format_decimal($ligne->revient) ?? "0.00"}} MAD
                                             </td>
                                             <td class="text-end"
-                                                style="white-space: nowrap">{{number_format($ligne->ht,2,'.',' ')}} MAD
+                                                style="white-space: nowrap">{{format_decimal($ligne->ht)}} MAD
                                             </td>
                                             <td class="text-end" style="white-space: nowrap">{{$ligne->taxe}} %</td>
                                             <td class="text-end"
-                                                style="white-space: nowrap">{{$ligne->reduction}} {{$ligne->mode_reduction ==='fixe' ? 'MAD' : '%'}}</td>
-                                            <td class="text-end" style="white-space: nowrap">{{$ligne->total_ttc}}MAD
+                                                style="white-space: nowrap">{{round_number($ligne->reduction)}} {{$ligne->mode_reduction ==='fixe' ? 'MAD' : '%'}}</td>
+                                            <td class="text-end" style="white-space: nowrap">{{format_decimal($ligne->total_ttc)}} MAD
                                             </td>
                                             @if($prix_revient)
                                                 <td class="text-end"
                                                     style="white-space: nowrap">{{$ligne->ht == 0 ? 0 :  ($ligne->ht - $ligne->revient) * $ligne->quantite}}
-                                                    MAD <span class="font-size-12 text-success mx-1">{{$ligne->ht == 0 ? 0 : round(($ligne->ht - $ligne->revient)*100/$ligne->ht,2)}}%</span>
+                                                    MAD <span class="font-size-12 text-success mx-1">{{$ligne->ht == 0 ? 0 : format_decimal(round_number(($ligne->ht - $ligne->revient)*100/$ligne->ht))}}%</span>
                                                 </td>
                                             @endif
                                         </tr>
@@ -477,16 +477,16 @@
                                 <div class="col-md-6 row mx-0 bg-primary p-3 rounded text-white" style="max-width: 500px">
                                     <h5 class="col-4 fw-normal">Total HT</h5>
                                     <h5 class="col-8 text-end fw-normal"
-                                        id="total-ht-text">{{$o_vente->total_ht}} MAD</h5>
+                                        id="total-ht-text">{{format_decimal($o_vente->total_ht)}} MAD</h5>
                                     <h5 class="col-4 fw-normal">Total Réduction</h5>
                                     <h5 class="col-8 text-end fw-normal"
-                                        id="total-reduction-text">{{$o_vente->total_reduction}}
+                                        id="total-reduction-text">{{format_decimal($o_vente->total_reduction)}}
                                         MAD</h5>
                                     <h5 class="col-4 fw-normal">Total TVA</h5>
-                                    <h5 class="col-8 text-end fw-normal" id="total-tva-text">{{$o_vente->total_tva}}
+                                    <h5 class="col-8 text-end fw-normal" id="total-tva-text">{{format_decimal($o_vente->total_tva)}}
                                         MAD</h5>
                                     <h5 class="col-4 mb-0 fw-normal">Total TTC</h5>
-                                    <h2 class="col-8 mb-0 text-end" id="total-ttc-text">{{$o_vente->total_ttc}} MAD</h2>
+                                    <h2 class="col-8 mb-0 text-end" id="total-ttc-text">{{format_decimal($o_vente->total_ttc)}} MAD</h2>
                                 </div>
                             </div>
                             @if($o_vente->note)
@@ -520,7 +520,7 @@
                                            @forelse($o_vente->paiements as $paiement)
                                                <tr>
                                                    <td>{{$paiement->date_paiement}}</td>
-                                                   <td>{{$paiement->encaisser == 0 ? $paiement->decaisser : $paiement->encaisser }}
+                                                   <td>{{format_decimal($paiement->encaisser == 0 ? $paiement->decaisser : $paiement->encaisser) }}
                                                        MAD
                                                    </td>
                                                    <td>{{$paiement->compte->nom}}</td>
@@ -580,7 +580,7 @@
                                                 <tr>
                                                     <td>{{$promesse->created_at->format('d/m/Y')}}</td>
                                                     <td>{{$promesse->type}}</td>
-                                                    <td>{{$promesse->montant}}</td>
+                                                    <td>{{format_decimal($promesse->montant)}}</td>
                                                     <td>{{\Carbon\Carbon::make($promesse->date)->format('d/m/Y')}}</td>
                                                     <td>@lang('ventes.promesses.statut.'.($promesse->statut ?? 'null'))</td>
                                                     <td style="width: 1%;white-space: nowrap" >

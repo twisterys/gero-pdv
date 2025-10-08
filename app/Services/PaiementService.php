@@ -92,7 +92,7 @@ class PaiementService
         $date_permission = !request()->user()->can('paiement.date');
 
         // Round payment amount to 2 decimal places
-        $montant = round((float)$data['i_montant'], 2);
+        $montant = round_number((float)$data['i_montant']);
 
         $payment_data = [
             'payable_type' => Depense::class,

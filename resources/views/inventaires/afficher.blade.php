@@ -104,8 +104,8 @@
                                @foreach($o_inventaire->transactions as $transaction)
                                    <tr>
                                        <td> ({{$transaction->article->reference}}) {{$transaction->article->designation}} </td>
-                                       <td> {{$transaction->qte_entree}}</td>
-                                       <td> {{$transaction->qte_sortir}}</td>
+                                       <td> {{format_decimal($transaction->qte_entree)}}</td>
+                                       <td> {{format_decimal($transaction->qte_sortir)}}</td>
                                        <td> {{\Carbon\Carbon::make($transaction->date)->format('d/m/Y')}}</td>
                                    </tr>
                                @endforeach
