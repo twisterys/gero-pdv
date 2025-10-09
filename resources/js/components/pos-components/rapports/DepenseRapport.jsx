@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import CreanceTable from "./tables/CreanceTable.jsx";
 import DepenseTable from "./tables/depenseTable.jsx";
+import {formatDecimal} from "../../../helpers/numbers.js";
 
 const DepenseRapport = ({
                             data,
@@ -20,10 +21,7 @@ const DepenseRapport = ({
     // Function to format currency values
     const formatCurrency = (value) => {
         if (value === null || value === undefined) return "-";
-        return new Intl.NumberFormat('fr-FR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(value);
+        return formatDecimal(value)+' MAD';
     };
 
     return (

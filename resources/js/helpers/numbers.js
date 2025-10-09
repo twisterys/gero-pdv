@@ -18,12 +18,9 @@ function roundNumber(num) {
 
 function formatDecimal(num) {
   const decimals = getDecimalLength();
-    console.log(decimals)
-    const n = Number(num) || 0;
-  // Format with French style: comma as decimal separator and space for thousands
-  // Intl may use non-breaking spaces depending on environment; ensure regular spaces
+  const n = Number.isFinite(Number(num)) ? Number(num) : 0;
   const formatted = n.toLocaleString('fr-FR', {
-    minimumFractionDigits: decimals,
+    minimumFractionDigits: 0,
     maximumFractionDigits: decimals,
   });
   return formatted.replace(/\u00A0/g, ' ');

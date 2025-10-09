@@ -31,7 +31,7 @@ class PaiementService
         ];
 
         // Round payment amount to 2 decimal places
-        $montant = round((float)$data['i_montant'], 2);
+        $montant = round_number((float)$data['i_montant']);
 
         if (in_array($o_payable->type_document, $decaissment_types)) {
             $payment_data['decaisser'] = $montant;
@@ -58,16 +58,16 @@ class PaiementService
 
         if (in_array($payable, [Vente::class])) {
             // Use the rounded montant value and ensure all calculations are rounded to 2 decimal places
-            $payable_data['solde'] = round($o_payable->solde - $montant, 2);
-            $payable_data['encaisser'] = round($o_payable->encaisser + $montant, 2);
-            $total = round($o_payable->total_ttc, 2);
+            $payable_data['solde'] = round_number($o_payable->solde - $montant);
+            $payable_data['encaisser'] = round_number($o_payable->encaisser + $montant);
+            $total = round_number($o_payable->total_ttc);
 
             $payable_data['statut_paiement'] = self::get_payable_statut($total, $payable_data['encaisser'], $payable_data['solde']);
         } elseif (in_array($payable, [Achat::class])) {
             // Use the rounded montant value and ensure all calculations are rounded to 2 decimal places
-            $payable_data['debit'] = round($o_payable->debit - $montant, 2);
-            $payable_data['credit'] = round($o_payable->credit + $montant, 2);
-            $payable_data['statut_paiement'] = self::get_payable_statut(round($o_payable->total_ttc, 2), $payable_data['credit'], $payable_data['debit']);
+            $payable_data['debit'] = round_number($o_payable->debit - $montant);
+            $payable_data['credit'] = round_number($o_payable->credit + $montant);
+            $payable_data['statut_paiement'] = self::get_payable_statut(round_number($o_payable->total_ttc), $payable_data['credit'], $payable_data['debit']);
         }
 
 
@@ -131,9 +131,9 @@ class PaiementService
 
     public static function get_payable_statut(float|string $payable_total, float|string $montant_paye = 0, float|string $montant_impaye = 0)
     {
-        if ($montant_impaye <= 0 && round($montant_paye, 2) >= round($payable_total, 2)) {
+        if ($montant_impaye <= 0 && round_number($montant_paye) >= round_number($payable_total)) {
             $paiment_statut = 'paye';
-        } elseif ($montant_paye > 0 && round($payable_total, 2) > round($montant_paye, 2)) {
+        } elseif ($montant_paye > 0 && round_number($payable_total) > round_number($montant_paye)) {
             $paiment_statut = 'partiellement_paye';
         } else {
             $paiment_statut = 'non_paye';

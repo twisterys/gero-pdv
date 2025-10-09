@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {formatDecimal, roundNumber} from "../../helpers/numbers.js";
 
 export const Articles = ({items,setItems}) => {
     const [articles, setArticles] = useState([]);
@@ -66,7 +67,7 @@ export const Articles = ({items,setItems}) => {
         let newItem = article;
         newItem.name = article.designation;
         newItem.id = article.id;
-        newItem.prix = article.prix;
+        newItem.prix = roundNumber(article.prix);
         newItem.reference = article.reference;
         newItem.quantity = 1;
         newItem.reduction = 0;
@@ -100,7 +101,7 @@ export const Articles = ({items,setItems}) => {
                                 {/*    {article.quantity}*/}
                                 {/*    <span className="ms-1">{article.unit}</span></p>*/}
                                 <p className="m-0 text-center fw-bold my1 text-primary">
-                                    {article.prix} MAD</p>
+                                    {formatDecimal(article.prix)} MAD</p>
                             </div>
                         </div>
                     </div>

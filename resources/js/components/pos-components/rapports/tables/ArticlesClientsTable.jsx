@@ -1,7 +1,8 @@
 import React from 'react';
+import { formatDecimal } from '../../../../helpers/numbers.js';
 
 const ArticlesClientsTable = ({data = {}}) => {
-    const formater = new Intl.NumberFormat('fr-FR', {currency:"MAD",style:"currency"})
+    const formatCurrency = (value) => `${formatDecimal(value || 0)} MAD`;
 
     // Calcul de secours des totaux si non fournis par l'API
     const totals = React.useMemo(() => {
@@ -57,14 +58,14 @@ const ArticlesClientsTable = ({data = {}}) => {
                                 )}
                             </td>
                         ))}
-                        <td >
-                            {formater.format(data.client_totals?.[client]?.total_ttc || 0)}
+                        <td>
+                            {formatCurrency(data.client_totals?.[client]?.total_ttc || 0)}
                         </td>
-                        <td >
-                            {formater.format(data.client_totals?.[client]?.total_paye || 0)}
+                        <td>
+                            {formatCurrency(data.client_totals?.[client]?.total_paye || 0)}
                         </td>
-                        <td >
-                            {formater.format(data.client_totals?.[client]?.total_creance || 0)}
+                        <td>
+                            {formatCurrency(data.client_totals?.[client]?.total_creance || 0)}
                         </td>
                     </tr>
                 ))}
@@ -79,9 +80,9 @@ const ArticlesClientsTable = ({data = {}}) => {
                         <tr className="bg-light">
                             {/* colSpan doit couvrir la colonne "Clients/Articles" + toutes les colonnes d'articles */}
                             <th colSpan={(data.articles ? data.articles.length : 0) + 1} className="text-end">Total</th>
-                            <th className="text-end">{formater.format(totals.total_ttc || 0)}</th>
-                            <th className="text-end">{formater.format(totals.total_paye || 0)}</th>
-                            <th className="text-end">{formater.format(totals.total_creance || 0)}</th>
+                            <th className="text-end">{formatCurrency(totals.total_ttc || 0)}</th>
+                            <th className="text-end">{formatCurrency(totals.total_paye || 0)}</th>
+                            <th className="text-end">{formatCurrency(totals.total_creance || 0)}</th>
                         </tr>
                     </tfoot>
                 )}

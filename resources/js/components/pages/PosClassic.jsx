@@ -16,6 +16,7 @@ import {PaiementModal} from "../pos-components/PaiementModal.jsx";
 import { debounce } from 'lodash';
 import RapportsPage from "../pos-components/rapports/RapportsPage.jsx";
 import { RebutModal } from "../pos-components/RebutModal.jsx";
+import {roundNumber} from "../../helpers/numbers.js";
 
 function PosClassic() {
     // set all variable needed
@@ -159,15 +160,13 @@ function PosClassic() {
         });
 
         // Calculate total amount
-        const totalAmount = (
-            Math.round(
-                items.reduce(
-                    (a, b) =>
-                        a + b.prix * b.quantity * (1 - b.reduction / 100),
-                    0
-                ) * 100
-            ) / 100
-        ).toFixed(2);
+        const totalAmount = roundNumber((
+            items.reduce(
+                (a, b) =>
+                    a + b.prix * b.quantity * (1 - b.reduction / 100),
+                0
+            ) * 100
+        ) / 100)
 
         // Check if payment amount is less than total
         const isPartialPayment = parseFloat(paiement.i_montant) < parseFloat(totalAmount);
@@ -194,11 +193,11 @@ function PosClassic() {
                     $("#paiement-modal").modal("hide");
 
                     // Mettre à jour le cumul avec le paiement qui vient d’être ajouté
-                    const newCumulative = parseFloat((cumulativePaid || 0)) + parseFloat(paiement.i_montant || 0);
+                    const newCumulative = roundNumber((cumulativePaid || 0) + (Number(paiement.i_montant) || 0));
                     setCumulativePaid(newCumulative);
 
                     // Calculate remaining balance
-                    const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(2);
+                    const remainingBalance = Math.max(0, roundNumber(Number(totalAmount) - newCumulative));
 
                     // If there's still a remaining balance, ask if they want to add another payment
                     if (parseFloat(remainingBalance) > 0) {
@@ -334,7 +333,7 @@ function PosClassic() {
                         const newCumulative = parseFloat(paiement.i_montant || 0);
                         setCumulativePaid(newCumulative);
 
-                        const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(2);
+                        const remainingBalance = roundNumber((parseFloat(totalAmount) - newCumulative));
                         Swal.fire({
                             icon: "success",
                             title: "Paiement partiel enregistré !",
@@ -551,14 +550,14 @@ function PosClassic() {
         setPaiement({
             ...paiement,
             i_montant: (
-                Math.round(
+                roundNumber((
                     items.reduce(
                         (a, b) =>
                             a + b.prix * b.quantity * (1 - b.reduction / 100),
                         0
                     ) * 100
-                ) / 100
-            ).toFixed(2),
+                ) / 100)
+            ),
         });
     }, [items]);
     //

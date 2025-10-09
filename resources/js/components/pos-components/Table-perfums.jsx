@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {formatDecimal} from "../../helpers/numbers.js";
 
 export const Table = ({
                           items,
@@ -183,11 +184,11 @@ export const Table = ({
                         </td>
                     ) : null}
                     <td style={fitContentStyle}>
-                        {(
+                        {formatDecimal(
                             item.quantity *
                             item.prix *
                             (1 - item.reduction / 100)
-                        ).toFixed(2)}
+                        )}
                         MAD
                     </td>
                     <td style={fitContentStyle}>

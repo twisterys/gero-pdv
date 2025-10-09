@@ -13,10 +13,7 @@ const TresorieRapport = ({
     // Function to format currency values
     const formatCurrency = (value) => {
         if (value === null || value === undefined) return "-";
-        return new Intl.NumberFormat('fr-FR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(value);
+        return formatCurrency(value);
     };
 
     return (

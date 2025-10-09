@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {formatDecimal, roundNumber} from "../../helpers/numbers.js";
 
 export const Table = ({
     items,
@@ -23,20 +24,20 @@ export const Table = ({
     // update row quantity value in items array
     const setQuantity = (id, value) => {
         let allItems = items.map((item) =>
-            item.id == id ? { ...item, quantity: value } : item
+            item.id == id ? { ...item, quantity: roundNumber(value) } : item
         );
         setItems(allItems);
     };
     const setReduction = (id, value) => {
         let allItems = items.map((item) =>
-            item.id == id ? { ...item, reduction: value } : item
+            item.id == id ? { ...item, reduction: roundNumber(value) } : item
         );
         setItems(allItems);
     };
 
     const setPrice = (id, value) => {
         let allItems = items.map((item) =>
-            item.id == id ? { ...item, prix: value } : item
+            item.id == id ? { ...item, prix: roundNumber(value) } : item
         );
         setItems(allItems);
     };
@@ -158,12 +159,11 @@ export const Table = ({
                         </td>
                     ) : null}
                     <td style={fitContentStyle}>
-                        {(
+                        {formatDecimal(
                             item.quantity *
                             item.prix *
                             (1 - item.reduction / 100)
-                        ).toFixed(2)}
-                        MAD
+                        )} MAD
                     </td>
                     <td style={fitContentStyle}>
                         <button
@@ -218,14 +218,14 @@ export const Table = ({
                     <div className="col-12 my-1 d-flex justify-content-between align-items-center">
                         <h4 className="m-0">Montant total :</h4>
                         <h4 className="m-0">
-                            {paiement.i_montant.toLocaleString(undefined  ,{ minimumFractionDigits: 2 })}
+                            {formatDecimal(paiement.i_montant)}
                             <span className="ms-2" >MAD</span>
                         </h4>
                     </div>
                     <div className="col-12 my-1 d-flex justify-content-between align-items-center">
                         <h4 className="m-0">Nombre d'articles :</h4>
                         <h4 className="m-0">
-                            {items.reduce((a, b) => a + b.quantity, 0)}
+                            {formatDecimal(items.reduce((a, b) => a + b.quantity, 0))}
                         </h4>
                     </div>
                 </div>

@@ -97,15 +97,16 @@ class VenteController extends Controller
                 $totalTtcCourant = 0;
                 if (count($lignes) > 0) {
                     foreach ($lignes as $ligne) {
-                        $ht = $ligne['prix'] ?? 0;
+                        $ht = round_number($ligne['prix'] ?? 0);
                         $reduction = 0;
                         $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
-                        $quantite = $ligne['quantity'] ?? 0;
-                        $htReduit = $ht - $reduction;
-                        $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                        $quantite = round_number($ligne['quantity'] ?? 0);
+                        $htReduit = round_number($ht - $reduction);
+                        $ttc = round_number(($htReduit * (1 + $taxe / 100)) * $quantite);
                         $totalTtcCourant += $ttc;
                     }
                 }
+                $totalTtcCourant = round_number($totalTtcCourant);
                 // Vérification des limites de crédit (montant et nombre de ventes)
                 if (
                     $request->get('credit') &&
@@ -113,15 +114,15 @@ class VenteController extends Controller
                     (
                         // Vérification de la limite de crédit par montant
                         ($client->limite_de_credit > 0 &&
-                        $creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit']) ||
+                        $creditInfo['total_non_paye'] + $totalTtcCourant > round_number($creditInfo['limite_credit'])) ||
 
                         // Vérification de la limite de crédit par nombre de ventes
                         ($client->limite_ventes_impayees > 0 &&
-                        $creditInfo['total_ventes_impayees'] + 1 > $creditInfo['limite_ventes_impayees'])
+                        $creditInfo['total_ventes_impayees'] + 1 > round_number($creditInfo['limite_ventes_impayees']))
                     )
                 ){
                     $message = ($client->limite_de_credit > 0 &&
-                               $creditInfo['total_non_paye'] + $totalTtcCourant > $creditInfo['limite_credit'])
+                               $creditInfo['total_non_paye'] + $totalTtcCourant > round_number($creditInfo['limite_credit']))
                                ? "Limite de crédit (montant) dépassée pour ce client."
                                : "Limite du nombre de ventes impayées dépassée pour ce client.";
 
@@ -143,8 +144,8 @@ class VenteController extends Controller
                     $o_ligne->unit_id = $o_article->unite_id;
                     $o_ligne->mode_reduction = 'fixe';
                     $o_ligne->nom_article = $ligne['name'];
-                    $o_ligne->ht = $ligne['prix'];
-                    $o_ligne->quantite = $ligne['quantity'];
+                    $o_ligne->ht = round_number($ligne['prix']);
+                    $o_ligne->quantite = round_number($ligne['quantity']);
                     $o_ligne->taxe = $o_article->taxe;
                     $o_ligne->reduction = 0;
                     $o_ligne->total_ttc = $this->calculate_ttc($o_ligne->ht, 0, $o_ligne->taxe, $o_ligne->quantite);
@@ -165,11 +166,11 @@ class VenteController extends Controller
                     $vente_ttc += $o_ligne->total_ttc;
                 }
                 $o_vente->update([
-                    'total_ht' => $vente_ht,
-                    'total_tva' => $vente_tva,
-                    'total_reduction' => $vente_reduction,
-                    'total_ttc' => $vente_ttc,
-                    'solde' => $vente_ttc,
+                    'total_ht' => round_number($vente_ht),
+                    'total_tva' => round_number($vente_tva),
+                    'total_reduction' => round_number($vente_reduction),
+                    'total_ttc' => round_number($vente_ttc),
+                    'solde' => round_number($vente_ttc),
                 ]);
             }
             $magasin = Magasin::where('id', $o_pos_session->magasin_id )->first();
@@ -549,10 +550,10 @@ class VenteController extends Controller
 
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round_number($ht - $reduction);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round_number($ht * $tva) * $quantite;
+        return round_number($ttc);
     }
 
     /**
@@ -564,7 +565,7 @@ class VenteController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        return round_number(round_number(($ht - $reduction) * ($tva / 100)) * $quantite);
     }
     /**
      * Vérifie l'encours de crédit d'un client.
