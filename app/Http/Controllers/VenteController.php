@@ -459,7 +459,7 @@ class VenteController extends Controller
     public function mettre_a_jour(VenteUpdateRequest $request, string $type, int $id): RedirectResponse
     {
         $this->guard_custom(['vente.mettre_a_jour']);
-        $date_permission = !$request->user()->can('vente.date');
+        $date_permission = $request->user()->can('vente.date');
         $o_vente = Vente::find($id);
         if (!$o_vente) {
             abort(404);
@@ -484,8 +484,6 @@ class VenteController extends Controller
                 'commercial_id' => $request->get('commercial_id') ?? null,
                 'commission_par_defaut' => $request->get('commercial_id') ? $request->get('i_commercial_pourcentage') : null,
                 "objet" => $request->get('objet'),
-                'date_document' => now()->toDateString(),
-                'date_emission' => $date_permission ? Carbon::today()->toDateString()  :  Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString(),
                 'note' => $request->get('i_note'),
                 'magasin_id' => $magasin_id,
                 'template_id' => $request->get('template_id') // Mise à jour du template
@@ -493,8 +491,11 @@ class VenteController extends Controller
             if (GlobalService::get_modifier_reference()) {
                 $data['reference'] = $request->get('i_reference');
             }
-            if (in_array($type, ['dv', 'fa', 'fp', 'bc'])) {
-                $data['date_expiration'] = $date_permission ? Carbon::today()->toDateString() :  Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
+            if ($date_permission){
+                $data['date_emission'] = Carbon::createFromFormat('d/m/Y', $request->get('date_emission'))->toDateString();
+            }
+            if (in_array($type, ['dv', 'fa', 'fp', 'bc']) && $date_permission) {
+                $data['date_expiration'] = Carbon::createFromFormat('d/m/Y', $request->get('date_expiration'))->toDateString();
             }
             $o_vente->update($data);
             $lignes = $request->get('lignes', []);
