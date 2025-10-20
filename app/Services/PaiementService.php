@@ -129,8 +129,12 @@ class PaiementService
         }
     }
 
-    public static function get_payable_statut(float|string $payable_total, float|string $montant_paye = 0, float|string $montant_impaye = 0)
+    public static function get_payable_statut(float|int|string|null $payable_total, float|int|string|null $montant_paye = null, float|int|string|null $montant_impaye = null)
     {
+        $payable_total = (float) $payable_total;
+        $montant_paye = (float) $montant_paye;
+        $montant_impaye = (float) $montant_impaye;
+
         if ($montant_impaye <= 0 && round($montant_paye, 2) >= round($payable_total, 2)) {
             $paiment_statut = 'paye';
         } elseif ($montant_paye > 0 && round($payable_total, 2) > round($montant_paye, 2)) {
@@ -138,6 +142,8 @@ class PaiementService
         } else {
             $paiment_statut = 'non_paye';
         }
+
         return $paiment_statut;
     }
+
 }
