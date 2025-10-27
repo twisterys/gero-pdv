@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\management;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\CreateTenantJob;
+use App\Jobs\DuplicateTenantJob;
 use App\Models\Tenant;
 use App\Services\LogService;
 use Illuminate\Http\Request;
@@ -68,6 +69,28 @@ class TenantController extends Controller
         } catch (\Exception $e) {
             LogService::logException($e);
             return response()->json(['message' => 'Erreur lors de la mise à jour de la date d\'expiration'], 500);
+        }
+    }
+    public function dupliquer($tenantId,Request $request)
+    {
+        try {
+            $duplicated_tenant = Tenant::create([
+                'id' => $request->input('instance'),
+                'tenancy_db_name' => $request->input('database'),
+                'date_expiration' => $request->input('date_expiration'),
+            ]);
+
+            $duplicated_tenant->domains()->create(['domain' => $request->input('domain')]);
+            $response = response()->json(['message' => 'En cours de création'], 200);
+
+            $original_tenant = Tenant::findOrFail($tenantId);
+
+            DuplicateTenantJob::dispatch($original_tenant,$duplicated_tenant, $request->all())->onQueue('tenants');
+
+            return $response;
+        } catch (\Exception $e) {
+            LogService::logException($e);
+            return response()->json(['message' => 'Erreur lors de la création du tenant'], 500);
         }
     }
 }

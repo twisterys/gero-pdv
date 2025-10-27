@@ -42,6 +42,7 @@ Route::group([
         Route::delete('/{tenantId}', 'TenantController@supprimer');
         Route::put('/{tenantId}/subdomain', 'TenantController@modifier_sous_domaine');
         Route::put('/{tenantId}/expiration-date', 'TenantController@modifier_date_expiration');
+        Route::post('/{tenantId}/dupliquer', 'TenantController@dupliquer');
     });
     Route::prefix('users')->group(function () {
         Route::get("/{tenantId}", 'UserController@liste');
