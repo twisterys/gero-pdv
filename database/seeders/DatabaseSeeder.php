@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ReferencesSeeder::class);
         $this->call(UniteSeeder::class);
         $this->call(MagasinSeeder::class);
+        $this->call(DashboardSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(MagasinUserSeeder::class);
         $this->call(DocumentsParametresSeeder::class);
@@ -35,7 +36,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LimitesSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(BanquesSeeder::class);
-        $this->call(DashboardSeeder::class);
         $this->call(PassagerSeeder::class);
 
     }
