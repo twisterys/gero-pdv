@@ -203,7 +203,7 @@ return [
             'maxJobs' => 0,
             'memory' => 128,
             'tries' => 1,
-            'timeout' => 60,
+            'timeout' => 900,
             'nice' => 0,
         ],
         'supervisor-3' => [
@@ -228,12 +228,21 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
-        ],
-
-        'local' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
+            'supervisor-2' => [
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
             ],
+            'supervisor-3' => [
+                'maxProcesses' => 2,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+        ],
+        'local' => [
+            'supervisor-1' => ['maxProcesses' => 3],
+            'supervisor-2' => ['maxProcesses' => 1],
+            'supervisor-3' => ['maxProcesses' => 1],
         ],
     ],
 
@@ -241,5 +250,4 @@ return [
         'username' => env('HORIZON_BASIC_AUTH_USERNAME'),
         'password' => env('HORIZON_BASIC_AUTH_PASSWORD'),
     ],
-
 ];

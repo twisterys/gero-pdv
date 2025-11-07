@@ -18,6 +18,11 @@ class CreateTenantJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 1;
+    public $timeout = 900;
+
+
+
     protected $tenant;
     protected $request;
 
@@ -55,6 +60,7 @@ class CreateTenantJob implements ShouldQueue
         } catch (\Throwable $e) {
             LogService::logException($e, $this->tenant->id);
             $this->call_webhook($this->tenant, 'Erreur lors du traitement.');
+            return;
         }
     }
 
@@ -154,19 +160,29 @@ class CreateTenantJob implements ShouldQueue
     private function call_webhook($tenant, $message = null)
     {
         $apiToken = env('INTERNAL_API_TOKEN');
+        $base = rtrim((string) config('tenancy.callback_url'), '/');
+        if (!$base) {
+            \Log::warning('TENANCY_CALLBACK_URL manquante, webhook ignoré.');
+            return;
+        }
+        $url = $base . '/' . $tenant->id;
+        $cbHost = parse_url($url, PHP_URL_HOST);
+        $appHost = parse_url((string) config('app.url'), PHP_URL_HOST);
+        if ($cbHost && $appHost && strcasecmp($cbHost, $appHost) === 0) {
+            \Log::warning("Webhook ignoré (même hôte): {$url}");
+            return;
+        }
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiToken,
-            ])->post(config('tenancy.callback_url').$tenant->id, [
-                'status' => $tenant->status,
-                'message' => $message,
-            ]);
+            $response = \Http::timeout(10)
+                ->withHeaders(['Authorization' => 'Bearer ' . $apiToken])
+                ->post($url, ['status' => $tenant->status, 'message' => $message]);
+
             if ($response->failed()) {
-                Log::error("Webhook call failed for tenant {$tenant->id}: " . $response->body());
+                \Log::error("Webhook call failed for tenant {$tenant->id}: " . $response->body());
             }
-        } catch (\Exception $e) {
-            LogService::logException($e, $tenant->id);
+        } catch (\Throwable $e) {
+            \App\Services\LogService::logException($e, $tenant->id);
         }
     }
 }
