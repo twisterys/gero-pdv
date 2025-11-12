@@ -114,6 +114,7 @@
 
 
     </div>
+    @include('rapports.partials.rapport_help')
 @endsection
 
 @push('scripts')
@@ -191,7 +192,7 @@
         const centerTextPlugin = {
             id: 'centerText',
             beforeDatasetsDraw(chart, args, pluginOptions) {
-                const { ctx, data } = chart;
+                const {ctx, data} = chart;
                 ctx.save();
 
                 const total = data.datasets[0].data.reduce((sum, value) => sum + value, 0);
@@ -220,7 +221,7 @@
                     // Ajouter un fond semi-transparent pour améliorer la lisibilité
                     const textWidth = ctx.measureText(percentage + '%').width;
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                    ctx.fillRect(x - textWidth/2 - 5, y - 8, textWidth + 10, 16);
+                    ctx.fillRect(x - textWidth / 2 - 5, y - 8, textWidth + 10, 16);
 
                     ctx.fillStyle = '#fff';
                     ctx.fillText(percentage + '%', x, y);
@@ -255,7 +256,7 @@
                                 size: 12
                             },
                             // Afficher le pourcentage dans la légende aussi
-                            generateLabels: function(chart) {
+                            generateLabels: function (chart) {
                                 const data = chart.data;
                                 if (data.labels.length && data.datasets.length) {
                                     const total = data.datasets[0].data.reduce((sum, value) => sum + value, 0);

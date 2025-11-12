@@ -101,7 +101,7 @@
 {{--            </div>--}}
 {{--        </div>--}}
 {{--    </div>--}}
-
+    @include('rapports.partials.rapport_help')
 @endsection
 
 @push('scripts')

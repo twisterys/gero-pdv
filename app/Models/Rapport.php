@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Rapport extends Model
 {
     protected $fillable = [
-        'nom', 'route', 'description', 'type'
+        'nom', 'route', 'description', 'type', 'details'
     ];
 }

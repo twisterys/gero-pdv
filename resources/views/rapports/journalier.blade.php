@@ -9,7 +9,8 @@
                     <h4 class="mb-0">Rapport Journalier</h4>
                 </div>
                 <div class="col-auto no-print">
-                    <a href="{{ route('rapports.journalier.plain', ['date' => $date ?? now()->format('Y-m-d'), 'magasin_id' => $magasinId ?? ($magasins[0]->id ?? null)]) }}" class="btn btn-primary ms-2">
+                    <a href="{{ route('rapports.journalier.plain', ['date' => $date ?? now()->format('Y-m-d'), 'magasin_id' => $magasinId ?? ($magasins[0]->id ?? null)]) }}"
+                       class="btn btn-primary ms-2">
                         <i class="mdi mdi-printer"></i> Imprimer
                     </a>
                 </div>
@@ -17,7 +18,8 @@
 
             <div class="row mt-3 justify-content-start no-print">
                 <div class="col-12 col-xl-8 col-lg-9">
-                    <form method="post" action="{{ route('rapports.journalier.filtrer') }}" class="row g-3 align-items-end">
+                    <form method="post" action="{{ route('rapports.journalier.filtrer') }}"
+                          class="row g-3 align-items-end">
                         @csrf
                         <div class="col-sm-6 col-md-4 col-lg-4">
                             <label class="form-label">Date</label>
@@ -31,7 +33,8 @@
                             <label class="form-label">Magasin</label>
                             <select name="magasin_id" class="form-select" required>
                                 @foreach($magasins as $m)
-                                    <option value="{{ $m->id }}" {{ (isset($magasinId) && (int)$magasinId === (int)$m->id) ? 'selected' : '' }}>
+                                    <option
+                                        value="{{ $m->id }}" {{ (isset($magasinId) && (int)$magasinId === (int)$m->id) ? 'selected' : '' }}>
                                         {{ $m->nom }}
                                     </option>
                                 @endforeach
@@ -167,7 +170,7 @@
                                     <th>Date vente</th>
                                     <th>Contrôlé</th>
                                     <th>Montant Payé</th>
-                                    <th>Montant Total	</th>
+                                    <th>Montant Total</th>
                                     <th>Montant Créance</th>
                                 </tr>
                                 </thead>
@@ -184,12 +187,13 @@
                                         <td>{!! ($row['is_controled'] ?? false) ? '<span class="badge bg-success">Oui</span>' : '<span class="badge bg-danger">Non</span>' !!}</td>
                                         <td>{{ $row['total_paiement_today'] }}</td>
                                         <td>{{ $row['total_ttc'] }}</td>
-                                        <td >{{ number_format($row['creance_amount'] ?? 0, 2, ',', ' ') }}</td>
+                                        <td>{{ number_format($row['creance_amount'] ?? 0, 2, ',', ' ') }}</td>
                                     </tr>
                                 @endforeach
                                 <tr class="fw-bold bg-light">
-                                    <td colspan="9" >Total des paiements</td>
-                                    <td colspan="2" class="text-end">{{ number_format($cr['total_paiements'] ?? 0, 2, ',', ' ') }}</td>
+                                    <td colspan="9">Total des paiements</td>
+                                    <td colspan="2"
+                                        class="text-end">{{ number_format($cr['total_paiements'] ?? 0, 2, ',', ' ') }}</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -295,20 +299,40 @@
                 </div>
             </div>
 
-
+            @include('rapports.partials.rapport_help')
             @endsection
 
-@push('styles')
-<style>
-    /* Hide elements marked as no-print when printing */
-    @media print {
-        .no-print { display: none !important; }
-        /* Avoid breaking cards and tables across pages */
-        .card { break-inside: avoid; page-break-inside: avoid; }
-        table { break-inside: avoid; page-break-inside: avoid; }
-        thead { display: table-header-group; }
-        tfoot { display: table-footer-group; }
-        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-</style>
-@endpush
+            @push('styles')
+                <style>
+                    /* Hide elements marked as no-print when printing */
+                    @media print {
+                        .no-print {
+                            display: none !important;
+                        }
+
+                        /* Avoid breaking cards and tables across pages */
+                        .card {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+
+                        table {
+                            break-inside: avoid;
+                            page-break-inside: avoid;
+                        }
+
+                        thead {
+                            display: table-header-group;
+                        }
+
+                        tfoot {
+                            display: table-footer-group;
+                        }
+
+                        body {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                    }
+                </style>
+    @endpush

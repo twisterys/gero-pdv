@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Magasin;
 use App\Models\Paiement;
+use App\Models\Rapport;
 use App\Models\Vente;
 use App\Models\VenteLigne;
 use App\Services\PosService;
@@ -20,7 +21,8 @@ class RapportJournalierController extends Controller
         $magasins = Magasin::all(['id', 'nom']);
 
         $data = $this->buildReports($date, (int)$magasinId);
-        return view('rapports.journalier', compact('date', 'magasins', 'magasinId') + $data);
+        $rapport_details = Rapport::where('route','journalier')->first();
+        return view('rapports.journalier', compact('date', 'magasins', 'magasinId','rapport_details') + $data);
     }
 
     public function filtrer(Request $request)

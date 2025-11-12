@@ -141,6 +141,7 @@
             </div>
         </div>
     </div>
+    @include('rapports.partials.rapport_help')
 @endsection
 @push('scripts')
     <script src="{{ asset('libs/moment/min/moment-with-locales.min.js') }}"></script>

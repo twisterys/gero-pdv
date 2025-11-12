@@ -28,7 +28,9 @@ use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Yajra\DataTables\Facades\DataTables;
-
+/*
+ * rapports pour Gero PDV
+ */
 class RapportController extends Controller
 {
     public function liste()
@@ -107,7 +109,8 @@ class RapportController extends Controller
 
             return $table->make();
         }
-        return view("rapports.mouvement_stock", compact('date_picker_start', 'date_picker_end'));
+        $rapport_details = Rapport::where('route','mouvement-stock')->first();
+        return view("rapports.mouvement_stock", compact('date_picker_start', 'date_picker_end','rapport_details'));
     }
 
 
@@ -308,7 +311,8 @@ class RapportController extends Controller
         $ventes_types = Vente::TYPES;
         $achats_types = Achat::TYPES;
         $balises = Tag::all();
-        return view("rapports.achat_vente", compact('recap', 'balises', 'depense_total_ttc', 'ventes_types', 'achats_types', 'retours_achat', 'retours_vente', 'types_vente', 'types_achat', 'totalCredit', 'ventetotalEncaisser', 'date_picker_start', 'date_picker_end', 'totalTTC', 'ventestotalTTC', 'totalHT', 'ventestotalHT', 'totalAva', 'totalAv'));
+        $rapport_details = Rapport::where('route','achat_vente')->first();
+        return view("rapports.achat_vente", compact('recap', 'balises', 'depense_total_ttc', 'ventes_types', 'achats_types', 'retours_achat', 'retours_vente', 'types_vente', 'types_achat', 'totalCredit', 'ventetotalEncaisser', 'date_picker_start', 'date_picker_end', 'totalTTC', 'ventestotalTTC', 'totalHT', 'ventestotalHT', 'totalAva', 'totalAv','rapport_details'));
     }
 
     public function vente_produit(Request $request)
@@ -363,7 +367,8 @@ class RapportController extends Controller
 
         $types_inclues = ['bc', 'br'];
         $types = Vente::TYPES;
-        return view("rapports.vente_produit", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclues'));
+        $rapport_details = Rapport::where('route','vente-produit')->first();
+        return view("rapports.vente_produit", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclues','rapport_details'));
     }
 
     public function achat_produit(Request $request)
@@ -423,7 +428,8 @@ class RapportController extends Controller
 
         $types_inclues = ['bra', 'faa'];
         $types = Achat::TYPES;
-        return view("rapports.achat_produit", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclues'));
+        $rapport_details = Rapport::where('route','achat-produit')->first();
+        return view("rapports.achat_produit", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclues','rapport_details'));
     }
 
     public function ca_client(Request $request)
@@ -491,7 +497,8 @@ class RapportController extends Controller
             return $table->make();
         }
         $types = Vente::TYPES;
-        return view("rapports.ca_client", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclue'));
+        $rapport_details = Rapport::where('route','ca-client')->first();
+        return view("rapports.ca_client", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclue','rapport_details'));
     }
 
     public function tendance_produit(Request $request)
@@ -547,7 +554,8 @@ class RapportController extends Controller
             return $table->make();
         }
         $types = Vente::TYPES;
-        return view("rapports.tendance_produit", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclus'));
+        $rapport_details = Rapport::where('route','tendance-produit')->first();
+        return view("rapports.tendance_produit", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclus','rapport_details'));
     }
 
     public function stock_produit(Request $request)
@@ -594,7 +602,8 @@ class RapportController extends Controller
             ->selectRaw('SUM(stocks.quantite * prix_achat ) as somme_achat')->pluck('somme_achat')[0];
         $benifice = $stock_ventes - $stock_achats;
         $profit = $stock_ventes == 0 ? 0 : number_format((($benifice / $stock_ventes) * 100), 2);
-        return view("rapports.stock_produit", compact('stock_achats', 'stock_ventes', 'benifice', 'profit'));
+        $rapport_details = Rapport::where('route','stock-produit')->first();
+        return view("rapports.stock_produit", compact('stock_achats', 'stock_ventes', 'benifice', 'profit','rapport_details'));
     }
     public function stock_produit_legal(Request $request){
 
@@ -655,8 +664,8 @@ class RapportController extends Controller
             $table->rawColumns(['selectable_td']);
             return $table->make();
         }
-
-        return view("rapports.stock_produit_legal");
+        $rapport_details = Rapport::where('route','stock-produit-legal')->first();
+        return view("rapports.stock_produit_legal",compact('rapport_details'));
     }
     public function stock_produit_par_magasin(Request $request)
     {
@@ -723,7 +732,8 @@ class RapportController extends Controller
             ];
         }
         $magasins = auth()->user()->magasins;
-        return view("rapports.stock_produit_par_magasin", compact('magasins'));
+        $rapport_details = Rapport::where('route','stock-produit-magasin')->first();
+        return view("rapports.stock_produit_par_magasin", compact('magasins','rapport_details'));
     }
 
     public function commerciaux(Request $request)
@@ -780,7 +790,8 @@ class RapportController extends Controller
             return $table->make();
         }
         $types = Vente::TYPES;
-        return view("rapports.commerciaux", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclue'));
+        $rapport_details = Rapport::where('route','commerciaux')->first();
+        return view("rapports.commerciaux", compact('date_picker_start', 'date_picker_end', 'types', 'types_inclue','rapport_details'));
     }
 
     public function afficher_session($id, Request $request)
@@ -845,10 +856,10 @@ class RapportController extends Controller
             ->where('type_document', $retour->value)->sum('total_ttc');
 
         $depenses_total = Depense::where('pos_session_id', $id)->sum('montant');
-
+        $rapport_details = Rapport::where('route','sessions.ventes')->first();
         return \view('rapports.partials.sessions.ventes', compact('o_session',
             'vente', 'retour', 'count_ventes', 'count_retours', 'depenses_total'
-            , 'total_ventes', 'total_retours'));
+            , 'total_ventes', 'total_retours','rapport_details'));
     }
 
     public function sessions(Request $request)
@@ -894,7 +905,8 @@ class RapportController extends Controller
         }
 
         $magasins = auth()->user()->magasins;
-        return view('rapports.sessions', compact('magasins'));
+        $rapport_details = Rapport::where('route','sessions')->first();
+        return view('rapports.sessions', compact('magasins','rapport_details'));
     }
 
     /**
@@ -1002,7 +1014,8 @@ class RapportController extends Controller
                 'somme' => number_format($paiements->sum('tva_result'),2,'.',' ')
             ];
         }
-        return view('rapports.tva', compact('date_picker_start', 'date_picker_end'));
+        $rapport_details = Rapport::where('route','tva')->first();
+        return view('rapports.tva', compact('date_picker_start', 'date_picker_end','rapport_details'));
 
     }
 
@@ -1108,8 +1121,8 @@ class RapportController extends Controller
                 'depense' => view('rapports.partials.annuel.depense', compact('depense_ca_ht', 'depense_ca'))->render(),
             ];
         }
-
-        return view("rapports.annuel",compact('vente_ca','depense_ca_ht', 'depense_ca', 'first_day_of_the_year','cumulated_achat_creance','cumulated_vente_creance','vente_ca_ht','vente_recette', 'vente_creance', 'achat_creance', 'achat_recette', 'achat_ca', 'achat_ca_ht'));
+        $rapport_details = Rapport::where('route','annuel')->first();
+        return view("rapports.annuel",compact('vente_ca','depense_ca_ht', 'depense_ca', 'first_day_of_the_year','cumulated_achat_creance','cumulated_vente_creance','vente_ca_ht','vente_recette', 'vente_creance', 'achat_creance', 'achat_recette', 'achat_ca', 'achat_ca_ht','rapport_details'));
     }
 
 
@@ -1167,8 +1180,8 @@ class RapportController extends Controller
 
         $grouped = collect($grouped)->sortByDesc('total_ttc');
         $chart_data = collect($chart_data);
-
-        return view('rapports.categorie_depense', compact('grouped', 'chart_data', 'date_picker_start', 'date_picker_end'));
+        $rapport_details = Rapport::where('route','categorie-depense')->first();
+        return view('rapports.categorie_depense', compact('grouped', 'chart_data', 'date_picker_start', 'date_picker_end','rapport_details'));
     }
 
 
