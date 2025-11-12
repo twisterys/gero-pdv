@@ -26,7 +26,6 @@ Route::prefix('rapports')->group(function () {
         Route::get('/journalier', [RapportJournalierController::class, 'index'])->name('rapports.journalier');
         Route::post('/journalier', [RapportJournalierController::class, 'filtrer'])->name('rapports.journalier.filtrer');
         Route::get('/journalier/plain', [RapportJournalierController::class, 'printPlain'])->name('rapports.journalier.plain');
-
         // Optionnel: endpoints AJAX par section
         Route::get('/journalier/ac', [RapportJournalierController::class, 'ac'])->name('rapports.journalier.ac');
         Route::get('/journalier/af', [RapportJournalierController::class, 'af'])->name('rapports.journalier.af');
