@@ -69,6 +69,8 @@
                                 <p class="m-0">
                                     {{$rapport->description}}
                                 </p>
+                                {{-- Champ caché contenant les détails complets du rapport --}}
+                                <div class="rapport-details d-none">{!! nl2br(e($rapport->details ?? 'Aucun détail disponible pour ce rapport.')) !!}</div>
                             </div>
                         </div>
                     </div>
@@ -96,6 +98,8 @@
                                 <p class="m-0">
                                     {{$rapport->description}}
                                 </p>
+                                {{-- Champ caché contenant les détails complets du rapport --}}
+                                <div class="rapport-details d-none">{!! nl2br(e($rapport->details ?? 'Aucun détail disponible pour ce rapport.')) !!}</div>
                             </div>
                         </div>
                     </div>
@@ -123,6 +127,8 @@
                                 <p class="m-0">
                                     {{$rapport->description}}
                                 </p>
+                                {{-- Champ caché contenant les détails complets du rapport --}}
+                                <div class="rapport-details d-none">{!! nl2br(e($rapport->details ?? 'Aucun détail disponible pour ce rapport.')) !!}</div>
                             </div>
                         </div>
                     </div>
@@ -151,6 +157,8 @@
                                     <p class="m-0">
                                         {{$rapport->description}}
                                     </p>
+                                    {{-- Champ caché contenant les détails complets du rapport --}}
+                                    <div class="rapport-details d-none">{!! nl2br(e($rapport->details ?? 'Aucun détail disponible pour ce rapport.')) !!}</div>
                                 </div>
                             </div>
                         </div>
@@ -178,6 +186,8 @@
                                     <p class="m-0">
                                         {{$rapport->description}}
                                     </p>
+                                    {{-- Champ caché contenant les détails complets du rapport --}}
+                                    <div class="rapport-details d-none">{!! nl2br(e($rapport->details ?? 'Aucun détail disponible pour ce rapport.')) !!}</div>
                                 </div>
                             </div>
                         </div>
