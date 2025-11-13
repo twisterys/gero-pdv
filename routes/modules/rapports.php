@@ -21,6 +21,8 @@ Route::prefix('rapports')->group(function () {
         Route::get('/sessions', 'sessions')->name('rapports.sessions');
         Route::get('/sessions/ventes/{id}', 'afficher_session')->name('rapports.sessions.ventes');
         Route::get('/categorie-depense','categorie_depense')->name('rapports.categorie-depense');
+        Route::get('/rapport-creances', 'rapport_creances')->name('rapports.rapport-creances');
+        Route::get('/historique-client', 'historique_client')->name('rapports.historique-client');
 
 
         Route::get('/journalier', [RapportJournalierController::class, 'index'])->name('rapports.journalier');

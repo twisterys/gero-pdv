@@ -1184,7 +1184,241 @@ class RapportController extends Controller
         return view('rapports.categorie_depense', compact('grouped', 'chart_data', 'date_picker_start', 'date_picker_end','rapport_details'));
     }
 
+    public function rapport_creances(Request $request)
+    {
+        $this->guard_custom(['rapport.*']);
 
+        $exercice_date = session()->get('exercice');
+        $start_of_year = Carbon::now()->setYear($exercice_date)->firstOfYear()->toDateString();
+        $end_of_year = Carbon::now()->setYear($exercice_date)->lastOfYear()->toDateString();
+
+        // Par défaut, uniquement les factures "fa"
+        $types_inclue = ['fa'];
+
+        if ($request->ajax()) {
+            if ($request->get('i_types')) {
+                $types_inclue = $request->get('i_types');
+            }
+
+            $query = DB::table('clients')
+                ->leftJoin('ventes', function ($join) use ($types_inclue) {
+                    $join->on('clients.id', '=', 'ventes.client_id')
+                        ->whereIn('ventes.type_document', $types_inclue);
+                })
+                ->select([
+                    'clients.id as id',
+                    'clients.nom as nom',
+                    'clients.telephone as telephone',
+                    DB::raw("COALESCE(SUM(CASE WHEN ventes.statut='validé' THEN ventes.solde ELSE 0 END),0) AS total_credit"),
+                    DB::raw("COALESCE(SUM(CASE WHEN ventes.statut='validé' AND ventes.date_emission BETWEEN '{$start_of_year}' AND '{$end_of_year}' THEN ventes.solde ELSE 0 END),0) AS credit_n"),
+                    DB::raw("COALESCE(SUM(CASE WHEN ventes.statut='validé' AND ventes.date_emission < '{$start_of_year}' THEN ventes.solde ELSE 0 END),0) AS credit_prev"),
+                ])
+                ->groupBy('clients.id', 'clients.nom', 'clients.telephone');
+
+            if ($request->get('i_search')) {
+                $search = '%' . $request->get('i_search') . '%';
+                $query->where(function (Builder $q) use ($search) {
+                    $q->where('clients.nom', 'LIKE', $search)
+                        ->orWhere('clients.reference', 'LIKE', $search);
+                });
+            }
+
+            // Filtrage par montant min/max selon le critère choisi
+            $critere = $request->get('i_critere'); // 'total' | 'current' | 'previous'
+            $min = $request->get('i_min');
+            $max = $request->get('i_max');
+            $column = null;
+            if ($critere === 'current') {
+                $column = 'credit_n';
+            } elseif ($critere === 'previous') {
+                $column = 'credit_prev';
+            } else {
+                $column = 'total_credit';
+            }
+            if ($column) {
+                if ($min !== null && $min !== '') {
+                    $query->having($column, '>=', (float)$min);
+                }
+                if ($max !== null && $max !== '') {
+                    $query->having($column, '<=', (float)$max);
+                }
+            }
+
+            // Tri DataTables
+            if ($request->get('order') && $request->get('columns')) {
+                $orders = $request->get('order');
+                $columns = $request->get('columns');
+                foreach ($orders as $order) {
+                    $query->orderByRaw('' . $columns[$order['column']]['data'] . ' ' . $order['dir']);
+                }
+            }
+
+            $table = DataTables::of($query)->order(function () {
+            });
+            $table->addColumn('selectable_td', function ($row) {
+                $id = $row->id;
+                return '<input type="checkbox" class="row-select form-check-input" value="' . $id . '">';
+            });
+            $table->editColumn('total_credit', function ($row) {
+                return number_format($row->total_credit, 2, '.', ' ') . ' MAD';
+            });
+            $table->editColumn('credit_n', function ($row) {
+                return number_format($row->credit_n, 2, '.', ' ') . ' MAD';
+            });
+            $table->editColumn('credit_prev', function ($row) {
+                return number_format($row->credit_prev, 2, '.', ' ') . ' MAD';
+            });
+            $table->rawColumns(['selectable_td']);
+            return $table->make();
+        }
+
+        // Indicateurs globaux (actuellement basés sur 'fa' uniquement)
+        $total_general = DB::table('ventes')
+            ->where('statut', 'validé')
+            ->where('type_document', 'fa')
+            ->sum('solde');
+        $total_n = DB::table('ventes')
+            ->where('statut', 'validé')
+            ->where('type_document', 'fa')
+            ->whereBetween('date_emission', [$start_of_year, $end_of_year])
+            ->sum('solde');
+        $total_prev = DB::table('ventes')
+            ->where('statut', 'validé')
+            ->where('type_document', 'fa')
+            ->where('date_emission', '<', $start_of_year)
+            ->sum('solde');
+
+        $rapport_details = Rapport::where('route', 'rapport-creances')->first();
+        $types = Vente::TYPES;
+        return view('rapports.rapport_creances', [
+            'total_general' => $total_general,
+            'total_n' => $total_n,
+            'total_prev' => $total_prev,
+            'exercice' => $exercice_date,
+            'rapport_details' => $rapport_details,
+            'types' => $types,
+            'types_inclue' => $types_inclue,
+        ]);
+    }
+
+    public function historique_client(Request $request)
+    {
+        $this->guard_custom(['rapport.*']);
+        $clients = \App\Models\Client::select(['id', 'nom'])->orderBy('nom')->get();
+        $globals = \App\Models\GlobalSetting::first();
+        $prix_revient_active = (bool)($globals->prix_revient ?? false);
+
+        // Par défaut, on inclut uniquement les factures 'fa' (comme rapport_creances)
+        $types_inclue = ['fa'];
+
+        if ($request->ajax()) {
+            if ($request->get('i_types')) {
+                $types_inclue = $request->get('i_types');
+            }
+
+            $clientId = $request->get('i_client');
+            $annee = $request->get('i_annee');
+
+            // Agrégats Ventes (CA & Crédit) par client/année
+            $ventesAgg = DB::table('ventes')
+                ->selectRaw('ventes.client_id as client_id, YEAR(ventes.date_emission) as annee, COALESCE(SUM(ventes.total_ttc),0) as ca, COALESCE(SUM(ventes.solde),0) as credit_annee')
+                ->when($clientId, function ($q) use ($clientId) { $q->where('ventes.client_id', $clientId); })
+                ->when($annee, function ($q) use ($annee) { $q->whereYear('ventes.date_emission', $annee); })
+                ->where('ventes.statut', 'validé')
+                ->whereIn('ventes.type_document', $types_inclue)
+                ->groupBy('ventes.client_id', DB::raw('YEAR(ventes.date_emission)'))
+                ->get();
+
+            // Agrégats Encaissements par client/année (paiements sur ventes)
+            $encaissementsAgg = DB::table('paiements')
+                ->join('ventes', function ($join) use ($types_inclue) {
+                    $join->on('paiements.payable_id', '=', 'ventes.id')
+                        ->where('paiements.payable_type', Vente::class)
+                        ->where('ventes.statut', 'validé')
+                        ->whereIn('ventes.type_document', $types_inclue);
+                })
+                ->when($clientId, function ($q) use ($clientId) { $q->where('ventes.client_id', $clientId); })
+                ->when($annee, function ($q) use ($annee) { $q->whereYear('paiements.date_paiement', $annee); })
+                ->selectRaw('ventes.client_id as client_id, YEAR(paiements.date_paiement) as annee, COALESCE(SUM(paiements.encaisser),0) as encaissements')
+                ->groupBy('ventes.client_id', DB::raw('YEAR(paiements.date_paiement)'))
+                ->get();
+
+            // Agrégats Prix de revient par client/année (optionnel)
+            $revientAgg = collect();
+            if ($prix_revient_active) {
+                $revientAgg = DB::table('vente_lignes')
+                    ->join('ventes', 'vente_lignes.vente_id', '=', 'ventes.id')
+                    ->when($clientId, function ($q) use ($clientId) { $q->where('ventes.client_id', $clientId); })
+                    ->when($annee, function ($q) use ($annee) { $q->whereYear('ventes.date_emission', $annee); })
+                    ->where('ventes.statut', 'validé')
+                    ->whereIn('ventes.type_document', $types_inclue)
+                    ->selectRaw('ventes.client_id as client_id, YEAR(ventes.date_emission) as annee, COALESCE(SUM(vente_lignes.revient * vente_lignes.quantite),0) as prix_revient')
+                    ->groupBy('ventes.client_id', DB::raw('YEAR(ventes.date_emission)'))
+                    ->get();
+            }
+
+            // Indexer par clé composite client|annee
+            $toKey = function ($client_id, $year) { return $client_id . '|' . $year; };
+            $ventesMap = collect($ventesAgg)->keyBy(function ($r) use ($toKey) { return $toKey($r->client_id, $r->annee); });
+            $encaissMap = collect($encaissementsAgg)->keyBy(function ($r) use ($toKey) { return $toKey($r->client_id, $r->annee); });
+            $revientMap = collect($revientAgg)->keyBy(function ($r) use ($toKey) { return $toKey($r->client_id, $r->annee); });
+
+            // Ensemble des clés
+            $allKeys = $ventesMap->keys()->merge($encaissMap->keys())->merge($revientMap->keys())->unique();
+
+            // Récupérer les noms des clients concernés
+            $clientIds = $allKeys->map(function ($k) { return (int)explode('|', $k)[0]; })->unique()->values();
+            $clientsMap = DB::table('clients')->whereIn('id', $clientIds)->pluck('nom', 'id');
+
+            // Construire les lignes
+            $rows = [];
+            foreach ($allKeys as $key) {
+                [$cid, $year] = explode('|', $key);
+                $cid = (int)$cid; $year = (int)$year;
+                $v = $ventesMap->get($key);
+                $e = $encaissMap->get($key);
+                $r = $prix_revient_active ? $revientMap->get($key) : null;
+
+                $ca = $v->ca ?? 0;
+                $credit = $v->credit_annee ?? 0;
+                $enc = $e->encaissements ?? 0;
+                $rev = $prix_revient_active ? ($r->prix_revient ?? 0) : null;
+
+                $rows[] = [
+                    'id' => $cid . ':' . $year,
+                    'client' => $clientsMap[$cid] ?? ('Client #' . $cid),
+                    'annee' => $year,
+                    'ca' => number_format($ca, 2, '.', ' ') . ' MAD',
+                    'encaissements' => number_format($enc, 2, '.', ' ') . ' MAD',
+                    'prix_revient' => $prix_revient_active ? number_format($rev, 2, '.', ' ') . ' MAD' : '--',
+                    'credit_annee' => number_format($credit, 2, '.', ' ') . ' MAD',
+                ];
+            }
+
+            // Tri: année desc puis client asc
+            $rows = collect($rows)->sortBy([["annee", 'desc'], ['client', 'asc']])->values();
+
+            $table = DataTables::of($rows)->order(function () {});
+            $table->addColumn('selectable_td', function ($row) {
+                $id = data_get($row, 'id');
+                return '<input type="checkbox" class="row-select form-check-input" value="' . e($id) . '">';
+            });
+            $table->rawColumns(['selectable_td']);
+            return $table->make();
+        }
+        // Valeurs par défaut pour la vue
+        $currentYear = Carbon::now()->year;
+        $rapport_details = Rapport::where('route', 'historique-client')->first();
+        $types = Vente::TYPES;
+        return view('rapports.historique_client', [
+            'clients' => $clients,
+            'prix_revient' => $prix_revient_active,
+            'currentYear' => $currentYear,
+            'rapport_details' => $rapport_details,
+            'types' => $types,
+            'types_inclue' => $types_inclue,
+        ]);
+    }
 
 
 }

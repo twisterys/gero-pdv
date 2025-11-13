@@ -710,6 +710,109 @@ Répartition des dépenses du jour par catégorie avec montants et pourcentages.
 
 ---
 
+## Rapport Créances Clients
+
+#### À QUOI SERT CE RAPPORT ?
+
+Ce rapport permet de suivre vos impayés clients, d’analyser leur ancienneté (aging) et de préparer les actions de relance.
+
+#### MÉTHODE DE CALCUL
+
+- Documents pris en compte : factures de vente (fa) validées
+- Solde d’une facture : Montant TTC − Paiements encaissés − Avoirs de vente imputés
+- Paiements partiels : pris en compte au prorata
+- Échéance : déterminée par les conditions de paiement (date facture + délai)
+- Ancienneté : calculée à partir d’une date de référence (fin de période ou aujourd’hui)
+
+#### INDICATEURS AFFICHÉS
+
+- Solde total des créances (toutes factures non soldées)
+- Répartition par tranches d’âge : 0–30 j, 31–60 j, 61–90 j, >90 j
+- Nombre de factures échues et en retard
+- Top clients par solde dû
+- Date du dernier encaissement par client
+
+#### DÉTAIL PAR FACTURE
+
+Chaque ligne affiche :
+- Référence de la facture, date, date d’échéance
+- Montant TTC, total encaissé, solde restant
+- Jours de retard (si échéance dépassée)
+- Magasin / commercial (si disponibles)
+- Balises (tags) associées
+
+#### FILTRES DISPONIBLES
+
+- Date de référence pour l’aging (par défaut : aujourd’hui)
+- Période de facturation (date de facture)
+- Client(s), magasin, commercial
+- Statut : À échéance, Échue, En retard, Soldée
+- Balises (tags) documentaires
+- Inclure/Exclure les avoirs imputés
+
+#### UTILISATION PRATIQUE
+
+- Prioriser les relances en ciblant les factures les plus anciennes
+- Identifier les clients à risque (>90 j)
+- Suivre l’efficacité des encaissements (date du dernier paiement)
+- Exporter un état pour votre comptable
+
+#### NOTES IMPORTANTES
+
+- Les devis, bons et documents non fiscaux ne sont pas inclus
+- Les avoirs de vente (av) réduisent le solde s’ils sont imputés sur la facture
+- En multi-devises, les soldes sont présentés dans la devise du document
+
+---
+
+## Rapport Historique Client
+
+#### À QUOI SERT CE RAPPORT ?
+
+Ce rapport constitue le relevé chronologique d’un client (état de compte) : toutes les opérations qui impactent son solde, avec un cumul en cours.
+
+#### CONTENU ET MÉTHODE
+
+- Opérations listées (validées uniquement) :
+    - Factures de vente (fa) : augmentent le solde dû
+    - Avoirs de vente (av) : diminuent le solde dû
+    - Paiements reçus : diminuent le solde dû
+- Solde initial (optionnel) : créance cumulée avant la période sélectionnée
+- Solde courant : calculé après chaque opération (running balance)
+
+#### INFORMATIONS PAR OPÉRATION
+
+- Date, type d’opération (facture/avoir/paiement)
+- Référence du document et lien de consultation
+- Montant TTC (facture/avoir) ou montant du paiement
+- Méthode de paiement (si disponible)
+- Solde après opération
+- Magasin / commercial / balises (si disponibles)
+
+#### FILTRES DISPONIBLES
+
+- Client (obligatoire)
+- Période (dates de documents)
+- Types d’opérations à inclure (factures, avoirs, paiements)
+- Magasin, commercial, balises
+- Inclure le solde initial (oui/non)
+
+#### UTILISATION PRATIQUE
+
+- Émettre un relevé de compte pour un client donné
+- Comprendre l’historique des impayés et des régularisations
+- Justifier un solde lors d’une relance ou d’un litige
+- Vérifier l’imputation d’avoirs et de paiements
+
+#### NOTES IMPORTANTES
+
+- Seuls les documents validés sont pris en compte
+- Les paiements non affectés à une facture apparaissent comme mouvements généraux de solde
+- Les montants et soldes respectent la devise du client/document
+
+
+---
+
 ## Notes Générales
 
 #### Conventions utilisées dans tous les rapports :
