@@ -107,6 +107,14 @@
                                 <option value=""></option>
                             </select>
                         </div>
+                        <div class="col-sm-3 col-12 mb-3">
+                            <label class="form-label" for="statut-controle-select">Statut de contrôle</label>
+                            <select class="select2 form-control mb-3 custom-select" id="statut-controle-select">
+                                <option value="">Tous</option>
+                                <option value="1">Contrôlé</option>
+                                <option value="0">Non contrôlé</option>
+                            </select>
+                        </div>
                         <div class="col-12 d-flex justify-content-end">
                             <button id="search-btn" class="btn btn-primary"><i class="mdi mdi-magnify"></i> Rechercher
                             </button>
@@ -239,7 +247,8 @@
             reference: '#reference-input',
             total_ttc: '#ttc-input',
             balises: '#balises-select',
-            reference_interne: '#reference_interne'
+            reference_interne: '#reference_interne',
+            controle:"#statut-controle-select"
         }
         const __dataTable_filter_trigger_button_id = '#search-btn';
         @php

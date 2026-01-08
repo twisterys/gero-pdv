@@ -118,6 +118,9 @@ class AchatController extends Controller
                 $ids = DB::table('taggables')->where('taggable_type', Achat::class)->whereIn('tag_id', $balises)->pluck('taggable_id');
                 $o_achat->whereIn('id', $ids);
             }
+            if ($request->filled('conrole')){
+                $o_achat->where('is_controled',(bool)$request->get('conrole'));
+            }
             if ($request->get('order') && $request->get('columns')) {
                 $orders = $request->get('order');
                 $columns = $request->get('columns');
@@ -393,7 +396,7 @@ class AchatController extends Controller
             return redirect()->route('achats.liste', $type)->with('error', __('achats.' . $type) . " n'existe pas");
         }
         $payabale_types = ModuleService::getPayabaleTypes();
-        $is_controled = GlobalSetting::first()->controle;
+        $is_controled = GlobalSetting::first()->controle && auth()->user()->can('achat.controler');
         $globals = GlobalService::get_all_globals();
         return view('achats.afficher', compact('o_achat', 'type', 'payabale_types', 'is_controled', 'globals'));
     }
@@ -1026,6 +1029,7 @@ class AchatController extends Controller
      */
     public function controle($type, $id)
     {
+        $this->guard_custom(['achat.controler']);
         try {
             $achat = Achat::findOrFail($id);
             $achat->update([
