@@ -64,7 +64,7 @@
                                             class="form-control {{ $errors->has('magasin_id') ? 'is-invalid' : '' }}"
                                             id="magasin-select">
                                         @foreach ($o_magasins as $o_magasin)
-                                            <option value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
+                                            <option @selected(old('magasin_id', $o_vente->magasin_id) == $o_magasin->id)  value="{{ $o_magasin->id }}">{{ $o_magasin->text }}</option>
                                         @endforeach
                                     </select>
                                     @error('magasin_id')
