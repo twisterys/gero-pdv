@@ -149,15 +149,48 @@ class ClientController extends Controller
         $exercice = session()->get('exercice');
         $types_event = Event::TYPES;
         $payable_types = ModuleService::getPayabaleTypes();
-        $commandes = Vente::where('type_document','bc')->where('statut','validé')->whereRaw('Year(date_emission) = '.$exercice)->where('client_id',$id)->sum('total_ttc');
-        $ca = Vente::whereIn('type_document',$payable_types)->where('statut','validé')->whereRaw('Year(date_emission) = '.$exercice)->where('client_id',$id)->sum('total_ttc');
-        $encaissement = Paiement::where('client_id',$id)->whereRaw('Year(date_paiement) = '.$exercice)->sum('encaisser');
-        $credit = Vente::whereIn('type_document',$payable_types)->where('statut','validé')->whereRaw('Year(date_emission) = '.$exercice)->where('client_id',$id)->sum('solde');
+
+        $query_commandes = Vente::where('type_document','bc')->where('statut','validé')->where('client_id',$id);
+        $query_ca = Vente::whereIn('type_document',$payable_types)->where('statut','validé')->where('client_id',$id);
+        $query_encaissement = Paiement::where('client_id',$id);
+        $query_credit = Vente::whereIn('type_document',$payable_types)->where('statut','validé')->where('client_id',$id);
+
+        if ($request->get('date_emission')) {
+            $start = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[0]))->toDateString();
+            $end = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[1]))->toDateString();
+
+            $query_commandes->whereBetween('date_emission', [$start, $end]);
+            $query_ca->whereBetween('date_emission', [$start, $end]);
+            $query_encaissement->whereBetween('date_paiement', [$start, $end]);
+            $query_credit->whereBetween('date_emission', [$start, $end]);
+        } else {
+            $query_commandes->whereYear('date_emission', $exercice);
+            $query_ca->whereYear('date_emission', $exercice);
+            $query_encaissement->whereYear('date_paiement', $exercice);
+            $query_credit->whereYear('date_emission', $exercice);
+        }
+
+        $commandes = $query_commandes->sum('total_ttc');
+        $ca = $query_ca->sum('total_ttc');
+        $encaissement = $query_encaissement->sum('encaisser');
+        $credit = $query_credit->sum('solde');
+
         $types = array_diff(ModuleService::getActiveModules(),Achat::TYPES);
         $payables = ModuleService::getPayabaleTypes();
-        return view('clients.afficher', compact('o_client','commandes','ca','encaissement','credit','types','payables','types_event'));
 
+        $ventesImpayeQuery = $o_client->ventesImpaye();
+        if ($request->get('date_emission')) {
+            $start = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[0]))->toDateString();
+            $end = Carbon::createFromFormat('d/m/Y', trim(explode('-', $request->get('date_emission'))[1]))->toDateString();
+            $ventesImpayeQuery->whereBetween('date_emission', [$start, $end]);
+        }
+        $ventesImpaye = $ventesImpayeQuery->get();
 
+        if ($request->ajax()) {
+            return view('clients.partials.afficher_content', compact('o_client','commandes','ca','encaissement','credit','types','payables','types_event', 'ventesImpaye'))->render();
+        }
+
+        return view('clients.afficher', compact('o_client','commandes','ca','encaissement','credit','types','payables','types_event', 'ventesImpaye'));
     }
 
     public function afficher_ajax(Request $request, $id)
