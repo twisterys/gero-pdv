@@ -118,8 +118,8 @@ class AchatController extends Controller
                 $ids = DB::table('taggables')->where('taggable_type', Achat::class)->whereIn('tag_id', $balises)->pluck('taggable_id');
                 $o_achat->whereIn('id', $ids);
             }
-            if ($request->filled('conrole')){
-                $o_achat->where('is_controled',(bool)$request->get('conrole'));
+            if ($request->filled('controle')){
+                $o_achat->where('is_controled',$request->get('controle'));
             }
             if ($request->get('order') && $request->get('columns')) {
                 $orders = $request->get('order');

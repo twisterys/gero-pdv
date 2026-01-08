@@ -43,7 +43,7 @@ $("#fournisseur-select").select2({
     },
     minimumInputLength: 3,
 });
-$("#statut-select,#statut-paiement-select").select2({
+$("#statut-select,#statut-paiement-select, #statut-controle-select").select2({
     width: "100%",
     placeholder: {
         id: "",
