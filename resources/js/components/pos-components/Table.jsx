@@ -225,7 +225,7 @@ export const Table = ({
                     <div className="col-12 my-1 d-flex justify-content-between align-items-center">
                         <h4 className="m-0">Nombre d'articles :</h4>
                         <h4 className="m-0">
-                            {items.reduce((a, b) => a + b.quantity, 0)}
+                            {items.reduce((a, b) => +a + +b.quantity, 0)}
                         </h4>
                     </div>
                 </div>
