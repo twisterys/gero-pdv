@@ -135,7 +135,16 @@
                                 </p>
                             </div>
                         </div>
-
+                        <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4  col-12  my-2 d-flex align-items-center">
+                            <div class="rounded bg-soft-primary  p-2 d-flex align-items-center justify-content-center"
+                                 style="width: 49px">
+                                <i class="fa fa-store fa-2x"></i>
+                            </div>
+                            <div class="ms-3 ">
+                                <span class="font-weight-bolder font-size-sm">Magasin</span>
+                                <p class="mb-0 h5 text-black text-capitalize">{{$o_achat->magasin->nom}} </p>
+                            </div>
+                        </div>
                         <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 col-12 mt-lg-0 mt-3 d-flex align-items-center">
                             <div class="rounded bg-soft-success  p-2 d-flex align-items-center justify-content-center"
                                  style="width: 49px">
@@ -187,6 +196,7 @@
 
                             </div>
                         </div>
+
                         <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 col-12 mt-3 d-flex align-items-md-start">
                             <div
                                 class="rounded bg-info text-white  p-2 d-flex align-items-center justify-content-center"

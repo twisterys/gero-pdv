@@ -123,4 +123,9 @@ class Achat extends Model
         );
     }
 
+    public function magasin()
+    {
+        return $this->belongsTo(Magasin::class);
+    }
+
 }
