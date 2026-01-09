@@ -362,14 +362,24 @@ class RapportController extends Controller
         // We union both sets and compute remaining amount per sale.
 
         // Query A: ventes with a payment today (classic behavior)
-        $creances = Paiement::where('date_paiement', '=', Carbon::today()->format('Y-m-d'))
-            ->where('paiements.magasin_id', $magasin_id)->join('ventes', function ($join) {
+        $creances = Paiement::where('paiements.date_paiement', '=', Carbon::today()->format('Y-m-d'))
+            ->where('paiements.magasin_id', $magasin_id)
+            ->join('ventes', function ($join) {
                 $join->on('ventes.id', '=', 'paiements.payable_id')
                     ->where('paiements.payable_type', '=', 'App\\Models\\Vente');
-            })->join('clients', 'ventes.client_id', '=', 'clients.id')
+            })
+            ->join('clients', 'ventes.client_id', '=', 'clients.id')
             ->join('magasins', 'magasins.id', '=', 'ventes.magasin_id')
-            ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'))
             ->join('methodes_paiement', 'methodes_paiement.key', '=', 'paiements.methode_paiement_key')
+            ->where(function ($query) use ($magasin_id) {
+                $query->where('paiements.magasin_id', '=', $magasin_id)->where('ventes.magasin_id', '=', $magasin_id)
+                    ->where('ventes.date_emission', '<', Carbon::today()->format('Y-m-d'));
+            })
+            ->orWhere(function ($query) use ($magasin_id) {
+                $query->where('paiements.magasin_id', '=', $magasin_id)
+                    ->where('paiements.date_paiement', '=', Carbon::today()->format('Y-m-d'))
+                    ->where('ventes.magasin_id', '!=', $magasin_id);
+            })
             ->select(
                 'ventes.reference',
                 'clients.nom as client_name',
@@ -382,8 +392,11 @@ class RapportController extends Controller
                 'ventes.is_controled',
                 'ventes.total_ttc',
                 'ventes.statut_paiement',
-                DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount')
-            )->get();
+                'ventes.magasin_id as sale_magasin_id',
+                DB::raw('ventes.total_ttc - COALESCE((SELECT SUM(encaisser) FROM paiements WHERE payable_id = ventes.id AND payable_type = "App\\\\Models\\\\Vente"), 0) as creance_amount'),
+                DB::raw('CASE WHEN ventes.magasin_id = ' . $magasin_id . ' THEN "Local" ELSE "External" END as sale_origin')
+            )
+            ->get();
 
 
         // Convert the creances to an array for easier manipulation
