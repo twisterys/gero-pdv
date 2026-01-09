@@ -30,7 +30,10 @@ class Depense extends Model
         'pos_session_id',
         'taxe',
         'affaire_id',
-        'magasin_id'
+        'magasin_id',
+        'is_controled',
+        'controled_at',
+        'controled_by'
     ];
 
     public function categorie()

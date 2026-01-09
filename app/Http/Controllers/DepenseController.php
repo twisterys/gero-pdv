@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CategorieDepense;
 use App\Models\Compte;
 use App\Models\Depense;
+use App\Models\GlobalSetting;
 use App\Models\Magasin;
 use App\Models\MethodesPaiement;
 use App\Models\Taxe;
@@ -15,6 +16,7 @@ use App\Services\ReferenceService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -23,6 +25,38 @@ use Yajra\DataTables\DataTables;
 
 class DepenseController extends Controller
 {
+    public function controle($id)
+    {
+        $this->guard_custom(['depense.controler']);
+        try {
+            $depense = Depense::findOrFail($id);
+            $depense->update([
+                'is_controled' => true,
+                'controled_at' => now(),
+                'controled_by' => auth()->id()
+            ]);
+
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Contrôle')
+                ->withProperties([
+                    'subject_type' => Depense::class,
+                    'subject_id' => $depense->id,
+                    'subject_reference' => $depense->reference,
+                ])
+                ->log('Contrôle effectué sur dépense ' . $depense->reference);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Dépense contrôlée avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du contrôle de la dépense: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     public function liste(Request $request)
     {
         $this->guard_custom(['depense.liste']);
@@ -53,6 +87,14 @@ class DepenseController extends Controller
 
             if ($request->get('affaire_id')) {
                 $o_depenses->where('affaire_id', $request->get('affaire_id'));
+            }
+
+            if ($request->filled('statut_controle')) {
+                if ($request->statut_controle === 'controle') {
+                    $o_depenses->where('is_controled', 1);
+                } elseif ($request->statut_controle === 'non_controle') {
+                    $o_depenses->where('is_controled', 0);
+                }
             }
 
             if ($request->get('date_operation')) {
@@ -112,9 +154,14 @@ class DepenseController extends Controller
                         break;
                 }
                 return '<div class="badge w-100 bg-soft-' . $color . '" >' . __('ventes.' . $row->statut_paiement) . '</div>';
+            })->editColumn('is_controled', function ($row) {
+                if ($row->is_controled) {
+                    return '<div class="badge bg-soft-success w-100">Contrôlé</div>';
+                }
+                return '<div class="badge bg-soft-secondary w-100">Non contrôlé</div>';
             });
 
-            $table->rawColumns(['actions', 'selectable_td', 'statut_paiement']);
+            $table->rawColumns(['actions', 'selectable_td', 'statut_paiement', 'is_controled']);
 
             return $table->make();
         }
@@ -211,7 +258,8 @@ class DepenseController extends Controller
 
         $o_depense = Depense::with('categorie')->find($id);
 //        dd($o_depense);
-        return view('depenses.afficher', compact('o_depense'));
+        $is_controled=GlobalSetting::first()->controle;
+        return view('depenses.afficher', compact('o_depense','is_controled'));
     }
 
     public function modifier($id)

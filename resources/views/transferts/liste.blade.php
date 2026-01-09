@@ -18,20 +18,42 @@
                 <div class="card-body">
                     <!-- #####--Card Title--##### -->
                     <div class="card-title">
-                        <div   class="d-flex switch-filter justify-content-between align-items-center">
+                        <div   class="d-flex justify-content-between align-items-center">
                             <h5 class="m-0"> <i class="fa  fas fa-boxes me-2 text-success"></i>  Liste des transferts</h5>
-                            <div class="page-title-right">
-                                <a href="{{route('transferts.afficher.demandes')}}" class="btn btn-soft-info"><i class="mdi mdi-eye"></i> <span class="d-none d-sm-inline" > Demandes de transferts </span>
-                                </a>
-                                <a href="{{route('transferts.ajouter')}}" class="btn btn-soft-success"><i class="mdi mdi-plus"></i> <span class="d-none d-sm-inline" > Ajouter </span>
-                                </a>
+                                <div class="page-title-right">
+                                    <button class="filter-btn btn btn-soft-info"><i class="fa fa-filter"></i> Filtrer</button>
+                                    <a href="{{route('transferts.afficher.demandes')}}" class="btn btn-soft-info"><i class="mdi mdi-eye"></i> <span class="d-none d-sm-inline" > Demandes de transferts </span>
+                                    </a>
+                                    <a href="{{route('transferts.ajouter')}}" class="btn btn-soft-success"><i class="mdi mdi-plus"></i> <span class="d-none d-sm-inline" > Ajouter </span>
+                                    </a>
+                                </div>
                             </div>
-
+                            <hr class="border">
                         </div>
-                        <hr class="border">
-                    </div>
-                    <!-- #####--DataTable--##### -->
-                    <div class="row">
+                        <!-- #####--Filters--##### -->
+                        <div class="switch-filter row px-3 d-none mt-2 mb-4">
+                            <div class="card-title col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="m-0">Filtres</h5>
+                                </div>
+                                <hr class="border">
+                            </div>
+                            <div class="col-sm-3 col-12 mb-3">
+                                <label class="form-label" for="statut-controle-select">Statut de contrôle</label>
+                                <select class="select2 form-control mb-3 custom-select" id="statut-controle-select">
+                                    <option value=""></option>
+                                    <option value="Tous">Tous</option>
+                                    <option value="controle">Contrôlé</option>
+                                    <option value="non_controle">Non contrôlé</option>
+                                </select>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button id="search-btn" class="btn btn-primary"><i class="mdi mdi-magnify"></i> Rechercher
+                                </button>
+                            </div>
+                        </div>
+                        <!-- #####--DataTable--##### -->
+                        <div class="row">
                         <div class="card-title switch-filter d-none col-12">
                             <hr class="border">
                         </div>
@@ -47,6 +69,7 @@
                                         <th>Magasin de sortie</th>
                                         <th>Magasin d'entrée</th>
                                         <th>Date</th>
+                                        <th>Contrôle</th>
                                         <th style="width: 100px">Actions</th>
                                     </tr>
                                     </thead>
@@ -78,12 +101,20 @@
             {data: 'magasin_sortie', name: 'magasin_sortie'},
             {data: 'magasin_entree', name: 'magasin_entree'},
             {data: 'created_at', name: 'created_at'},
+            {data: 'is_controled', name: 'is_controled'},
             {data: 'actions', name: 'actions', orderable: false,},
         ];
         const __dataTable_ajax_link = "{{ route('transferts.liste') }}";
         const __dataTable_id = "#datatable";
+        const __dataTable_filter_inputs_id = {
+            statut_controle: '#statut-controle-select',
+        }
+        const __dataTable_filter_trigger_button_id = '#search-btn';
     </script>
     <script>
+        $('.filter-btn').click(e => {
+            $('.switch-filter').toggleClass('d-none')
+        })
         $(document).on('click','.show-btn',function (){
             let btn = $(this);
             let html = btn.html();
@@ -100,6 +131,16 @@
                 }
             })
         })
+        $("#statut-controle-select").select2({
+            width: "100%",
+            placeholder: {
+                id: "",
+                text: "Tous",
+            },
+            allowClear: !0,
+            minimumResultsForSearch: -1,
+            selectOnClose: false,
+        });
     </script>
     <script src="{{asset('js/dataTable_init.js')}}" ></script>
 @endpush

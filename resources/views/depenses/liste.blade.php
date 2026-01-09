@@ -78,6 +78,15 @@
                       @endforeach
                   </select>
               </div>
+              <div class="col-sm-3 col-12 mb-3">
+                  <label class="form-label" for="statut-controle-select">Statut de contrôle</label>
+                  <select class="select2 form-control mb-3 custom-select" id="statut-controle-select">
+                      <option value=""></option>
+                      <option value="Tous">Tous</option>
+                      <option value="controle">Contrôlé</option>
+                      <option value="non_controle">Non contrôlé</option>
+                  </select>
+              </div>
               <div class="col-12 d-flex justify-content-end">
                   <button id="search-btn" class="btn btn-primary"><i class="mdi mdi-magnify"></i> Rechercher
                   </button>
@@ -107,6 +116,7 @@
                               <th>Montant</th>
                               <th>Date d'opération</th>
                               <th style="max-width: 100px">Statut de paiement</th>
+                              <th>Contrôle</th>
                               <th>Actions</th>
                           </tr>
                       </thead>
@@ -145,6 +155,7 @@
             {data: 'montant', name: 'montant'},
             {data: 'date_operation', name: 'date_operation'},
             {data: 'statut_paiement', name: 'statut_paiement'},
+            {data: 'is_controled', name: 'is_controled'},
 
             {data: 'actions', name: 'actions', orderable: false,},
         ];
@@ -157,7 +168,8 @@
             categories_id: '#categorie_select',
             date_operation: '#date_operation',
             montant: '#montant-input',
-            statut_paiement: '#statut-paiement-select'
+            statut_paiement: '#statut-paiement-select',
+            statut_controle: '#statut-controle-select'
         }
         const __sort_column = 6;
 

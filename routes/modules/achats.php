@@ -55,4 +55,5 @@ Route::group(['prefix' => 'depenses','controller' => DepenseController::class],f
     //ajax
     Route::get('payer/{id}', 'paiement_modal')->name('depenses.paiement_modal');
     Route::post('payer/{id}', 'payer')->name('depenses.payer');
+    Route::post('controle/{id}', 'controle')->name('depenses.controle');
 });

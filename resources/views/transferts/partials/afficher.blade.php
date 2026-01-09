@@ -41,6 +41,57 @@
    </table>
 </div>
 <div class="modal-footer">
+    @can('transfert.controler')
+        @if($is_controled && $o_transfert->is_controled)
+            <button class="btn btn-soft-dark mx-1" disabled>
+                <i class="fa fa-check-circle"></i> Contrôlée
+            </button>
+        @elseif($is_controled)
+            <button data-href="{{ route('transferts.controle', [$o_transfert->id]) }}"
+                    id="controle-btn" class="btn btn-soft-success mx-1">
+                <i class="fa fa-check-circle"></i> Contrôler
+            </button>
+        @endif
+    @endcan
     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fermer</button>
 </div>
+
+<script>
+    $(document).off('click', '#controle-btn').on('click', '#controle-btn', function () {
+        let url = $(this).data('href');
+        Swal.fire({
+            title: "Êtes-vous sûr?",
+            text: "voulez-vous contrôler ce transfert ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Oui, contrôler!",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-success mx-2',
+                cancelButton: 'btn btn-light mx-2',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            location.reload();
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        toastr.error('Une erreur est survenue');
+                    }
+                });
+            }
+        });
+    });
+</script>
 

@@ -28,6 +28,18 @@
                                 </h5>
                             </div>
                             <div class="pull-right">
+                                @can('depense.controler')
+                                    @if($is_controled && $o_depense->is_controled)
+                                        <button class="btn btn-soft-dark mx-1" disabled>
+                                            <i class="fa fa-check-circle"></i> Contrôlée
+                                        </button>
+                                    @elseif($is_controled)
+                                        <button data-href="{{ route('depenses.controle', [$o_depense->id]) }}"
+                                                id="controle-btn" class="btn btn-soft-success mx-1">
+                                            <i class="fa fa-check-circle"></i> Contrôler
+                                        </button>
+                                    @endif
+                                @endcan
                                     <button id="paiement-btn"
                                             @if($o_depense->solde != '0' )data-href="{{route('depenses.paiement_modal',$o_depense->id)}}"
                                             @else disabled @endif class="btn btn-soft-info mx-1"><i
@@ -334,7 +346,42 @@
                 }
             })
         });
-
+        $(document).on('click', '#controle-btn', function () {
+            let url = $(this).data('href');
+            Swal.fire({
+                title: "Êtes-vous sûr?",
+                text: "voulez-vous contrôler cette dépense ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, contrôler!",
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-success mx-2',
+                    cancelButton: 'btn btn-light mx-2',
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                location.reload();
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function (xhr) {
+                            toastr.error('Une erreur est survenue');
+                        }
+                    });
+                }
+            });
+        });
     </script>
 
 @endpush

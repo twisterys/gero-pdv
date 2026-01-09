@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Commercial;
 use App\Models\DemandeTransfert;
 use App\Models\Importation;
+use App\Models\GlobalSetting;
 use App\Models\Magasin;
 use App\Models\Taxe;
 use App\Models\Transfert;
@@ -24,6 +25,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +33,38 @@ use Yajra\DataTables\DataTables;
 
 class TransfertController extends Controller
 {
+    public function controle($id)
+    {
+        $this->guard_custom(['transfert.controler']);
+        try {
+            $transfert = Transfert::findOrFail($id);
+            $transfert->update([
+                'is_controled' => true,
+                'controled_at' => now(),
+                'controled_by' => auth()->id()
+            ]);
+
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Contrôle')
+                ->withProperties([
+                    'subject_type' => Transfert::class,
+                    'subject_id' => $transfert->id,
+                    'subject_reference' => $transfert->reference,
+                ])
+                ->log('Contrôle effectué sur transfert ' . $transfert->reference);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transfert contrôlé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du contrôle du transfert: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function liste(Request $request){
         $this->guard_custom(['transfert_stock.*']);
@@ -38,7 +72,14 @@ class TransfertController extends Controller
             abort(404);
         }
         if ($request->ajax()){
-            $query = Transfert::all();
+            $query = Transfert::query();
+            if ($request->filled('statut_controle')) {
+                if ($request->statut_controle === 'controle') {
+                    $query->where('is_controled', 1);
+                } elseif ($request->statut_controle === 'non_controle') {
+                    $query->where('is_controled', 0);
+                }
+            }
             $table = DataTables::of($query);
             $table->addColumn('selectable_td',function ($row){
                 return '<input type="checkbox" class="row-select form-check-input" value="' . $row->id . '">';
@@ -51,7 +92,12 @@ class TransfertController extends Controller
                 return $row->magasinSortie->nom;
             })->editColumn('created_at',function ($row){
                 return Carbon::make($row->created_at)->format('d/m/Y');
-                })->rawColumns(['selectable_td','actions']);
+            })->editColumn('is_controled', function ($row) {
+                if ($row->is_controled) {
+                    return '<div class="badge bg-soft-success w-100">Contrôlé</div>';
+                }
+                return '<div class="badge bg-soft-secondary w-100">Non contrôlé</div>';
+            })->rawColumns(['selectable_td','actions','is_controled']);
             return  $table->make();
         }
         return \view('transferts.liste');
@@ -63,7 +109,8 @@ class TransfertController extends Controller
             abort(404);
         }
         $o_transfert = Transfert::findOrFail($id);
-        return \view('transferts.partials.afficher',compact('o_transfert'));
+        $is_controled=GlobalSetting::first()->controle;
+        return \view('transferts.partials.afficher',compact('o_transfert','is_controled'));
     }
     public function afficher_demande($id){
         $this->guard_custom(['transfert_stock.*']);

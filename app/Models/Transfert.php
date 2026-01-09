@@ -15,6 +15,9 @@ class Transfert extends Model
         'reference',
         'magasin_entree',
         'magasin_sortie',
+        'is_controled',
+        'controled_at',
+        'controled_by'
     ];
 
     public function magasinEntree()

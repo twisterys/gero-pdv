@@ -3,22 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\GlobalSetting;
 use App\Models\Magasin;
 use App\Models\Rebut;
 use App\Services\StockService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class RebutController extends Controller
 {
+    public function controle($id)
+    {
+        $this->guard_custom(['rebut.controler']);
+        try {
+            $rebut = Rebut::findOrFail($id);
+            $rebut->update([
+                'is_controled' => true,
+                'controled_at' => now(),
+                'controled_by' => auth()->id()
+            ]);
 
-    public function liste(){
+            activity()
+                ->causedBy(Auth::user())
+                ->event('Contrôle')
+                ->withProperties([
+                    'subject_type' => Rebut::class,
+                    'subject_id' => $rebut->id,
+                    'subject_reference' => $rebut->reference,
+                ])
+                ->log('Contrôle effectué sur rebut ' . $rebut->reference);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rebut contrôlé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du contrôle du rebut: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function liste(Request $request){
         $this->guard_custom(['rebut.*']);
-        if (\request()->ajax()){
+        if ($request->ajax()){
             $query = Rebut::with('magasin');
+            if ($request->filled('statut_controle')) {
+                if ($request->statut_controle === 'controle') {
+                    $query->where('is_controled', 1);
+                } elseif ($request->statut_controle === 'non_controle') {
+                    $query->where('is_controled', 0);
+                }
+            }
             $table = DataTables::of($query);
             $table->addColumn('actions',function ($row){
                 $crudRoutePart = 'rebuts';
@@ -50,7 +91,13 @@ class RebutController extends Controller
             $table->editColumn('date_operation', function ($row) {
                 return \Carbon\Carbon::make($row->date_operation)->format('d/m/Y');
             });
-            $table->rawColumns(['actions']);
+            $table->editColumn('is_controled', function ($row) {
+                if ($row->is_controled) {
+                    return '<div class="badge bg-soft-success w-100">Contrôlé</div>';
+                }
+                return '<div class="badge bg-soft-secondary w-100">Non contrôlé</div>';
+            });
+            $table->rawColumns(['actions', 'is_controled']);
             $table->addColumn('selectable_td',function (){
                 return'';
             });
@@ -69,7 +116,8 @@ class RebutController extends Controller
     public function afficher($id){
         $this->guard_custom(['rebut.afficher']);
         $o_rebut = Rebut::findOrFail($id);
-        return view('rebuts.afficher',compact('o_rebut'));
+        $is_controled=GlobalSetting::first()->controle;
+        return view('rebuts.afficher',compact('o_rebut','is_controled'));
     }
 
     public function sauvegarder(Request $request)

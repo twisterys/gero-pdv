@@ -15,6 +15,9 @@ class Rebut extends Model
         'magasin_id',
         'pos_session_id',
         'statut',
+        'is_controled',
+        'controled_at',
+        'controled_by',
     ];
 
     public const DECLENCHEUR = 'Rebut';

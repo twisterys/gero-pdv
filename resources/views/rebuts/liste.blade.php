@@ -17,12 +17,35 @@
                                     class="mdi mdi-chart-bell-curve-cumulative me-2 text-success"></i> Rebut
                             </h5>
                             <div class="page-title-right">
+                                <button class="filter-btn btn btn-soft-info"><i class="fa fa-filter"></i> Filtrer</button>
                                 <a href="{{ route('rebuts.ajouter') }}">
                                     <button class="btn btn-soft-success"><i class="mdi mdi-plus"></i>Ajouter un rebut</button>
                                 </a>
                             </div>
                         </div>
                         <hr class="border">
+                    </div>
+                    <!-- #####--Filtres --##### -->
+                    <div class="switch-filter row px-3 d-none mt-2 mb-4">
+                        <div class="card-title col-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="m-0">Filtres</h5>
+                            </div>
+                            <hr class="border">
+                        </div>
+                        <div class="col-sm-3 col-12 mb-3">
+                            <label class="form-label" for="statut-controle-select">Statut de contrôle</label>
+                            <select class="select2 form-control mb-3 custom-select" id="statut-controle-select">
+                                <option value=""></option>
+                                <option value="Tous">Tous</option>
+                                <option value="controle">Contrôlé</option>
+                                <option value="non_controle">Non contrôlé</option>
+                            </select>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end">
+                            <button id="search-btn" class="btn btn-primary"><i class="mdi mdi-magnify"></i> Rechercher
+                            </button>
+                        </div>
                     </div>
                     <!-- #####--DataTable--##### -->
                     <div class="row px-3">
@@ -44,6 +67,7 @@
                                         <th>Date</th>
                                         <th>Magasin</th>
                                         <th>Statut</th>
+                                        <th>Contrôle</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
@@ -77,13 +101,29 @@
                 data: 'statut',name:'statut'
             },
             {
+                data: 'is_controled',name:'is_controled'
+            },
+            {
                 data: 'actions',name:'actions'
             },
         ];
         const __dataTable_ajax_link = "{{ route('rebuts.liste') }}";
         const __dataTable_id = "#datatable";
+        const __dataTable_filter_inputs_id = {
+            statut_controle: '#statut-controle-select',
+        }
+        const __dataTable_filter_trigger_button_id = '#search-btn';
         const __sort_column = "2"
-
+        $("#statut-controle-select").select2({
+            width: "100%",
+            placeholder: {
+                id: "",
+                text: "Tous",
+            },
+            allowClear: !0,
+            minimumResultsForSearch: -1,
+            selectOnClose: false,
+        });
     </script>
     <script src="{{asset('js/dataTable_init.js')}}"></script>
     @vite('resources/js/ventes_liste.js')

@@ -11,5 +11,6 @@ Route::group(['prefix' => 'transferts','controller' => TransfertController::clas
     Route::post('/sauvegarder', 'sauvegarder')->name('transferts.sauvegarder');
     Route::get('/article-modal','article_select_modal')->name('transferts.article_select_modal');
     Route::get('/afficher-demandes', 'afficher_demandes')->name('transferts.afficher.demandes');
+    Route::post('/{id}/controle', 'controle')->name('transferts.controle');
 
 });
