@@ -145,7 +145,11 @@ class FournisseurController extends Controller
         $exercice = session()->get('exercice');
         $payable_types = ModuleService::getPayabaleTypes();
         $commandes = Achat::where('type_document', 'bca')->where('statut', 'validé')->whereRaw('Year(date_emission) = '.$exercice)->where('fournisseur_id', $id)->sum('total_ttc');
-        $ca = Achat::where('type_document', $payable_types)->where('statut', 'validé')->whereRaw('Year(date_emission) = '.$exercice)->where('fournisseur_id', $id)->sum('total_ttc');
+        $ca = Achat::whereIn('type_document', $payable_types)
+            ->where('statut', 'validé')
+            ->whereRaw('Year(date_emission) = '.$exercice)
+            ->where('fournisseur_id', $id)
+            ->sum('total_ttc');
         $decaissement = Paiement::where('fournisseur_id', $id)->whereRaw('Year(date_paiement) = '.$exercice)->sum('decaisser');
         $credit = Achat::where('type_document', $payable_types)->whereRaw('Year(date_emission) = '.$exercice)->where('statut', 'validé')->where('fournisseur_id', $id)->sum('debit');
         $types = array_diff(ModuleService::getActiveModules(),Vente::TYPES);
