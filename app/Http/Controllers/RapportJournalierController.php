@@ -200,10 +200,10 @@ class RapportJournalierController extends Controller
             ->join('achats', 'achats.id', '=', 'achat_lignes.achat_id')
             ->join('articles', 'articles.id', '=', 'achat_lignes.article_id')
             ->join('fournisseurs', 'fournisseurs.id', '=', 'achats.fournisseur_id')
-            ->leftJoin('paiements', function ($join) {
-                $join->on('paiements.payable_id', '=', 'achats.id')
-                    ->where('paiements.payable_type', '=', 'App\\Models\\Achat');
-            })
+//            ->leftJoin('paiements', function ($join) {
+//                $join->on('paiements.payable_id', '=', 'achats.id')
+//                    ->where('paiements.payable_type', '=', 'App\\Models\\Achat');
+//            })
             ->where('achats.magasin_id', $magasinId)
             ->where('achats.date_emission', '=', $date)
             ->select(
@@ -213,7 +213,7 @@ class RapportJournalierController extends Controller
                 'achat_lignes.article_id',
                 DB::raw('SUM(achat_lignes.quantite) as quantite'),
                 DB::raw('SUM(achat_lignes.total_ttc) as total_ttc'),
-                DB::raw('COALESCE(SUM(paiements.encaisser), 0) as montant')
+//                DB::raw('COALESCE(SUM(paiements.encaisser), 0) as montant')
             )
             ->groupBy('fournisseurs.id', 'fournisseurs.nom', 'achat_lignes.article_id', 'articles.designation')
             ->get();
