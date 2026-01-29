@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -17,30 +18,42 @@ return new class extends Migration
                 'guard_name' => 'web',
             ],
         ];
-        foreach ($permissions as $permission) {
-            // Check if the permission already exists
-            $existingPermission = DB::table('permissions')->where('name', $permission['name'])->first();
 
-            if ($existingPermission) {
-                // If exists, add its ID to the array
-                $permissionIds[] = $existingPermission->id;
-            } else {
-                // If doesn't exist, insert it and get the ID
+        $permissionIds = [];
+        foreach ($permissions as $permission) {
+            // Find or create the permission
+            $perm = DB::table('permissions')->where('name', $permission['name'])->first();
+            if (!$perm) {
                 $id = DB::table('permissions')->insertGetId($permission);
-                $permissionIds[] = $id;
+            } else {
+                $id = $perm->id;
             }
+            $permissionIds[] = $id;
         }
+
+        // Find or create the admin role
         $adminRole = DB::table('roles')->where('name', 'admin')->first();
+        if (!$adminRole) {
+            $adminRoleId = DB::table('roles')->insertGetId([
+                'name' => 'admin',
+                'guard_name' => 'web',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $adminRoleId = $adminRole->id;
+        }
+
         foreach ($permissionIds as $permissionId) {
             $exists = DB::table('role_has_permissions')
                 ->where('permission_id', $permissionId)
-                ->where('role_id', $adminRole->id)
+                ->where('role_id', $adminRoleId)
                 ->exists();
 
             if (!$exists) {
                 DB::table('role_has_permissions')->insert([
                     'permission_id' => $permissionId,
-                    'role_id' => $adminRole->id
+                    'role_id' => $adminRoleId
                 ]);
             }
         }
