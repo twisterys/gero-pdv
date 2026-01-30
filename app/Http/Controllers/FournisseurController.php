@@ -151,7 +151,7 @@ class FournisseurController extends Controller
             ->where('fournisseur_id', $id)
             ->sum('total_ttc');
         $decaissement = Paiement::where('fournisseur_id', $id)->whereRaw('Year(date_paiement) = '.$exercice)->sum('decaisser');
-        $credit = Achat::where('type_document', $payable_types)->whereRaw('Year(date_emission) = '.$exercice)->where('statut', 'validé')->where('fournisseur_id', $id)->sum('debit');
+        $credit = Achat::whereIn('type_document', $payable_types)->whereRaw('Year(date_emission) = '.$exercice)->where('statut', 'validé')->where('fournisseur_id', $id)->sum('debit');
         $types = array_diff(ModuleService::getActiveModules(),Vente::TYPES);
         $payables = ModuleService::getPayabaleTypes();
         return view('fournisseurs.afficher', compact('o_fournisseur', 'commandes', 'ca', 'decaissement', 'credit','types','payables'));
