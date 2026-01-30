@@ -86,7 +86,7 @@
                         <i class="fa fa-dollar-sign text-success fa-3x"></i>
                         <div class="ms-4 ">
                             <h4 class="text-muted dashboard-text ">
-                                {{number_format($ca,2,'.',' ')}} MAD
+                                {{number_format($ca,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Chiffre d'affaires TTC</h6>
                         </div>
@@ -102,7 +102,7 @@
                         <i class="fa fa-wallet text-info fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($total_depenses,2,'.',' ')}} MAD
+                                {{number_format($total_depenses,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total dépenses</h6>
                         </div>
@@ -118,7 +118,7 @@
                         <i class="fa fa-file-invoice text-warning fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($totals_achat['ttc'],2,'.',' ')}} MAD
+                                {{number_format($totals_achat['ttc'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Achats TTC</h6>
                         </div>
@@ -134,7 +134,7 @@
                         <i class="fa fa-shopping-cart text-danger fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($totals_achat['debit'],2,'.',' ')}} MAD
+                                {{number_format($totals_achat['debit'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total des dettes</h6>
                         </div>
@@ -162,9 +162,9 @@
                                 <tr>
                                     <td>{{$magasin->nom}}</td>
                                     <td>{{$magasin->count_vente}}</td>
-                                    <td>{{number_format($magasin->total_vente ?? 0,2,'.' ,' ')}} MAD</td>
+                                    <td>{{number_format($magasin->total_vente ?? 0,3,'.' ,' ')}} MAD</td>
                                     <td>{{$magasin->count_retour}}</td>
-                                    <td>{{number_format($magasin->total_retour ?? 0,2,'.' ,' ')}} MAD</td>
+                                    <td>{{number_format($magasin->total_retour ?? 0,3,'.' ,' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>

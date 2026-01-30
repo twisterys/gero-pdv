@@ -19,7 +19,7 @@
         <div class="col-12 mt-3">
             <label for="montant" class="form-label required">Montant de paiement</label>
             <div class="input-group">
-                <input required readonly class="form-control" step="0.01" min="1" type="number"
+                <input required readonly class="form-control" step="0.001" min="1" type="number"
                     value="{{ $o_paiement->decaisser + $o_paiement->encaisser }}" name="i_montant" id="montant">
                 <span class="input-group-text">MAD</span>
             </div>

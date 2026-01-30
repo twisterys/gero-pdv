@@ -6,7 +6,7 @@
         </div>
         <div class="ms-3 ">
             <span class="font-weight-bolder font-size-sm">Solde d'ouverture</span>
-            <p class="mb-0 h5 text-black">{{number_format($total_ouverture,2,'.',' ')}} MAD</p>
+            <p class="mb-0 h5 text-black">{{number_format($total_ouverture,3,'.',' ')}} MAD</p>
         </div>
     </div>
     <div class=" col-xl-3 col-md-6  my-2   d-flex align-items-center">
@@ -16,7 +16,7 @@
         </div>
         <div class="ms-3 ">
             <span class="font-weight-bolder font-size-sm">Solde de clôture</span>
-            <p class="mb-0 h5 text-black">{{number_format($total_actuel,2,'.',' ')}} MAD</p>
+            <p class="mb-0 h5 text-black">{{number_format($total_actuel,3,'.',' ')}} MAD</p>
         </div>
     </div>
     <div class=" col-xl-3 col-md-6  my-2   d-flex align-items-center">
@@ -26,7 +26,7 @@
         </div>
         <div class="ms-3 ">
             <span class="font-weight-bolder font-size-sm">Total encaissé</span>
-            <p class="mb-0 h5 text-black">{{number_format($total_encaisser,2,'.',' ')}} MAD</p>
+            <p class="mb-0 h5 text-black">{{number_format($total_encaisser,3,'.',' ')}} MAD</p>
         </div>
     </div>
     <div class=" col-xl-3 col-md-6  my-2   d-flex align-items-center">
@@ -36,7 +36,7 @@
         </div>
         <div class="ms-3 ">
             <span class="font-weight-bolder font-size-sm">Total décaissé</span>
-            <p class="mb-0 h5 text-black">{{number_format($total_decaisser,2,'.',' ')}} MAD</p>
+            <p class="mb-0 h5 text-black">{{number_format($total_decaisser,3,'.',' ')}} MAD</p>
         </div>
     </div>
 </div>

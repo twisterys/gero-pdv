@@ -105,9 +105,9 @@ class PaiementController extends Controller
             )->editColumn('compte_id', function ($row) {
                 return $row->compte->nom;
             })->editColumn('encaisser', function ($row) {
-                return '<span class="text-success" >' . number_format($row->encaisser, 2, '.', ' ') . ' MAD</span>';
+                return '<span class="text-success" >' . number_format($row->encaisser, 3, '.', ' ') . ' MAD</span>';
             })->editColumn('decaisser', function ($row) {
-                return '<span class="text-danger" >' . number_format($row->decaisser, 2, '.', ' ') . ' MAD</span>';
+                return '<span class="text-danger" >' . number_format($row->decaisser, 3, '.', ' ') . ' MAD</span>';
             })->editColumn('payable_id', function ($row) {
                 $route = null;
                 if ($row->payable_type === Achat::class) {
@@ -330,7 +330,7 @@ class PaiementController extends Controller
         $rules = [
             'i_date_paiement' => 'required|date_format:d/m/Y',
             'i_operation_id' => 'required|exists:operations,id',
-            'i_montant' => 'required|numeric|min:0.01|max:9999999999',
+            'i_montant' => 'required|numeric|min:0.001|max:9999999999',
             'i_compte_id' => 'required|exists:comptes,id',
             'i_method_key' => 'required|exists:methodes_paiement,key',
             'i_date' => 'nullable|date_format:d/m/Y'

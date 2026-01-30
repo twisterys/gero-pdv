@@ -247,7 +247,7 @@
                             <label for="montant" class="form-label required">Montant de paiement</label>
                             <div class="input-group">
                                 <input class="form-control @error('i_montant') is-invalid @enderror"
-                                       step="0.01" min="0.01"
+                                       step="0.001" min="0.001"
                                        type="number" name="i_montant"
                                        id="montant"
                                        value="{{ old('i_montant') }}"  required>

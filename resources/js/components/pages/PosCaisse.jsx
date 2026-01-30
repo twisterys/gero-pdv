@@ -278,7 +278,7 @@ function PosClassic() {
         });
 
         // Calculate total amount
-        const totalAmount = total_ttc.toFixed(2);
+        const totalAmount = total_ttc.toFixed(3);
 
         // Check if payment amount is less than total
         const isPartialPayment = parseFloat(paiement.i_montant) < parseFloat(totalAmount);
@@ -305,7 +305,7 @@ function PosClassic() {
                     cashSound();
 
                     // Calculate remaining balance
-                    const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(2);
+                    const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(3);
 
                     // If there's still a remaining balance, ask if they want to add another payment
                     if (parseFloat(remainingBalance) > 0) {
@@ -435,7 +435,7 @@ function PosClassic() {
 
                         // Store the current sale information
                         const venteId = response.data.vente_id;
-                        const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(2);
+                        const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(3);
 
                         Swal.fire({
                             icon: "success",
@@ -582,7 +582,7 @@ function PosClassic() {
     useEffect(() => {
         setPaiement({
             ...paiement,
-            i_montant: total_ttc.toFixed(2),
+            i_montant: total_ttc.toFixed(3),
         });
     }, [items]);
     // loader element

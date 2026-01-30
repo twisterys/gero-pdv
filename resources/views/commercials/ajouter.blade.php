@@ -151,7 +151,7 @@
                                     </label>
                                     <div class="input-group">
 
-                                        <input type="number" min="0" step="0.01"
+                                        <input type="number" min="0" step="0.001"
                                             class="form-control @error('commission_par_defaut') is-invalid @enderror"
                                             id="commission_par_defaut" name="commission_par_defaut"
                                             value="{{ old('commission_par_defaut') }}">
@@ -171,7 +171,7 @@
                                     <label class="form-label" for="vente_ht-input">Objectif
                                     </label>
                                     <div class="input-group">
-                                        <input type="number" min="0" step="0.01"
+                                        <input type="number" min="0" step="0.001"
                                             class="form-control @error('objectif') is-invalid @enderror" id="objectif"
                                             name="objectif" value="{{ old('limite_de_credit') }}">
                                         <div class="input-group-prepend">

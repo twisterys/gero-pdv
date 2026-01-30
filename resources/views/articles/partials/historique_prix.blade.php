@@ -17,7 +17,7 @@
            <tr>
                <td>{{$vente->reference}}</td>
                <td>{{\Carbon\Carbon::make($vente->date_document)->format('d/m/Y')}}</td>
-               <td>{{number_format($vente->ht,2,'.',' ')}} MAD</td>
+               <td>{{number_format($vente->ht,3,'.',' ')}} MAD</td>
            </tr>
        @endforeach
        </tbody>

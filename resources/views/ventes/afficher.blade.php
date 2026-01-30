@@ -453,7 +453,7 @@
                                                 style="white-space: nowrap">{{$ligne->revient ?? "0.00"}} MAD
                                             </td>
                                             <td class="text-end"
-                                                style="white-space: nowrap">{{number_format($ligne->ht,2,'.',' ')}} MAD
+                                                style="white-space: nowrap">{{number_format($ligne->ht,3,'.',' ')}} MAD
                                             </td>
                                             <td class="text-end" style="white-space: nowrap">{{$ligne->taxe}} %</td>
                                             <td class="text-end"
@@ -463,7 +463,7 @@
                                             @if($prix_revient)
                                                 <td class="text-end"
                                                     style="white-space: nowrap">{{$ligne->ht == 0 ? 0 :  ($ligne->ht - $ligne->revient) * $ligne->quantite}}
-                                                    MAD <span class="font-size-12 text-success mx-1">{{$ligne->ht == 0 ? 0 : round(($ligne->ht - $ligne->revient)*100/$ligne->ht,2)}}%</span>
+                                                    MAD <span class="font-size-12 text-success mx-1">{{$ligne->ht == 0 ? 0 : round(($ligne->ht - $ligne->revient)*100/$ligne->ht,3)}}%</span>
                                                 </td>
                                             @endif
                                         </tr>

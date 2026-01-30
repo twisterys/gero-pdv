@@ -88,8 +88,8 @@ export const TableCaisse = ({
         const remaining = Math.max(parseFloat(total) - parseFloat(paiementRecu), 0);
         const refund = parseFloat(paiementRecu) > totalAPayer ? parseFloat(paiementRecu) - totalAPayer : 0;
 
-        setPaymentRemaining(parseFloat(remaining.toFixed(2)));
-        setRefundAmount(parseFloat(refund.toFixed(2)));
+        setPaymentRemaining(parseFloat(remaining.toFixed(3)));
+        setRefundAmount(parseFloat(refund.toFixed(3)));
     }, [total, paiementRecu, totalAPayer]);
 
     // Update paiement object when payment received changes
@@ -149,7 +149,7 @@ export const TableCaisse = ({
                                     type="number"
                                     min={0}
                                     // Display price with tax for editing
-                                    value={parseFloat((item.prix * (item.tax || 1)).toFixed(2))}
+                                    value={parseFloat((item.prix * (item.tax || 1)).toFixed(3))}
                                     onChange={(e) =>
                                         setPrice(item.id, e.target.value)
                                     }
@@ -195,7 +195,7 @@ export const TableCaisse = ({
                             const totalWithTax = quantity * price * tax;
                             const totalAfterReduction = totalWithTax * (1 - reduction / 100);
 
-                            return totalAfterReduction.toFixed(2);
+                            return totalAfterReduction.toFixed(3);
                         })()}
                         MAD
                     </td>
@@ -400,7 +400,7 @@ export const TableCaisse = ({
                             <div className="col-12 my-1 d-flex justify-content-between align-items-center">
                                 <h4 className="m-0">Montant total TTC :</h4>
                                 <h4 className="m-0">
-                                    {parseFloat(total).toFixed(2)}
+                                    {parseFloat(total).toFixed(3)}
                                     <span className="ms-2">MAD</span>
                                 </h4>
                             </div>

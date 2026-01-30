@@ -130,15 +130,15 @@
                     <td style='vertical-align: top;text-align: center;'>
                         {{$ligne->quantite}} {{$ligne->unite->nom}}
                     </td>
-                    <td style='vertical-align: top;text-align: center;'>{{number_format($ligne->ht,2,'.',' ')}} </td>
+                    <td style='vertical-align: top;text-align: center;'>{{number_format($ligne->ht,3,'.',' ')}} </td>
 
 
 
                     @if( $o_achat['total_reduction'] != 0)
-                    <td style='vertical-align: top;text-align: center;'>{{number_format($ligne->reduction,2,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? ' ':'%'}}</td>
+                    <td style='vertical-align: top;text-align: center;'>{{number_format($ligne->reduction,3,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? ' ':'%'}}</td>
                     @endif
                     <td style='vertical-align: top;text-align: center;'>{{$ligne->taxe}} %</td>
-                    <td style="padding-right:1.2cm;vertical-align: top;">{{number_format(  (($ligne->ht-$reduction) *$ligne->quantite) + (($ligne->ht-$reduction) *$ligne->quantite * $ligne->taxe/100)  ,2,'.',' ')}} </td>
+                    <td style="padding-right:1.2cm;vertical-align: top;">{{number_format(  (($ligne->ht-$reduction) *$ligne->quantite) + (($ligne->ht-$reduction) *$ligne->quantite * $ligne->taxe/100)  ,3,'.',' ')}} </td>
                 </tr>
             @endforeach
             <tr>
@@ -153,21 +153,21 @@
          style="page-break-inside: avoid; position: fixed; bottom: {{$o_template->image_en_bas_hauteur-100-($o_achat->note ? 0 : 40)}}px; height: {{310 + ($o_achat->note ? 70 : 0)}}px;width: 100%">
         <div class="total-container " style="page-break-inside: avoid;">
             <div class="total-line">
-                <h5>Total HT</h5> <h5>{{number_format($o_achat->total_ht,2,'.',' ')}} MAD</h5>
+                <h5>Total HT</h5> <h5>{{number_format($o_achat->total_ht,3,'.',' ')}} MAD</h5>
             </div><hr>
             @if( $o_achat['total_reduction'] == 0)
             @endif
             @if( $o_achat['total_reduction'] != 0)
                 <div class="total-line">
-                <h5>Réduction</h5> <h5>{{number_format($o_achat->total_reduction,2,'.',' ')}} MAD</h5>
+                <h5>Réduction</h5> <h5>{{number_format($o_achat->total_reduction,3,'.',' ')}} MAD</h5>
             </div><hr>
             @endif
             <div class="total-line">
-                <h5>Total TVA</h5> <h5>{{number_format($o_achat->total_tva,2,'.',' ')}} MAD</h5>
+                <h5>Total TVA</h5> <h5>{{number_format($o_achat->total_tva,3,'.',' ')}} MAD</h5>
             </div><hr>
             <div class="total-line">
                 <h5>Total TTC</h5>
-                <h2>{{number_format($o_achat->total_ttc,2,'.',' ')}} MAD</h2>
+                <h2>{{number_format($o_achat->total_ttc,3,'.',' ')}} MAD</h2>
             </div>
         </div>
         @if($o_template['afficher_total_en_chiffre'])

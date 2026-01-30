@@ -16,7 +16,7 @@ class TransfertCaisseController extends Controller
             'compte_destination' => 'required|exists:comptes,id',
             'date_emission' => 'required|date_format:d/m/Y',
             'date_reception' => 'required|after_or_equal:date_emission|date_format:d/m/Y',
-            'i_montant' => 'required|numeric|min:0.01',
+            'i_montant' => 'required|numeric|min:0.001',
             'i_method_key' => 'required|exists:methodes_paiement,key',
         ];
         $attr = [

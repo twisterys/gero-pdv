@@ -4,9 +4,9 @@ import { usePOSStore } from '~/pos/pos-store';
 import { formatNumber } from '../../utils/formats';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 
-// Helper function to round monetary values to 2 decimal places (0.01)
-const roundToTwoDecimals = (value: number): number => {
-    return Math.round((value + Number.EPSILON) * 100) / 100;
+// Helper function to round monetary values to 3 decimal places (0.001)
+const roundToThreeDecimals = (value: number): number => {
+    return Math.round((value + Number.EPSILON) * 1000) / 1000;
 };
 
 interface PaymentModalProps {
@@ -66,7 +66,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         setError
     } = useForm<PaymentData>({
         defaultValues: {
-            amount: cartTotal,
+            amount: roundToThreeDecimals(cartTotal),
             accountId: '',
             paymentMethodId: '',
             note: '',

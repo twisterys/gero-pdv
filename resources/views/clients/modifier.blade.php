@@ -203,7 +203,7 @@
                                     <label class="form-label " for="limite_de_credit-input">Limite de crédit
                                     </label>
                                     <div class="input-group">
-                                        <input type="number" step="0.01"
+                                        <input type="number" step="0.001"
                                                class="form-control @error('limite_de_credit') is-invalid @enderror"
                                                id="limite_de_credit" name="limite_de_credit"
                                                value="{{old('limite_de_credit',$o_client->limite_de_credit) }}">
@@ -235,7 +235,7 @@
                                     <label class="form-label " for="remise_par_defaut-input">Remise par défaut
                                     </label>
                                     <div class="input-group">
-                                        <input type="number" step="0.01"
+                                        <input type="number" step="0.001"
                                                class="form-control @error('remise_par_defaut') is-invalid @enderror"
                                                id="remise_par_defaut" name="remise_par_defaut"
                                                value="{{old('remise_par_defaut',$o_client->remise_par_defaut) }}">

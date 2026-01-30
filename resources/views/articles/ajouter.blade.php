@@ -176,7 +176,7 @@
                                 <div class="col-12 col-lg-6 mb-3 ">
                                     <label class="form-label   required" for="vente-input">Prix de vente</label>
                                     <div class="input-group">
-                                        <input required type="number" step="0.01"
+                                        <input required type="number" step="0.001"
                                                class="form-control {{$errors->has('i_vente_prix')? 'is-invalid' : ''}}"
                                                id="vente-input" min="0"
                                                name="i_vente_prix" value="{{old('i_vente_prix',0)}}">
@@ -191,7 +191,7 @@
                                 <div class=" col-12 col-lg-6 mb-3 ">
                                     <label class="form-label   " for="achat_price-input">Prix d'achat</label>
                                     <div class="input-group">
-                                        <input type="number" step="0.01" min="0"
+                                        <input type="number" step="0.001" min="0"
                                                class="form-control {{$errors->has('i_achat_prix')? 'is-invalid' : ''}}"
                                                id="achat_price-input"
                                                name="i_achat_prix" value="{{old('i_achat_prix')}}">
@@ -206,7 +206,7 @@
                                 {{--                                <div class="col-12 col-lg-6 mb-3 ">--}}
                                 {{--                                    <label class="form-label  " for="revien_prix-input">Prix de revient</label>--}}
                                 {{--                                    <div class="input-group">--}}
-                                {{--                                        <input type="number" step="0.01" min="0"--}}
+                                {{--                                        <input type="number" step="0.001" min="0"--}}
                                 {{--                                               class="form-control {{$errors->has('i_revient_prix')? 'is-invalid' : ''}}"--}}
                                 {{--                                               id="revien_prix-input"--}}
                                 {{--                                               name="i_revient_prix" value="{{old('i_revient_prix')}}">--}}
@@ -239,7 +239,7 @@
                                 @endif
                                 <div class="col-12 col-lg-6 mb-3 ">
                                     <label class="form-label" for="quantite-input">Quantité d'alerte</label>
-                                    <input type="number" step="0.01"
+                                    <input type="number" step="0.001"
                                            class="form-control {{$errors->has('i_quantite_alerte')? 'is-invalid' : ''}}"
                                            id="quantite-input"
                                            placeholder=""

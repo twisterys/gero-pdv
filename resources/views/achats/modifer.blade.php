@@ -228,17 +228,17 @@
                                 <div class="col-md-6 col-12 row m-0 bg-primary p-3 rounded text-white" style="max-width: 500px">
                                     <h5 class="col-md-4 col-6 fw-normal">Total HT</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal" id="total-ht-text">
-                                        {{ number_format($o_achat?->total_ht, '2', '.', '') . ' MAD' ?? '0.00 MAD' }}</h5>
+                                        {{ number_format($o_achat?->total_ht, '3', '.', '') . ' MAD' ?? '0.00 MAD' }}</h5>
                                     <h5 class="col-md-4 col-6 fw-normal">Total Réduction</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal" id="total-reduction-text">
-                                        {{ number_format($o_achat?->total_reduction, '2', '.', '') . ' MAD' ?? '0.00 MAD' }}
+                                        {{ number_format($o_achat?->total_reduction, '3', '.', '') . ' MAD' ?? '0.00 MAD' }}
                                     </h5>
                                     <h5 class="col-md-4 col-6 fw-normal">Total TVA</h5>
                                     <h5 class="col-md-8 col-6 text-end fw-normal" id="total-tva-text">
-                                        {{ number_format($o_achat?->total_tva, '2', '.', '') . ' MAD' ?? '0.00 MAD' }}</h5>
+                                        {{ number_format($o_achat?->total_tva, '3', '.', '') . ' MAD' ?? '0.00 MAD' }}</h5>
                                     <h5 class="col-md-4 col-6 mb-0 fw-normal">Total TTC</h5>
                                     <h2 class="col-md-8 col-12 mb-0 text-end" id="total-ttc-text">
-                                        {{ number_format($o_achat?->total_ttc, '2', '.', '') . ' MAD' ?? '0.00 MAD' }}
+                                        {{ number_format($o_achat?->total_ttc, '3', '.', '') . ' MAD' ?? '0.00 MAD' }}
                                     </h2>
                                 </div>
                             </div>

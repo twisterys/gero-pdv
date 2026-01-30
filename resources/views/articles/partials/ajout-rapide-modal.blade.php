@@ -50,7 +50,7 @@
         <div class="col-12 mb-3 ">
             <label class="form-label   required" for="vente-input">Prix de vente</label>
             <div class="input-group">
-                <input required type="number" step="0.01" class="form-control" id="vente-input" min="0"
+                <input required type="number" step="0.001" class="form-control" id="vente-input" min="0"
                     name="i_vente_prix">
                 <span class="input-group-text">MAD</span>
                 <div class="invalid-feedback">
@@ -60,7 +60,7 @@
         <div class="col-12 mb-3 ">
             <label class="form-label" for="achat-input">Prix d'achat</label>
             <div class="input-group">
-                <input required type="number" step="0.01" class="form-control" id="achat-input" min="0"
+                <input required type="number" step="0.001" class="form-control" id="achat-input" min="0"
                     name="i_achat_prix">
                 <span class="input-group-text">MAD</span>
                 <div class="invalid-feedback">

@@ -104,10 +104,10 @@
                         </div>
                     </td>
                     <td style="white-space: nowrap">{{$ligne->quantite}} {{$ligne->unite->nom}}</td>
-                    <td style="white-space: nowrap">{{number_format($ligne->ht,2,'.',' ')}} MAD</td>
-                    <td style="white-space: nowrap">{{number_format($ligne->reduction,2,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? 'MAD':'%'}}</td>
+                    <td style="white-space: nowrap">{{number_format($ligne->ht,3,'.',' ')}} MAD</td>
+                    <td style="white-space: nowrap">{{number_format($ligne->reduction,3,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? 'MAD':'%'}}</td>
                     <td>{{$ligne->taxe}} %</td>
-                    <td style="white-space: nowrap">{{number_format(($ligne->ht-$reduction) *$ligne->quantite,2,'.',' ')}}
+                    <td style="white-space: nowrap">{{number_format(($ligne->ht-$reduction) *$ligne->quantite,3,'.',' ')}}
                         MAD
                     </td>
                 </tr>
@@ -125,33 +125,33 @@
           width: 100%">
         <div class="total-container " style="page-break-inside: avoid">
             <div class="total-line">
-                <h5>Total HT</h5> <h5>{{number_format($o_vente->total_ht,2,'.',' ')}} MAD</h5>
+                <h5>Total HT</h5> <h5>{{number_format($o_vente->total_ht,3,'.',' ')}} MAD</h5>
 
             </div>
             <div class="total-line">
-                <h5>Total Réduction</h5> <h5>{{number_format($o_vente->total_reduction,2,'.',' ')}} MAD</h5>
+                <h5>Total Réduction</h5> <h5>{{number_format($o_vente->total_reduction,3,'.',' ')}} MAD</h5>
             </div>
             <div class="total-line">
-                <h5>Total TVA</h5> <h5>{{number_format($o_vente->total_tva,2,'.',' ')}} MAD</h5>
+                <h5>Total TVA</h5> <h5>{{number_format($o_vente->total_tva,3,'.',' ')}} MAD</h5>
             </div>
             @if($o_vente->solde == 0 || $o_vente->encaisser <= 0)
                 <div class="total-line">
                     <h5>Total TTC</h5>
-                    <h2>{{ number_format($o_vente->total_ttc, 2, '.', ' ') }} MAD</h2>
+                    <h2>{{ number_format($o_vente->total_ttc, 3, '.', ' ') }} MAD</h2>
                 </div>
             @endif
             @if($o_vente->solde != 0 && $o_vente->encaisser> 0)
                 <div class="total-line">
                     <h5>Total TTC</h5>
-                    <h5>{{number_format($o_vente->total_ttc,2,'.',' ')}} MAD</h5>
+                    <h5>{{number_format($o_vente->total_ttc,3,'.',' ')}} MAD</h5>
                 </div>
                 <div class="total-line avance">
                     <h5>Avance</h5>
-                    <h5>{{ number_format($o_vente->encaisser, 2, '.', ' ') }} MAD</h5>
+                    <h5>{{ number_format($o_vente->encaisser, 3, '.', ' ') }} MAD</h5>
                 </div>
                 <div class="total-line">
                     <h5>Net à payer</h5>
-                    <h5>{{ number_format($o_vente->solde, 2, '.', ' ') }} MAD</h5>
+                    <h5>{{ number_format($o_vente->solde, 3, '.', ' ') }} MAD</h5>
                 </div>
             @endif
         </div>

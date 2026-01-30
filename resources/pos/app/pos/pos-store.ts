@@ -90,7 +90,7 @@ interface POSState {
 // $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
 // $quantite = $ligne['quantity'] ?? 0;
 // $htReduit = $ht - $reduction;
-// $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+// $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 3);
 const calculateFinalPrice = (
     unitPrice: number, 
     quantity: number, 

@@ -314,7 +314,7 @@
                                             <td class="text-end" style="white-space: nowrap">{{ $ligne->quantite }}
                                                 {{ $ligne->unite?->nom }}</td>
                                             <td class="text-end" style="white-space: nowrap">
-                                                {{ number_format($ligne->ht, 2, '.', ' ') }} MAD
+                                                {{ number_format($ligne->ht, 3, '.', ' ') }} MAD
                                             </td>
                                             <td class="text-end" style="white-space: nowrap">{{ $ligne->taxe }} %</td>
                                             <td class="text-end" style="white-space: nowrap">{{ $ligne->reduction }}

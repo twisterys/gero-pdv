@@ -21,11 +21,11 @@ class HistoryResource extends JsonResource
         foreach ($this->lignes as $ligne){
             $lignes[]=[
               'article'=>$ligne->nom_article,
-                'total_ttc'=>number_format($ligne->total_ttc,2,'.',' ').' MAD',
+                'total_ttc'=>number_format($ligne->total_ttc,3,'.',' ').' MAD',
                 'quantity' => $ligne->quantite,
                 'unite' => $ligne->unite->nom,
                 'reduction'=> $ligne->reduction.'%',
-                'price'=> number_format($ligne->ht,2,'.',' ').' MAD',
+                'price'=> number_format($ligne->ht,3,'.',' ').' MAD',
                 'article_reference'=>$ligne->article->reference
 
             ];
@@ -34,7 +34,7 @@ class HistoryResource extends JsonResource
             'id'=>$this->id,
             'reference'=>$this->reference,
             'type'=> __('ventes.'.$this->type_document),
-            'total'=>number_format($this->total_ttc,2,'.',' ').' MAD',
+            'total'=>number_format($this->total_ttc,3,'.',' ').' MAD',
             'lignes'=> $lignes,
             'client_nom'=> $this->client->nom,
             'time'=> Carbon::make($this->created_at)->format('d/m/Y H:i:s'),

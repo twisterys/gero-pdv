@@ -84,7 +84,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Total des charges TTC</span>
-                                <p class="mb-0 h5 text-black">{{number_format(0,2,'.',' ')}} MAD</p>
+                                <p class="mb-0 h5 text-black">{{number_format(0,3,'.',' ')}} MAD</p>
                             </div>
                         </div>
                         <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 d-flex p-2 align-items-center">
@@ -94,7 +94,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Chiffre d'affaires TTC</span>
-                                <p class="mb-0 h5 text-black">{{number_format($totalAv,2,'.',' ')}} MAD</p>
+                                <p class="mb-0 h5 text-black">{{number_format($totalAv,3,'.',' ')}} MAD</p>
                             </div>
                         </div>
                         <div class="col-lg-4 col-xl-3 col-sm-6 col-md-4 d-flex p-2 align-items-center">
@@ -104,7 +104,7 @@
                             </div>
                             <div class="ms-3 ">
                                 <span class="font-weight-bolder font-size-sm">Total des dépenses TTC</span>
-                                <p class="mb-0 h5 text-black">{{number_format(0,2,'.',' ')}} MAD</p>
+                                <p class="mb-0 h5 text-black">{{number_format(0,3,'.',' ')}} MAD</p>
                             </div>
                         </div>
 

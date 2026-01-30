@@ -26,7 +26,7 @@
         <div class="col-12 mt-3 ">
             <label for="montant" class="form-label required">Montant de Renouvelement</label>
             <div class="input-group">
-                <input required class="form-control" step="0.01" min="0"  type="number"
+                <input required class="form-control" step="0.001" min="0"  type="number"
                        value="" name="montant" id="montant">
                 <span class="input-group-text">MAD</span>
             </div>

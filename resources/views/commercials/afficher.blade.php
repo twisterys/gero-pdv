@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="ms-3 ">
                                         <span class="font-weight-bolder font-size-sm">@lang('ventes.bcs')</span>
-                                        <p class="mb-0 h5 text-black">{{ number_format($commandes, 2, '.', '') }} MAD</p>
+                                        <p class="mb-0 h5 text-black">{{ number_format($commandes, 3, '.', '') }} MAD</p>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3 col-sm-6 col-12 my-1 my-xxl-0 d-flex align-items-center">
@@ -67,7 +67,7 @@
                                     </div>
                                     <div class="ms-3 ">
                                         <span class="font-weight-bolder font-size-sm">Chiffre d'affaires</span>
-                                        <p class="mb-0 h5 text-black">{{ number_format($ca, 2, '.', '') }} MAD</p>
+                                        <p class="mb-0 h5 text-black">{{ number_format($ca, 3, '.', '') }} MAD</p>
                                     </div>
                                 </div>
                                 <div class="col-xxl-3  col-sm-6 col-12  my-1 my-xxl-0  d-flex align-items-center">
@@ -77,7 +77,7 @@
                                     </div>
                                     <div class="ms-3 ">
                                         <span class="font-weight-bolder font-size-sm">Total encaissement</span>
-                                        <p class="mb-0 h5 text-black">{{ number_format($encaissement, 2, '.', '') }} MAD
+                                        <p class="mb-0 h5 text-black">{{ number_format($encaissement, 3, '.', '') }} MAD
                                         </p>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@
                                     </div>
                                     <div class="ms-3 ">
                                         <span class="font-weight-bolder font-size-sm">Commissions</span>
-                                        <p class="mb-0 h5 text-black">{{ number_format($commissions, 2, '.', '') }} MAD</p>
+                                        <p class="mb-0 h5 text-black">{{ number_format($commissions, 3, '.', '') }} MAD</p>
                                     </div>
                                 </div>
                                 <div class="col-12 ">

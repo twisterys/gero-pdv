@@ -65,9 +65,9 @@
                         @endif
                     </td>
                 @endforeach
-                <td class="right">{{ number_format($totClient['total_ttc'] ?? 0, 2, ',', ' ') }}</td>
-                <td class="right">{{ number_format($totClient['total_paye'] ?? 0, 2, ',', ' ') }}</td>
-                <td class="right">{{ number_format($creance, 2, ',', ' ') }}</td>
+                <td class="right">{{ number_format($totClient['total_ttc'] ?? 0, 3, ',', ' ') }}</td>
+                <td class="right">{{ number_format($totClient['total_paye'] ?? 0, 3, ',', ' ') }}</td>
+                <td class="right">{{ number_format($creance, 3, ',', ' ') }}</td>
             </tr>
         @endforeach
         <tr>
@@ -75,9 +75,9 @@
             @foreach(($ac['articles'] ?? []) as $art)
                 <td></td>
             @endforeach
-            <td class="right"><strong>{{ number_format($ac['totals']['total_ttc'] ?? 0, 2, ',', ' ') }}</strong></td>
-            <td class="right"><strong>{{ number_format($ac['totals']['total_paye'] ?? 0, 2, ',', ' ') }}</strong></td>
-            <td class="right"><strong>{{ number_format($ac['totals']['total_creance'] ?? 0, 2, ',', ' ') }}</strong></td>
+            <td class="right"><strong>{{ number_format($ac['totals']['total_ttc'] ?? 0, 3, ',', ' ') }}</strong></td>
+            <td class="right"><strong>{{ number_format($ac['totals']['total_paye'] ?? 0, 3, ',', ' ') }}</strong></td>
+            <td class="right"><strong>{{ number_format($ac['totals']['total_creance'] ?? 0, 3, ',', ' ') }}</strong></td>
         </tr>
         </tbody>
     </table>
@@ -143,14 +143,14 @@
                 <td>{{ $row['cheque_lcn_reference'] ?? '—' }}</td>
                 <td>{{ $row['sale_date'] }}</td>
                 <td>{{ ($row['is_controled'] ?? false) ? 'Oui' : 'Non' }}</td>
-                <td class="right">{{ number_format($row['total_paiement_today'] ?? 0, 2, ',', ' ') }}</td>
-                <td class="right">{{ number_format($row['total_ttc'] ?? 0, 2, ',', ' ') }}</td>
-                <td class="right">{{ number_format($row['creance_amount'] ?? 0, 2, ',', ' ') }}</td>
+                <td class="right">{{ number_format($row['total_paiement_today'] ?? 0, 3, ',', ' ') }}</td>
+                <td class="right">{{ number_format($row['total_ttc'] ?? 0, 3, ',', ' ') }}</td>
+                <td class="right">{{ number_format($row['creance_amount'] ?? 0, 3, ',', ' ') }}</td>
             </tr>
         @endforeach
         <tr>
             <td colspan="9"><strong>Total des paiements</strong></td>
-            <td colspan="2" class="right"><strong>{{ number_format($cr['total_paiements'] ?? 0, 2, ',', ' ') }}</strong></td>
+            <td colspan="2" class="right"><strong>{{ number_format($cr['total_paiements'] ?? 0, 3, ',', ' ') }}</strong></td>
         </tr>
         </tbody>
     </table>
@@ -172,7 +172,7 @@
         @forelse(($depenses['items'] ?? []) as $row)
             <tr>
                 <td>{{ $row['categorie'] }}</td>
-                <td class="right">{{ number_format($row['montant'] ?? 0, 2, ',', ' ') }}</td>
+                <td class="right">{{ number_format($row['montant'] ?? 0, 3, ',', ' ') }}</td>
             </tr>
         @empty
             <tr>
@@ -181,7 +181,7 @@
         @endforelse
         <tr>
             <td><strong>Total</strong></td>
-            <td class="right"><strong>{{ number_format($depenses['total'] ?? 0, 2, ',', ' ') }}</strong></td>
+            <td class="right"><strong>{{ number_format($depenses['total'] ?? 0, 3, ',', ' ') }}</strong></td>
         </tr>
         </tbody>
     </table>
@@ -204,35 +204,35 @@
     <tr>
         <td>Total ventes</td>
         <td colspan="2"></td>
-        <td class="right">{{ number_format($tr['total_vente_jour'] ?? 0, 2, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_vente_jour'] ?? 0, 3, ',', ' ') }}</td>
     </tr>
     <tr>
         <td>Espèces</td>
-        <td class="right">{{ number_format($tr['total_espece_jour'] ?? 0, 2, ',', ' ') }}</td>
-        <td class="right">{{ number_format($tr['total_espece_creance'] ?? 0, 2, ',', ' ') }}</td>
-        <td class="right">{{ number_format($tr['total_espece'] ?? 0, 2, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_espece_jour'] ?? 0, 3, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_espece_creance'] ?? 0, 3, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_espece'] ?? 0, 3, ',', ' ') }}</td>
     </tr>
     <tr>
         <td>Chèques</td>
-        <td class="right">{{ number_format($tr['total_cheque_jour'] ?? 0, 2, ',', ' ') }}</td>
-        <td class="right">{{ number_format($tr['total_cheque_creance'] ?? 0, 2, ',', ' ') }}</td>
-        <td class="right">{{ number_format($tr['total_cheque'] ?? 0, 2, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_cheque_jour'] ?? 0, 3, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_cheque_creance'] ?? 0, 3, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_cheque'] ?? 0, 3, ',', ' ') }}</td>
     </tr>
     <tr>
         <td>LCN</td>
-        <td class="right">{{ number_format($tr['total_lcn_jour'] ?? 0, 2, ',', ' ') }}</td>
-        <td class="right">{{ number_format($tr['total_lcn_creance'] ?? 0, 2, ',', ' ') }}</td>
-        <td class="right">{{ number_format($tr['total_lcn'] ?? 0, 2, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_lcn_jour'] ?? 0, 3, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_lcn_creance'] ?? 0, 3, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_lcn'] ?? 0, 3, ',', ' ') }}</td>
     </tr>
     <tr>
         <td>Dépenses</td>
         <td colspan="2"></td>
-        <td class="right">{{ number_format($tr['total_depenses'] ?? 0, 2, ',', ' ') }}</td>
+        <td class="right">{{ number_format($tr['total_depenses'] ?? 0, 3, ',', ' ') }}</td>
     </tr>
     <tr>
         <td><strong>Reste en caisse</strong></td>
         <td colspan="2"></td>
-        <td class="right"><strong>{{ number_format($tr['reste_en_caisse'] ?? 0, 2, ',', ' ') }}</strong></td>
+        <td class="right"><strong>{{ number_format($tr['reste_en_caisse'] ?? 0, 3, ',', ' ') }}</strong></td>
     </tr>
     </tbody>
 </table>

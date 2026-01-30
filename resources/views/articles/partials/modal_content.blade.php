@@ -5,7 +5,7 @@
             data-reference="{{ $o_article->reference }}"
             data-ht="{{ $type == 'vente' ? $o_article->prix_vente : $o_article->prix_achat }}"
             data-unite="{{ $o_article->unite_id }}" data-taxe="{{ $o_article->taxe }}"
-            data-quantite-stock="{{ number_format($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite, 2, '.', ' ') }}"
+            data-quantite-stock="{{ number_format($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite, 3, '.', ' ') }}"
         >
             <div class="article-card-header mb-1 w-100 overflow-hidden d-flex align-items-center"
                 style="max-height: 100px">
@@ -17,10 +17,10 @@
                 <h6 class="text-capitalize text-center">{{ $o_article->designation }}</h6>
                 <p class="m-0 font-size-12 text-center text-muted">{{ $o_article->reference }}</p>
                 <p class="m-0 font-size-12 text-center text-muted">
-                    {{ number_format($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite, 2, '.', ' ') }}
+                    {{ number_format($magasin_id ? $o_article->magasin_stock($magasin_id) : $o_article->quantite, 3, '.', ' ') }}
                     {{ $o_article->unite->nom }}</p>
                 <p class="m-0 text-center fw-bold my1 text-primary">
-                    {{ $type == 'vente' ? $o_article->prix_vente : $o_article->prix_achat }} MAD</p>
+                    {{ $type == 'vente' ? number_format($o_article->prix_vente, 3, '.', ' ') : number_format($o_article->prix_achat, 3, '.', ' ') }} MAD</p>
             </div>
         </div>
     </div>

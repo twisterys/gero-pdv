@@ -42,7 +42,7 @@
             </div>
             <div class="ms-3 ">
                 <span class="font-weight-bolder font-size-sm">Montant</span>
-                <p class="mb-0 h5 text-black">{{number_format(abs($o_paiement->encaisser - $o_paiement->decaisser),2,'.',' ')}}</p>
+                <p class="mb-0 h5 text-black">{{number_format(abs($o_paiement->encaisser - $o_paiement->decaisser),3,'.',' ')}}</p>
             </div>
         </div>
         @if($o_paiement->methodePaiement->key === "cheque" || $o_paiement->methodePaiement->key === "lcn")

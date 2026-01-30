@@ -26,7 +26,7 @@
 {{--        <tr>--}}
 {{--            <td style="text-align:left">{{$vente->reference}}</td>--}}
 {{--            <td style="text-align:left">{{$vente->created_at->format('H:i:s')}}</td>--}}
-{{--            <td style="text-align:right">{{number_format($vente->total_ttc,2,'.',' ')}}</td>--}}
+{{--            <td style="text-align:right">{{number_format($vente->total_ttc,3,'.',' ')}}</td>--}}
 {{--        </tr>--}}
 {{--    @endforeach--}}
 {{--</table>--}}
@@ -42,22 +42,22 @@
     <tr style="padding: 10px;">
         <td style="text-align: left">Total Ventes</td>
         <td style="text-align: left">{{$count_vente}}</td>
-        <td style=" text-align: right;">{{number_format($total_vente,2,'.',' ')}}</td>
+        <td style=" text-align: right;">{{number_format($total_vente,3,'.',' ')}}</td>
     </tr>
     <tr style="padding: 10px;">
         <td style=" text-align: left">Total Retour</td>
         <td style="text-align: left">{{$count_retour}}</td>
-        <td style=" text-align: right;">{{number_format($total_retour,2,'.',' ')}}</td>
+        <td style=" text-align: right;">{{number_format($total_retour,3,'.',' ')}}</td>
     </tr>
     <tr style="padding: 10px;" >
         <td style=" text-align: left">Total Dépenses</td>
         <td style="text-align: left">{{$count_depense}}</td>
-        <td style=" text-align: right;">{{number_format($total_depense,2,'.',' ')}}</td>
+        <td style=" text-align: right;">{{number_format($total_depense,3,'.',' ')}}</td>
     </tr>
     <tr style="padding: 10px;">
         <td style=" text-align: left">Total</td>
         <td style="text-align: left">{{$count_total}}</td>
-        <td style=" text-align: right;">{{number_format($total,2,'.',' ')}}</td>
+        <td style=" text-align: right;">{{number_format($total,3,'.',' ')}}</td>
     </tr>
     </tbody>
 </table>

@@ -170,8 +170,8 @@
                                     <td><a href="{{route('ventes.afficher',[$facture->type_document,$facture->id])}}" class="link-underline-info text-info" >{{$facture->reference}}</a></td>
                                     <td><a class="link-underline-info text-info" href="{{route('clients.afficher',$facture->client_id)}}" target="_blank">{{$facture->client->nom}}</a></td>
                                     <td>{{$facture->jours_de_retard}}</td>
-                                    <td class="dashboard-text" >{{number_format($facture->total_ttc,2,'.',' ')}} MAD</td>
-                                    <td class="dashboard-text">{{number_format($facture->solde,2,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text" >{{number_format($facture->total_ttc,3,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text">{{number_format($facture->solde,3,'.',' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -207,8 +207,8 @@
                                     <td><a href="{{route('achats.afficher',[$facture_achat->type_document,$facture_achat->id])}}" class="link-underline-info text-info" >{{$facture_achat->reference}}</a></td>
                                     <td><a class="link-underline-info text-info" href="{{route('fournisseurs.afficher',$facture_achat->fournisseur_id)}}" target="_blank">{{$facture_achat->fournisseur->nom}}</a></td>
                                     <td>{{$facture_achat->jours_de_retard}}</td>
-                                    <td class="dashboard-text" >{{number_format($facture_achat->total_ttc,2,'.',' ')}} MAD</td>
-                                    <td class="dashboard-text">{{number_format($facture_achat->debit,2,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text" >{{number_format($facture_achat->total_ttc,3,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text">{{number_format($facture_achat->debit,3,'.',' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>

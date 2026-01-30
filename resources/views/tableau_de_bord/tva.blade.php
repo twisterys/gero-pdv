@@ -93,7 +93,7 @@
                         <i class="fa fa-dollar-sign text-success fa-3x"></i>
                         <div class="ms-4 ca">
                             <h4 class="text-muted dashboard-text ">
-                                {{number_format($ca_vente,2,'.',' ')}} MAD
+                                {{number_format($ca_vente,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total des ventes TTC</h6>
                         </div>
@@ -109,7 +109,7 @@
                         <i class="fa fa-shopping-cart text-info fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($ca_achat,2,'.',' ')}} MAD
+                                {{number_format($ca_achat,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total Achats TTC</h6>
                         </div>
@@ -125,7 +125,7 @@
                         <i class="fa fa-cash-register text-warning fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($encaissements,2,'.',' ')}} MAD
+                                {{number_format($encaissements,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total Encaissement TTC</h6>
                         </div>
@@ -141,7 +141,7 @@
                         <i class="fa fa-coins text-danger fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($decessements,2,'.',' ')}} MAD
+                                {{number_format($decessements,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total Décaissement</h6>
                         </div>
@@ -158,7 +158,7 @@
                         <i class="fa fa-money-bill text-success fa-3x"></i>
                         <div class="ms-4 ">
                             <h4 class="text-muted dashboard-text ">
-                                {{number_format($creance_client,2,'.',' ')}} MAD
+                                {{number_format($creance_client,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Créance Clients</h6>
                         </div>
@@ -174,7 +174,7 @@
                         <i class="fa fa-wallet text-info fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($creance_fournisseur,2,'.',' ')}} MAD
+                                {{number_format($creance_fournisseur,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Créance Fournisseurs</h6>
                         </div>
@@ -190,7 +190,7 @@
                         <i class="fa fa-file-invoice-dollar text-warning fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($tva_facture,2,'.',' ')}} MAD
+                                {{number_format($tva_facture,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">TVA Facturé</h6>
                         </div>
@@ -206,7 +206,7 @@
                         <i class="fa fa-percentage text-danger fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($tva_recup,2,'.',' ')}} MAD
+                                {{number_format($tva_recup,3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">TVA Récuperé</h6>
                         </div>
@@ -240,7 +240,7 @@
                                 </div>
                                 <div class="col-8 text-end">
                                     <p class="text-muted font-size-13 mb-1">Banque </p>
-                                    <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($total_banque,2,'.',' ')}}
+                                    <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($total_banque,3,'.',' ')}}
                                         MAD</h4>
                                 </div>
                             </div>
@@ -254,18 +254,18 @@
                                 </div>
                                 <div class="col-8 text-end">
                                     <p class="text-muted font-size-13 mb-1">Caisse </p>
-                                    <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($total_caisse,2,'.',' ')}}
+                                    <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($total_caisse,3,'.',' ')}}
                                         MAD</h4>
                                 </div>
                             </div>
                         </div>
                     <hr class="border">
                     <h5 class="text-primary" >Résultat de période</h5>
-                    <h2 class="text-end text-success" >{{number_format($ca_vente - $ca_achat,2,'.',' ')}} MAD  </h2>
+                    <h2 class="text-end text-success" >{{number_format($ca_vente - $ca_achat,3,'.',' ')}} MAD  </h2>
                     <hr class="border">
                     <h5 class="text-primary" >Marge net</h5>
                     <h2 class="text-end text-success">
-                        {{ number_format($ca_vente != 0 ? (($ca_vente - $ca_achat) / $ca_vente * 100) : 0, 2, '.', ' ') }} %
+                        {{ number_format($ca_vente != 0 ? (($ca_vente - $ca_achat) / $ca_vente * 100) : 0, 3, '.', ' ') }} %
                     </h2>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
             labels: ['CA', 'Depenses', 'Commandes', 'Achats', 'Encaissement'],
             gridLineColor: 'rgba(108, 120, 151, 0.2)',
             lineColors: ['#0acf97', '#44a2d2', '#f9bc0b', '#f1556c', '#3b5461'],
-            lineWidth: 2,
+            lineWidth: 3,
             parseTime: false,
             hideHover: 'auto'
         });

@@ -166,7 +166,7 @@
 
                                     <div class="input-group">
 
-                                        <input type="number" step="0.01"
+                                        <input type="number" step="0.001"
                                                class="form-control @error('limite_de_credit') is-invalid @enderror"
                                                id="limite_de_credit" name="limite_de_credit"
                                                value="{{ old('limite_de_credit', $O_fournisseur->limite_de_credit) }}">

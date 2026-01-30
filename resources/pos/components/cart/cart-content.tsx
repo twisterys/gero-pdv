@@ -373,7 +373,7 @@ const CartContent = () => {
                                         inputMode="decimal"
                                         min={0}
                                         max={100}
-                                        step="0.01"
+                                        step="0.001"
                                         className="w-full outline-none rounded-md border border-gray-200 px-2 py-1"
                                         value={(globalReduction ? Number(globalReduction) : '')}
                                         onChange={(e) => {

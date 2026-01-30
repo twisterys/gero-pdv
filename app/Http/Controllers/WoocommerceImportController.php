@@ -311,9 +311,9 @@ class WoocommerceImportController extends Controller
     }
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round($ht - $reduction, 3);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, 3) * $quantite;
+        return round($ttc, 3);
     }
 }

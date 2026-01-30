@@ -601,7 +601,7 @@ class RapportController extends Controller
         $stock_achats = DB::table('articles')->join('stocks', 'stocks.article_id', '=', 'articles.id')
             ->selectRaw('SUM(stocks.quantite * prix_achat ) as somme_achat')->pluck('somme_achat')[0];
         $benifice = $stock_ventes - $stock_achats;
-        $profit = $stock_ventes == 0 ? 0 : number_format((($benifice / $stock_ventes) * 100), 2);
+        $profit = $stock_ventes == 0 ? 0 : number_format((($benifice / $stock_ventes) * 100), 3);
         $rapport_details = Rapport::where('route','stock-produit')->first();
         return view("rapports.stock_produit", compact('stock_achats', 'stock_ventes', 'benifice', 'profit','rapport_details'));
     }
@@ -692,7 +692,7 @@ class RapportController extends Controller
             $stock_ventes = $result->vente;
             $stock_achats = $result->achat;
             $benifice = $stock_ventes - $stock_achats;
-            $profit = $stock_ventes == 0 ? 0 : number_format((($benifice / $stock_ventes) * 100), 2);
+            $profit = $stock_ventes == 0 ? 0 : number_format((($benifice / $stock_ventes) * 100), 3);
             //----------------- DATATABLE----------------
             $query = DB::table('articles as a')
                 ->leftJoin('transaction_stocks as s', 'a.id', '=', 's.article_id')
@@ -777,10 +777,10 @@ class RapportController extends Controller
 
             $table = DataTables::of($query);
             $table->addColumn('total_commission', function ($row) {
-                return number_format($row->total_commission, 2, '.', ' ') . ' MAD';
+                return number_format($row->total_commission, 3, '.', ' ') . ' MAD';
             });
             $table->editColumn('total_ca', function ($row) {
-                return number_format($row->total_ca, 2, '.', ' ') . ' MAD';
+                return number_format($row->total_ca, 3, '.', ' ') . ' MAD';
             });
             $table->addColumn('selectable_td', function ($row) {
                 $id = $row->id;
@@ -897,7 +897,7 @@ class RapportController extends Controller
                 })->editColumn('created_at', function ($row) {
                     return Carbon::make($row->created_at)->format('d/m/Y H:i:s');
                 })->addColumn('total_ttc',function ($row){
-                    return number_format($row->ventes()->where('type_document',PosService::getValue('type_vente'))->sum('total_ttc'),2,'.',' ').' MAD';
+                    return number_format($row->ventes()->where('type_document',PosService::getValue('type_vente'))->sum('total_ttc'),3,'.',' ').' MAD';
                 });
 
             $table->rawColumns(['selectable_td', 'actions']);
@@ -942,9 +942,9 @@ class RapportController extends Controller
 //            $tva_a_payer = $tva_ventes - $tva_achats;
 //
 //            return response()->json([
-//                'ventes_tva' => round($tva_ventes, 2),
-//                'achats_tva' => round($tva_achats, 2),
-//                'somme' => round($tva_a_payer, 2),
+//                'ventes_tva' => round($tva_ventes, 3),
+//                'achats_tva' => round($tva_achats, 3),
+//                'somme' => round($tva_a_payer, 3),
 //            ]);
 //        }
 //
@@ -1009,9 +1009,9 @@ class RapportController extends Controller
             $table->rawColumns(['selectable_td','reference']);
             return [
                 ...(array)$table->make()->getData(),
-                'ventes_tva' => number_format($paiements->sum('tva_ventes'),2,'.',' '),
-                'achats_tva' => number_format($paiements->sum('tva_achats'),2,'.',' '),
-                'somme' => number_format($paiements->sum('tva_result'),2,'.',' ')
+                'ventes_tva' => number_format($paiements->sum('tva_ventes'),3,'.',' '),
+                'achats_tva' => number_format($paiements->sum('tva_achats'),3,'.',' '),
+                'somme' => number_format($paiements->sum('tva_result'),3,'.',' ')
             ];
         }
         $rapport_details = Rapport::where('route','tva')->first();
@@ -1175,7 +1175,7 @@ class RapportController extends Controller
         $total_ttc = array_sum(array_column($grouped, 'total_ttc'));
         $chart_data = [];
         foreach ($grouped as $cat => $data) {
-            $chart_data[$cat] = $total_ttc > 0 ? round($data['total_ttc'] * 100 / $total_ttc, 2) : 0;
+            $chart_data[$cat] = $total_ttc > 0 ? round($data['total_ttc'] * 100 / $total_ttc, 3) : 0;
         }
 
         $grouped = collect($grouped)->sortByDesc('total_ttc');
@@ -1260,13 +1260,13 @@ class RapportController extends Controller
                 return '<input type="checkbox" class="row-select form-check-input" value="' . $id . '">';
             });
             $table->editColumn('total_credit', function ($row) {
-                return number_format($row->total_credit, 2, '.', ' ') . ' MAD';
+                return number_format($row->total_credit, 3, '.', ' ') . ' MAD';
             });
             $table->editColumn('credit_n', function ($row) {
-                return number_format($row->credit_n, 2, '.', ' ') . ' MAD';
+                return number_format($row->credit_n, 3, '.', ' ') . ' MAD';
             });
             $table->editColumn('credit_prev', function ($row) {
-                return number_format($row->credit_prev, 2, '.', ' ') . ' MAD';
+                return number_format($row->credit_prev, 3, '.', ' ') . ' MAD';
             });
             $table->rawColumns(['selectable_td']);
             return $table->make();
@@ -1388,10 +1388,10 @@ class RapportController extends Controller
                     'id' => $cid . ':' . $year,
                     'client' => $clientsMap[$cid] ?? ('Client #' . $cid),
                     'annee' => $year,
-                    'ca' => number_format($ca, 2, '.', ' ') . ' MAD',
-                    'encaissements' => number_format($enc, 2, '.', ' ') . ' MAD',
-                    'prix_revient' => $prix_revient_active ? number_format($rev, 2, '.', ' ') . ' MAD' : '--',
-                    'credit_annee' => number_format($credit, 2, '.', ' ') . ' MAD',
+                    'ca' => number_format($ca, 3, '.', ' ') . ' MAD',
+                    'encaissements' => number_format($enc, 3, '.', ' ') . ' MAD',
+                    'prix_revient' => $prix_revient_active ? number_format($rev, 3, '.', ' ') . ' MAD' : '--',
+                    'credit_annee' => number_format($credit, 3, '.', ' ') . ' MAD',
                 ];
             }
 

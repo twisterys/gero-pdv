@@ -31,7 +31,7 @@ class PaiementService
         ];
 
         // Round payment amount to 2 decimal places
-        $montant = round((float)$data['i_montant'], 2);
+        $montant = round((float)$data['i_montant'], 3);
 
         if (in_array($o_payable->type_document, $decaissment_types)) {
             $payment_data['decaisser'] = $montant;
@@ -58,15 +58,15 @@ class PaiementService
 
         if (in_array($payable, [Vente::class])) {
             // Use the rounded montant value and ensure all calculations are rounded to 2 decimal places
-            $payable_data['solde'] = round($o_payable->solde - $montant, 2);
-            $payable_data['encaisser'] = round($o_payable->encaisser + $montant, 2);
-            $total = round($o_payable->total_ttc, 2);
+            $payable_data['solde'] = round($o_payable->solde - $montant, 3);
+            $payable_data['encaisser'] = round($o_payable->encaisser + $montant, 3);
+            $total = round($o_payable->total_ttc, 3);
 
             $payable_data['statut_paiement'] = self::get_payable_statut($total, $payable_data['encaisser'], $payable_data['solde']);
         } elseif (in_array($payable, [Achat::class])) {
             // Use the rounded montant value and ensure all calculations are rounded to 2 decimal places
-            $payable_data['debit'] = round($o_payable->debit - $montant, 2);
-            $payable_data['credit'] = round($o_payable->credit + $montant, 2);
+            $payable_data['debit'] = round($o_payable->debit - $montant, 3);
+            $payable_data['credit'] = round($o_payable->credit + $montant, 3);
             $payable_data['statut_paiement'] = self::get_payable_statut(round($o_payable->total_ttc, 2), $payable_data['credit'], $payable_data['debit']);
         }
 
@@ -92,7 +92,7 @@ class PaiementService
         $date_permission = !request()->user()->can('paiement.date');
 
         // Round payment amount to 2 decimal places
-        $montant = round((float)$data['i_montant'], 2);
+        $montant = round((float)$data['i_montant'], 3);
 
         $payment_data = [
             'payable_type' => Depense::class,
@@ -111,9 +111,9 @@ class PaiementService
             $payment_data['cheque_lcn_date'] = Carbon::createFromFormat('d/m/Y', $data['i_date'])->toDateString();
         }
 
-        $payable_data['solde'] = round($o_depense->solde - $montant, 2);
-        $payable_data['encaisser'] = round($o_depense->encaisser + $montant, 2);
-        $total = round($o_depense->montant, 2);
+        $payable_data['solde'] = round($o_depense->solde - $montant, 3);
+        $payable_data['encaisser'] = round($o_depense->encaisser + $montant, 3);
+        $total = round($o_depense->montant, 3);
         $payable_data['statut_paiement'] = self::get_payable_statut($total, $payable_data['encaisser'], $payable_data['solde']);
 
         $o_depense->update($payable_data);
@@ -135,9 +135,9 @@ class PaiementService
         $montant_paye = (float) $montant_paye;
         $montant_impaye = (float) $montant_impaye;
 
-        if ($montant_impaye <= 0 && round($montant_paye, 2) >= round($payable_total, 2)) {
+        if ($montant_impaye <= 0 && round($montant_paye, 3) >= round($payable_total, 3)) {
             $paiment_statut = 'paye';
-        } elseif ($montant_paye > 0 && round($payable_total, 2) > round($montant_paye, 2)) {
+        } elseif ($montant_paye > 0 && round($payable_total, 3) > round($montant_paye, 3)) {
             $paiment_statut = 'partiellement_paye';
         } else {
             $paiment_statut = 'non_paye';

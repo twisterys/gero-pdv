@@ -35,9 +35,9 @@ class fixpaymentdataCommand extends Command
 
     public  function get_payable_statut(float|string $payable_total, float|string $montant_paye = 0, float|string $montant_impaye = 0)
     {
-        if ($montant_impaye <= 0 && round($montant_paye, 2) >= round($payable_total, 2)) {
+        if ($montant_impaye <= 0 && round($montant_paye, 3) >= round($payable_total, 3)) {
             $paiment_statut = 'paye';
-        } elseif ($montant_paye > 0 && round($payable_total, 2) > round($montant_paye, 2)) {
+        } elseif ($montant_paye > 0 && round($payable_total, 3) > round($montant_paye, 3)) {
             $paiment_statut = 'partiellement_paye';
         } else {
             $paiment_statut = 'non_paye';

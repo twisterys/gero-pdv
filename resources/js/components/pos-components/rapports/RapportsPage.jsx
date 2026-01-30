@@ -201,11 +201,11 @@ const RapportsPage = () => {
         }
     }, [fetchAcData, fetchAsData, fetchAfData, fetchCrData, fetchTrData,fetchDpData]);
 
-    // Memoized number formatter
+    // Memoized number formatter rounded to 3 decimals
     const formatNumber = useMemo(() => (
         (num) => new Intl.NumberFormat('fr-FR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
         }).format(num)
     ), []);
 

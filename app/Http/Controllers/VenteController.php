@@ -294,7 +294,7 @@ class VenteController extends Controller
                     $taxe = $ligne['i_taxe'] ?? 0;
                     $quantite = $ligne['i_quantite'] ?? 0;
                     $htReduit = $ht - $reduction;
-                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 3);
                     $totalTtcCourant += $ttc;
                 }
             }
@@ -349,7 +349,7 @@ class VenteController extends Controller
                     if ($ligne['i_reduction_mode'] === 'fixe') {
                         $reduction = $ligne['i_reduction'];
                     } else if ($ligne['i_reduction_mode'] === 'pourcentage') {
-                        $reduction = round($ligne['i_prix_ht'] * (($ligne['i_reduction'] ?? 0) / 100), 2);
+                        $reduction = round($ligne['i_prix_ht'] * (($ligne['i_reduction'] ?? 0) / 100), 3);
                     }
                     $o_ligne = new VenteLigne();
                     $o_ligne->vente_id = $o_vente->id;
@@ -514,7 +514,7 @@ class VenteController extends Controller
                     if ($ligne['i_reduction_mode'] === 'fixe') {
                         $reduction = $ligne['i_reduction'];
                     } else if ($ligne['i_reduction_mode'] === 'pourcentage') {
-                        $reduction = round($ligne['i_prix_ht'] * (($ligne['i_reduction'] ?? 0) / 100), 2);
+                        $reduction = round($ligne['i_prix_ht'] * (($ligne['i_reduction'] ?? 0) / 100), 3);
                     }
                     $o_ligne->article_id = $ligne['i_article_id'];
                     $o_ligne->unit_id = $ligne['i_unite'];
@@ -543,7 +543,7 @@ class VenteController extends Controller
                     'total_reduction' => $vente_reduction,
                     'total_ttc' => $vente_ttc,
                     'solde' => $vente_ttc - $o_vente->encaisser,
-                    'statut_paiement' => PaiementService::get_payable_statut($vente_ttc, $o_vente->encaisser, (round($vente_ttc, 2) - $o_vente->encaisser))
+                    'statut_paiement' => PaiementService::get_payable_statut($vente_ttc, $o_vente->encaisser, (round($vente_ttc, 3) - $o_vente->encaisser))
                 ]);
                 VenteLigne::whereNotIn('id', $exist_lignes)->where('vente_id', $o_vente->id)->delete();
             }
@@ -1676,10 +1676,10 @@ class VenteController extends Controller
      */
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round($ht - $reduction, 3);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, 3) * $quantite;
+        return round($ttc, 3);
     }
 
     /**
@@ -1691,7 +1691,7 @@ class VenteController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 3, '.', '');
     }
     /**
      * @param $vente

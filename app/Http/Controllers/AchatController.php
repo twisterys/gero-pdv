@@ -450,8 +450,8 @@ class AchatController extends Controller
             }
             // ------------------- ### Check if there is details or not ### -------------------
             if (!$request->get('details')) {
-                $data['total_ht'] = +number_format($request->get('total_ht'), 2, '.', '');
-                $data['total_ttc'] = +number_format($request->get('total_ttc'), 2, '.', '');
+                $data['total_ht'] = +number_format($request->get('total_ht'), 3, '.', '');
+                $data['total_ttc'] = +number_format($request->get('total_ttc'), 3, '.', '');
                 $data['total_tva'] = $data['total_ttc'] - $data['total_ht'];
                 $data['debit'] = $data['total_ttc'];
             }
@@ -953,10 +953,10 @@ class AchatController extends Controller
      */
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round($ht - $reduction, 3);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, 3) * $quantite;
+        return round($ttc, 3);
     }
 
     /**
@@ -968,7 +968,7 @@ class AchatController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 3, '.', '');
     }
 
     /**

@@ -10,7 +10,7 @@
     </td>
 
     <td>
-        <input style="width: 120px" class="form-control quantite mb-1 " step="0.01" name="lignes[-1][i_quantite]" type="number">
+        <input style="width: 120px" class="form-control quantite mb-1 " step="0.001" name="lignes[-1][i_quantite]" type="number">
 
     </td>
 

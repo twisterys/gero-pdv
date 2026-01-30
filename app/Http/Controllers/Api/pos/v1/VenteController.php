@@ -130,7 +130,7 @@ class VenteController extends Controller
                     $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
                     $quantite = $ligne['quantity'] ?? 0;
                     $htReduit = $ht - $reduction;
-                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 3);
                     $totalTtcCourant += $ttc;
                 }
             }
@@ -199,14 +199,14 @@ class VenteController extends Controller
                                 $ligne_reduction = (float)$global_reduction + $reduction_percent;
                                 $ligne_reduction_type = 'pourcentage';
                             }
-                            $ligne['reduction'] = round($ligne_reduction, 2);
+                            $ligne['reduction'] = round($ligne_reduction, 3);
                             $ligne['reduction_type'] = $ligne_reduction_type;
                         } else if ($global_reduction > 0) {
-                            $ligne['reduction'] = round((float)$global_reduction, 2);
+                            $ligne['reduction'] = round((float)$global_reduction, 3);
                             $ligne['reduction_type'] = 'pourcentage';
                         }
                     }
-                    $fixed_reduction = in_array(($ligne['reduction_type'] ?? ''), ['percent', 'pourcentage']) ? round((($ligne['reduction'] ?? 0) * $ligne['prix']) / 100, 2) : ($ligne['reduction'] ?? 0);
+                    $fixed_reduction = in_array(($ligne['reduction_type'] ?? ''), ['percent', 'pourcentage']) ? round((($ligne['reduction'] ?? 0) * $ligne['prix']) / 100, 3) : ($ligne['reduction'] ?? 0);
                     $o_article = Article::find($ligne['id']);
                     $o_ligne = new VenteLigne();
                     $o_ligne->vente_id = $o_vente->id;
@@ -265,7 +265,7 @@ class VenteController extends Controller
                 $paiement = $request->get('paiement');
                 $paiement['i_date_paiement'] = now()->format('d/m/Y');
                 // Round payment amount to 2 decimal places
-                $paiement['i_montant'] = round((float)$paiement['i_montant'], 2);
+                $paiement['i_montant'] = round((float)$paiement['i_montant'], 3);
                 PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement, $o_pos_session->magasin_id, $o_pos_session->id);
             } else if (!$request->filled('credit')) {
                 // Create default payment with cash method if not a credit sale
@@ -275,7 +275,7 @@ class VenteController extends Controller
                     'i_compte_id' => $o_compte->id,
                     'i_method_key' => 'especes',
                     'client_id' => $request->get('id'),
-                    'i_montant' => round($vente_ttc, 2),
+                    'i_montant' => round($vente_ttc, 3),
                     'i_session_id' => $o_pos_session->id,
                 ];
                 PaiementService::add_paiement(Vente::class, $o_vente->id, $paiement_data, $o_pos_session->magasin_id, $o_pos_session->id);
@@ -399,10 +399,10 @@ class VenteController extends Controller
 
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round($ht - $reduction, 3);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, 3) * $quantite;
+        return round($ttc, 3);
     }
 
     /**
@@ -414,7 +414,7 @@ class VenteController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 3, '.', '');
     }
     /**
      * Vérifie l'encours de crédit d'un client.

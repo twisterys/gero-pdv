@@ -52,7 +52,7 @@
                                         </div>
                                         <div class="card-body text-center">
                                             <h3>{{$banque->nom}}</h3>
-                                            <p class="m-0 text-center fw-bold my1 text-success">{{number_format($banque->solde,2,'.',' ')}}
+                                            <p class="m-0 text-center fw-bold my1 text-success">{{number_format($banque->solde,3,'.',' ')}}
                                                 MAD </p>
                                         </div>
                                     </div>
@@ -78,7 +78,7 @@
                                         </div>
                                         <div class="card-body text-center">
                                             <h3>{{$caisse->nom}}</h3>
-                                            <p class="m-0 text-center fw-bold my1 text-success">{{number_format($caisse->solde,2,'.',' ')}}
+                                            <p class="m-0 text-center fw-bold my1 text-success">{{number_format($caisse->solde,3,'.',' ')}}
                                                 MAD </p>
                                         </div>
                                     </div>

@@ -128,7 +128,7 @@
                                 <div class=" col-sm-6 col-12 mb-3 ">
                                     <label class="form-label   required" for="montant-input">Montant</label>
                                     <div class="input-group">
-                                        <input required type="number" step="0.01"
+                                        <input required type="number" step="0.001"
                                                class="form-control {{$errors->has('i_montant')? 'is-invalid' : ''}}"
                                                id="montant-input" min="0"
                                                name="i_montant" value="{{old('i_montant',0)}}">
@@ -158,7 +158,7 @@
                                 <div class=" col-sm-6 col-12 mb-3 ">
                                     <label class="form-label " for="ttc-input">Montant ttc</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="ttc-input" value="{{number_format(old('i_montant')*(1+old('i_tax')/100),2)}}">
+                                        <input type="text" class="form-control" id="ttc-input" value="{{number_format(old('i_montant')*(1+old('i_tax')/100),3)}}">
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
@@ -327,7 +327,7 @@
         })
 
         $(document).on('input', '#tax-input, #montant-input', function () {
-            let ttc = (Number($('#montant-input').val()) *(1+ Number($('#tax-input').val()/100))).toFixed(2);
+            let ttc = (Number($('#montant-input').val()) *(1+ Number($('#tax-input').val()/100))).toFixed(3);
             $('#ttc-input').val(ttc)
         })
     </script>

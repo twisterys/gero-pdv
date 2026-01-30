@@ -177,7 +177,7 @@ export const TableCommercial = ({
                             item.quantity *
                             item.prix *
                             (1 - item.reduction / 100)
-                        ).toFixed(2)}
+                        ).toFixed(3)}
                         MAD
                     </td>
                     <td style={fitContentStyle}>

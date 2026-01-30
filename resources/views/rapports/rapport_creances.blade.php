@@ -21,7 +21,7 @@
                         <h4 class="mb-3">Total général des créances</h4>
                         <span class="badge bg-soft-primary text-primary py-1 px-2 fs-6">Tous</span>
                     </div>
-                    <div class="h3 mt-1">{{ number_format($total_general, 2, '.', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="h3 mt-1">{{ number_format($total_general, 3, '.', ' ') }} <small class="fs-6">MAD</small></div>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
                         <h4 class="mb-3">Créances année :</h4>
                         <span class="badge bg-soft-success text-success py-1 px-2 fs-6">{{ $exercice }}</span>
                     </div>
-                    <div class="h3 mt-1">{{ number_format($total_n, 2, '.', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="h3 mt-1">{{ number_format($total_n, 3, '.', ' ') }} <small class="fs-6">MAD</small></div>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                         <h4 class="mb-3">Créances années :</h4>
                         <span class="badge bg-soft-warning text-warning py-1 px-2 fs-6">Avant {{ $exercice }}</span>
                     </div>
-                    <div class="h3 mt-1">{{ number_format($total_prev, 2, '.', ' ') }} <small class="fs-6">MAD</small></div>
+                    <div class="h3 mt-1">{{ number_format($total_prev, 3, '.', ' ') }} <small class="fs-6">MAD</small></div>
                 </div>
             </div>
         </div>
@@ -73,11 +73,11 @@
                 </div>
                 <div class="col-md-2 col-sm-4">
                     <label for="i_min" class="form-label">Montant min</label>
-                    <input type="number" step="0.01" min="0" id="i_min" name="i_min" class="form-control" placeholder="Ex: 1000">
+                    <input type="number" step="0.001" min="0" id="i_min" name="i_min" class="form-control" placeholder="Ex: 1000">
                 </div>
                 <div class="col-md-2 col-sm-4">
                     <label for="i_max" class="form-label">Montant max</label>
-                    <input type="number" step="0.01" min="0" id="i_max" name="i_max" class="form-control" placeholder="Ex: 10000">
+                    <input type="number" step="0.001" min="0" id="i_max" name="i_max" class="form-control" placeholder="Ex: 10000">
                 </div>
                 <div class="col-md-2 col-sm-6 mt-2 mt-md-0">
                     <label for="i_types" class="form-label">Documents inclus</label>

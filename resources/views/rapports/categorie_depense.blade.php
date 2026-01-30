@@ -36,7 +36,7 @@
                             <i class="mdi mdi-cash-multiple fs-2 me-2"></i>
                             <div>
                                 <div class="fw-bold">Total TTC</div>
-                                <div>{{ number_format($grouped->sum('total_ttc'), 2) }} MAD}</div>
+                                <div>{{ number_format($grouped->sum('total_ttc'), 3) }} MAD}</div>
                             </div>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                             <i class="mdi mdi-cash fs-2 me-2"></i>
                             <div>
                                 <div class="fw-bold">Total HT</div>
-                                <div>{{ number_format($grouped->sum('total_ht'), 2) }} MAD</div>
+                                <div>{{ number_format($grouped->sum('total_ht'), 3) }} MAD</div>
                             </div>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                             <i class="mdi mdi-percent fs-2 me-2"></i>
                             <div>
                                 <div class="fw-bold">Total TVA</div>
-                                <div>{{ number_format($grouped->sum('total_impot'), 2) }} MAD</div>
+                                <div>{{ number_format($grouped->sum('total_impot'), 3) }} MAD</div>
                             </div>
                         </div>
                     </div>
@@ -84,9 +84,9 @@
                             @foreach($grouped as $categorie => $data)
                                 <tr>
                                     <td><strong>{{ $categorie }}</strong></td>
-                                    <td class="text-center">{{ number_format($data['total_ttc'], 2) }} MAD</td>
-                                    <td class="text-center">{{ number_format($data['total_ht'], 2) }} MAD</td>
-                                    <td class="text-center">{{ number_format($data['total_impot'], 2) }} MAD</td>
+                                    <td class="text-center">{{ number_format($data['total_ttc'], 3) }} MAD</td>
+                                    <td class="text-center">{{ number_format($data['total_ht'], 3) }} MAD</td>
+                                    <td class="text-center">{{ number_format($data['total_impot'], 3) }} MAD</td>
                                     <td class="text-center">{{ $data['nombre_encaisse'] }}</td>
                                 </tr>
                             @endforeach

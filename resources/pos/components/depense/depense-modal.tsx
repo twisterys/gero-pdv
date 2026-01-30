@@ -3,9 +3,9 @@ import { useDepenseStore, type DepenseData, type DepenseCategory } from '../../s
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { formatNumber } from '../../utils/formats';
 
-// Helper function to round monetary values to 2 decimal places (0.01)
-const roundToTwoDecimals = (value: number): number => {
-    return Math.round((value + Number.EPSILON) * 100) / 100;
+// Helper function to round monetary values to 3 decimal places (0.001)
+const roundToThreeDecimals = (value: number): number => {
+    return Math.round((value + Number.EPSILON) * 1000) / 1000;
 };
 
 interface DepenseModalProps {
@@ -66,8 +66,8 @@ const DepenseModal: React.FC<DepenseModalProps> = ({
     }, [serverErrors, setError]);
 
     const onFormSubmit: SubmitHandler<DepenseData> = async (data) => {
-        // Round the amount to 2 decimal places
-        data.montant = roundToTwoDecimals(data.montant);
+        // Round the amount to 3 decimal places
+        data.montant = roundToThreeDecimals(data.montant);
         // Validation for amount
         if (data.montant <= 0) {
             setError('montant', { 

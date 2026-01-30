@@ -227,7 +227,7 @@ class AchatFactory extends Factory
     {
         $baseAmount = ($ht - $reduction);
         $taxAmount = $baseAmount * ($tva / 100);
-        return (float)number_format(round($taxAmount, 10) * $quantite, 2, '.', '');
+        return (float)number_format(round($taxAmount, 10) * $quantite, 3, '.', '');
     }
 
     /**
@@ -243,6 +243,6 @@ class AchatFactory extends Factory
     {
         $baseAmount = ($ht - $reduction);
         $withTax = $baseAmount + ($baseAmount * ($tva / 100));
-        return (float)number_format(round($withTax, 10) * $quantite, 2, '.', '');
+        return (float)number_format(round($withTax, 10) * $quantite, 3, '.', '');
     }
 }

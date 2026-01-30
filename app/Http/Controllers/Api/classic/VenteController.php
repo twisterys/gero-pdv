@@ -102,7 +102,7 @@ class VenteController extends Controller
                         $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
                         $quantite = $ligne['quantity'] ?? 0;
                         $htReduit = $ht - $reduction;
-                        $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                        $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 3);
                         $totalTtcCourant += $ttc;
                     }
                 }
@@ -208,7 +208,7 @@ class VenteController extends Controller
                         'subject_id' => $o_vente->id,
                         'subject_reference' => $o_vente->reference,
                     ])
-                    ->log('Paiement du montant ' . number_format($paiement_data['i_montant'], 2, ',', ' ') . ' MAD (POS)');
+                    ->log('Paiement du montant ' . number_format($paiement_data['i_montant'], 3, ',', ' ') . ' MAD (POS)');
             }
 
             $o_vente->refresh();
@@ -309,7 +309,7 @@ class VenteController extends Controller
                     $taxe = $ligne['taxe'] ?? (Article::find($ligne['id'])->taxe ?? 0);
                     $quantite = $ligne['quantity'] ?? 0;
                     $htReduit = $ht - $reduction;
-                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 2);
+                    $ttc = round(($htReduit * (1 + $taxe / 100)) * $quantite, 3);
                     $totalTtcCourant += $ttc;
                 }
             }
@@ -417,7 +417,7 @@ class VenteController extends Controller
                     'subject_id' => $o_vente->id,
                     'subject_reference' => $o_vente->reference,
                 ])
-                ->log('Paiement du montant ' . number_format($paiement['i_montant'], 2, ',', ' ') . ' MAD (POS)');
+                ->log('Paiement du montant ' . number_format($paiement['i_montant'], 3, ',', ' ') . ' MAD (POS)');
 
             $o_vente->refresh();
 
@@ -490,7 +490,7 @@ class VenteController extends Controller
                     'subject_id' => $o_vente->id,
                     'subject_reference' => $o_vente->reference,
                 ])
-                ->log('Paiement du montant ' . number_format($paiement['i_montant'], 2, ',', ' ') . ' MAD (POS)');
+                ->log('Paiement du montant ' . number_format($paiement['i_montant'], 3, ',', ' ') . ' MAD (POS)');
             // ------------------ ### Receipt ### ------------------
             $o_vente->refresh();
 
@@ -549,10 +549,10 @@ class VenteController extends Controller
 
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round($ht - $reduction, 3);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, 3) * $quantite;
+        return round($ttc, 3);
     }
 
     /**
@@ -564,7 +564,7 @@ class VenteController extends Controller
      */
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 3, '.', '');
     }
     /**
      * Vérifie l'encours de crédit d'un client.

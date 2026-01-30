@@ -74,7 +74,7 @@
                         </div>
                         <div class="col-sm-3 col-12 mb-3">
                             <label class="form-label" for="prix">Prix </label>
-                            <input type="number" class="form-control" name="prix" id="prix" min="0" step="0.01" placeholder="Prix">
+                            <input type="number" class="form-control" name="prix" id="prix" min="0" step="0.001" placeholder="Prix">
                         </div>
 
 

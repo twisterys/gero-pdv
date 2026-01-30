@@ -220,19 +220,19 @@
                         </div>
 
                     </td>
-                    <td  style="vertical-align: top; word-wrap: break-word ;"><div class="border" >{{number_format($ligne->ht,2,'.',' ')}} MAD
+                    <td  style="vertical-align: top; word-wrap: break-word ;"><div class="border" >{{number_format($ligne->ht,3,'.',' ')}} MAD
 
                         </div>
                     </td>
                     @if( $o_vente['total_reduction'] != 0)
-                        <td  style="vertical-align: top; word-wrap: break-word ;"><div class="border" >{{number_format($ligne->reduction,2,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? 'MAD':'%'}}
+                        <td  style="vertical-align: top; word-wrap: break-word ;"><div class="border" >{{number_format($ligne->reduction,3,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? 'MAD':'%'}}
 
                             </div></td>
                     @endif
                     <td  style="vertical-align: top; word-wrap: break-word ; ">
                         <div class="border" >{{$ligne->taxe}} %
                         </div></td>
-                    <td  style="vertical-align: top; word-wrap: break-word ; "><div class="border" >{{number_format(($ligne->ht-$reduction) *$ligne->quantite,2,'.',' ')}}  MAD
+                    <td  style="vertical-align: top; word-wrap: break-word ; "><div class="border" >{{number_format(($ligne->ht-$reduction) *$ligne->quantite,3,'.',' ')}}  MAD
 
                         </div></td>
                 </tr>
@@ -250,7 +250,7 @@
          style="page-break-inside: avoid; position: fixed; bottom: {{$o_template->image_en_bas_hauteur-100-($o_vente->note ? 0 : 150)}}px; height: {{310 + ($o_vente->note ? 70 : 60)}}px;width: 100%">
         <div class="total-container " style="page-break-inside: avoid">
             <div class="total-line">
-                <h5>Total HT</h5> <h5>{{number_format($o_vente->total_ht ,2,'.',' ')}} MAD</h5>                </div>
+                <h5>Total HT</h5> <h5>{{number_format($o_vente->total_ht ,3,'.',' ')}} MAD</h5>                </div>
             <hr>
             @if( $o_vente['total_reduction'] == 0)
             @endif

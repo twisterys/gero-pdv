@@ -99,10 +99,10 @@ export const History = ({reduction}) => {
 
         return (
             <>
-                <h5 className="m-0">Total Ventes: {total_ventes.toFixed(2)+" MAD"}</h5>
-                <h5 className="m-0">Total Retours: {total_retours.toFixed(2)+" MAD"}</h5>
-                <h5 className="m-0">Total Dépenses: {total_depenses.toFixed(2)+" MAD"}</h5>
-                <h5 className="m-0">Total : {(total_ventes - total_retours - total_depenses).toFixed(2)+" MAD"}</h5>
+                <h5 className="m-0">Total Ventes: {total_ventes.toFixed(3)+" MAD"}</h5>
+                <h5 className="m-0">Total Retours: {total_retours.toFixed(3)+" MAD"}</h5>
+                <h5 className="m-0">Total Dépenses: {total_depenses.toFixed(3)+" MAD"}</h5>
+                <h5 className="m-0">Total : {(total_ventes - total_retours - total_depenses).toFixed(3)+" MAD"}</h5>
             </>
         )
 

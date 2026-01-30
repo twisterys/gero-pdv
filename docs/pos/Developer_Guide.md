@@ -58,7 +58,7 @@ Scope
   - Client: `setClient`, `clearClient`.
   - Order: `toggleOrderType`, `setOrderType`, `checkout(paymentData)`, `addPaymentToOrder(orderId, paymentData)`.
   - Helpers: `isPaymentComplete`, `clearLastOrderInfo`.
-- Calculations: internal helpers compute line totals with reduction types (percentage/fixed), tax, and rounding to 0.01.
+- Calculations: internal helpers compute line totals with reduction types (percentage/fixed), tax, and rounding to 0.001.
 - Side effects: HTTP calls via `endpoints.orders.*`; auditory feedback via `playSound` if configured.
 
 5.2 Settings store (`stores/settings-store.ts`)

@@ -455,7 +455,7 @@
                     var total = api.column(2).data().reduce(function (a, b) {
                         return parseFloat(a) + parseFloat(b);
                     }, 0);
-                    $('#total_ventes').html(total.toFixed(2) + ' MAD');
+                    $('#total_ventes').html(total.toFixed(3) + ' MAD');
 
                 }
         });

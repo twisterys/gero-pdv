@@ -60,7 +60,7 @@ class Article extends Model
     }
     public function getQuantiteAttribute()
     {
-        return $this->stock ? number_format($this->stock->quantite, 2, '.', '') : '0.00';
+        return $this->stock ? number_format($this->stock->quantite, 3, '.', '') : '0.000';
     }
 
     public function abonnements()

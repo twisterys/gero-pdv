@@ -172,7 +172,7 @@ export const RebutModal = () => {
                                         <label className="form-label">Quantité de rebut</label>
                                         <input
                                             type="number"
-                                            step="0.01"
+                                            step="0.001"
                                             className="form-control"
                                             value={l.quantite_rebut}
                                             onChange={(e) => setLine(idx, {quantite_rebut: e.target.value})}

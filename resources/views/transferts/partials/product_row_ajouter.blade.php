@@ -22,7 +22,7 @@
 
     </td>
     <td>
-        <input style="width: 120px" class="form-control quantite mb-1 {{$errors->has('lignes.'.$position.'.i_quantite')? 'is-invalid' : ''}}" step="0.01"
+        <input style="width: 120px" class="form-control quantite mb-1 {{$errors->has('lignes.'.$position.'.i_quantite')? 'is-invalid' : ''}}" step="0.001"
                name="lignes[{{$position}}][i_quantite]" type="number"
                value="{{old('lignes.'.$position.'.i_quantite')}}">
         @error('lignes.'.$position.'.i_quantite')

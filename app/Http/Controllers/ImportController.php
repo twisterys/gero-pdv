@@ -909,7 +909,7 @@ class ImportController extends Controller
                     if ($venteLigneData['type_reduction'] === 'fixe') {
                         $reduction = $venteLigneData['reduction'];
                     } elseif ($venteLigneData['type_reduction'] === 'pourcentage') {
-                        $reduction = round($venteLigneData['prix_vente_ht']  * (($venteLigneData['reduction'] ?? 0) / 100), 2);
+                        $reduction = round($venteLigneData['prix_vente_ht']  * (($venteLigneData['reduction'] ?? 0) / 100), 3);
                     }
                     $venteLigne->total_ttc = $this->calculate_ttc($venteLigneData['prix_vente_ht'], $reduction,$venteLigneData['tva'],$venteLigneData['quantite']);
                     $venteLigne->save();
@@ -1133,7 +1133,7 @@ class ImportController extends Controller
                     if ($achatLigneData['type_reduction'] === 'fixe') {
                         $reduction = $achatLigneData['reduction'];
                     } elseif ($achatLigneData['type_reduction'] === 'pourcentage') {
-                        $reduction = round($achatLigneData['prix_achat_ht']  * (($achatLigneData['reduction'] ?? 0) / 100), 2);
+                        $reduction = round($achatLigneData['prix_achat_ht']  * (($achatLigneData['reduction'] ?? 0) / 100), 3);
                     }
 
                     $achatLigne->total_ttc = $this->calculate_ttc($achatLigneData['prix_achat_ht'], $reduction,$achatLigneData['tva'],$achatLigneData['quantite']);
@@ -1170,16 +1170,16 @@ class ImportController extends Controller
 
     function calculate_ttc(float $ht, float $reduction, float $tva, float $quantite): string
     {
-        $ht = round($ht - $reduction, 2);
+        $ht = round($ht - $reduction, 3);
         $tva = (1 + $tva / 100);
-        $ttc = round($ht * $tva, 2) * $quantite;
-        return round($ttc, 2);
+        $ttc = round($ht * $tva, 3) * $quantite;
+        return round($ttc, 3);
 
     }
 
     function calculate_tva_amount(float $ht, float $reduction, float $tva, float $quantite): float
     {
-        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 2, '.', '');
+        return +number_format(round(($ht - $reduction) * ($tva / 100), 10) * $quantite, 3, '.', '');
     }
 
     public function importer_paiement(Request $request)

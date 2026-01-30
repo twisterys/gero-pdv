@@ -135,9 +135,9 @@ $colors = [
                         </div>
                     </td>
                     <td style="white-space: nowrap">{{$ligne->quantite}} {{$ligne->unite->nom}}</td>
-                    <td style="white-space: nowrap">{{number_format($ligne->ht,2,'.',' ')}} MAD</td>
+                    <td style="white-space: nowrap">{{number_format($ligne->ht,3,'.',' ')}} MAD</td>
                     <td>{{$ligne->taxe}} %</td>
-                    <td style="white-space: nowrap">{{number_format(($ligne->ht) *$ligne->quantite,2,'.',' ')}} MAD</td>
+                    <td style="white-space: nowrap">{{number_format(($ligne->ht) *$ligne->quantite,3,'.',' ')}} MAD</td>
                 </tr>
             @endforeach
             <tr>
@@ -152,18 +152,18 @@ $colors = [
          style="page-break-inside: avoid; position: fixed; bottom: {{$o_template->image_en_bas_hauteur-70-($o_vente->note ? 0 : 40)}}px; height: {{180 + ($o_vente->note ? 70 : 0)}}px;width: 100%">
         <div class="total-container " style="page-break-inside: avoid">
             <div class="total-line">
-                <h5>Total HT</h5> <h5>{{number_format($o_vente->total_ht,2,'.',' ')}} MAD</h5>
+                <h5>Total HT</h5> <h5>{{number_format($o_vente->total_ht,3,'.',' ')}} MAD</h5>
 
             </div>
             <div class="total-line">
-                <h5>Total Réduction</h5> <h5>{{number_format($o_vente->total_reduction,2,'.',' ')}} MAD</h5>
+                <h5>Total Réduction</h5> <h5>{{number_format($o_vente->total_reduction,3,'.',' ')}} MAD</h5>
             </div>
             <div class="total-line">
-                <h5>Total TVA</h5> <h5>{{number_format($o_vente->total_tva,2,'.',' ')}} MAD</h5>
+                <h5>Total TVA</h5> <h5>{{number_format($o_vente->total_tva,3,'.',' ')}} MAD</h5>
             </div>
             <div class="total-line">
                 <h5>Total TTC</h5>
-                <h2>{{number_format($o_vente->total_ttc,2,'.',' ')}} MAD</h2>
+                <h2>{{number_format($o_vente->total_ttc,3,'.',' ')}} MAD</h2>
             </div>
         </div>
         @if($o_template['afficher_total_en_chiffre'])

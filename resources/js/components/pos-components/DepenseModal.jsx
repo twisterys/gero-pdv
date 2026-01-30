@@ -136,7 +136,7 @@ export const DepenseModal = ({depense, setDepense}) => {
                                 <input
                                     required
                                     className="form-control"
-                                    step="0.01"
+                                    step="0.001"
                                     min="1"
                                     max={depense.montant}
                                     type="number"

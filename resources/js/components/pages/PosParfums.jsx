@@ -346,7 +346,7 @@ function PosParfums() {
             Math.round(
                 items.reduce((a, b) => a + b.prix * b.quantity, 0) * 100
             ) / 100
-        ).toFixed(2);
+        ).toFixed(3);
 
         // Check if payment amount is less than total
         const isPartialPayment = parseFloat(paiement.i_montant) < parseFloat(totalAmount);
@@ -373,7 +373,7 @@ function PosParfums() {
                     $("#paiement-modal").modal("hide");
 
                     // Calculate remaining balance
-                    const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(2);
+                    const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(3);
 
                     // If there's still a remaining balance, ask if they want to add another payment
                     if (parseFloat(remainingBalance) > 0) {
@@ -471,7 +471,7 @@ function PosParfums() {
 
                         // Store the current sale information
                         const venteId = response.data.vente_id;
-                        const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(2);
+                        const remainingBalance = (parseFloat(totalAmount) - parseFloat(paiement.i_montant)).toFixed(3);
 
                         Swal.fire({
                             icon: "success",
@@ -585,7 +585,7 @@ function PosParfums() {
                 Math.round(
                     items.reduce((a, b) => a + b.prix * b.quantity, 0) * 100
                 ) / 100
-            ).toFixed(2),
+            ).toFixed(3),
             i_date_paiement: document.querySelector("#date_paiement").value,
             i_date: document.querySelector("#date_prevu").value,
         });

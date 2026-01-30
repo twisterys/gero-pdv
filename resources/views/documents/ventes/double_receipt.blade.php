@@ -200,9 +200,9 @@
         // Rows
         foreach ($o_vente->lignes as $ligne){
             // Format quantity: remove trailing .00
-            $quantite = number_format($ligne->quantite, 2, '.', ' ');
-            if (preg_match('/\.00$/', $quantite)) {
-                $quantite = preg_replace('/\.00$/', '', $quantite);
+            $quantite = number_format($ligne->quantite, 3, '.', ' ');
+            if (preg_match('/\.000$/', $quantite)) {
+                $quantite = preg_replace('/\.000$/', '', $quantite);
             }
             $table .= '<tr style="border-bottom: 1px dotted #eee;">';
             foreach ($cols as $col) {
@@ -225,13 +225,13 @@
                         break;
                     case 'prix':
                         $unit_ht = isset($ligne->ht) ? $ligne->ht : ($ligne->ht_unitaire ?? 0);
-                        $cell = number_format($unit_ht, 2, '.', ' ');
+                        $cell = number_format($unit_ht, 3, '.', ' ');
                         $align = 'right';
                         break;
                     case 'reduction':
                     case 'reduc':
                         $unit_reduc = $ligne->reduction_unitaire ?? 0;
-                        $cell = number_format($unit_reduc, 2, '.', ' ');
+                        $cell = number_format($unit_reduc, 3, '.', ' ');
                         $align = 'right';
                         break;
                     case 'tva':
@@ -244,12 +244,12 @@
                             $unit_reduc = $ligne->reduction_unitaire ?? 0;
                             $total_tva = ($qty * max($unit_ht - $unit_reduc, 0)) * $rate;
                         }
-                        $cell = number_format($total_tva, 2, '.', ' ');
+                        $cell = number_format($total_tva, 3, '.', ' ');
                         $align = 'right';
                         break;
                     case 'total':
                         $unit_ht = isset($ligne->ht) ? $ligne->ht : ($ligne->ht_unitaire ?? 0);
-                        $cell = number_format(($ligne->quantite ?? 0) * $unit_ht, 2, '.', ' ');
+                        $cell = number_format(($ligne->quantite ?? 0) * $unit_ht, 3, '.', ' ');
                         $align = 'right';
                         break;
                     default:
@@ -281,12 +281,12 @@
             '[Client]'=> $o_vente->client->nom,
             '[Magasin_adresse]'=>$o_vente->magasin->adresse,
             '[Magasin]'=>$o_vente->magasin->nom,
-            '[Total_HT]'=>  number_format($o_vente->total_ht + $o_vente->total_reduction,2,'.',' ').' MAD',
-            '[Total_TVA]'=>  number_format($o_vente->total_tva,2,'.',' ').' MAD',
-            '[Total_Reduction]'=>  number_format($o_vente->total_reduction,2,'.',' ').' MAD',
-            '[Total_TTC]'=>  number_format($o_vente->total_ttc,2,'.',' ').' MAD',
-            '[Montant_Paye]'=> number_format($total_paye,2,'.',' ').' MAD',
-            '[Montant_Restant]'=> number_format($montant_restant,2,'.',' ').' MAD',
+            '[Total_HT]'=>  number_format($o_vente->total_ht + $o_vente->total_reduction,3,'.',' ').' MAD',
+            '[Total_TVA]'=>  number_format($o_vente->total_tva,3,'.',' ').' MAD',
+            '[Total_Reduction]'=>  number_format($o_vente->total_reduction,3,'.',' ').' MAD',
+            '[Total_TTC]'=>  number_format($o_vente->total_ttc,3,'.',' ').' MAD',
+            '[Montant_Paye]'=> number_format($total_paye,3,'.',' ').' MAD',
+            '[Montant_Restant]'=> number_format($montant_restant,3,'.',' ').' MAD',
             '[Nom_Revendeur]'=> $nom_revendeur,
         ];
 

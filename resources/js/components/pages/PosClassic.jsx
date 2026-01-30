@@ -167,7 +167,7 @@ function PosClassic() {
                     0
                 ) * 100
             ) / 100
-        ).toFixed(2);
+        ).toFixed(3);
 
         // Check if payment amount is less than total
         const isPartialPayment = parseFloat(paiement.i_montant) < parseFloat(totalAmount);
@@ -198,7 +198,7 @@ function PosClassic() {
                     setCumulativePaid(newCumulative);
 
                     // Calculate remaining balance
-                    const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(2);
+                    const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(3);
 
                     // If there's still a remaining balance, ask if they want to add another payment
                     if (parseFloat(remainingBalance) > 0) {
@@ -334,7 +334,7 @@ function PosClassic() {
                         const newCumulative = parseFloat(paiement.i_montant || 0);
                         setCumulativePaid(newCumulative);
 
-                        const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(2);
+                        const remainingBalance = (parseFloat(totalAmount) - newCumulative).toFixed(3);
                         Swal.fire({
                             icon: "success",
                             title: "Paiement partiel enregistré !",
@@ -558,7 +558,7 @@ function PosClassic() {
                         0
                     ) * 100
                 ) / 100
-            ).toFixed(2),
+            ).toFixed(3),
         });
     }, [items]);
     //

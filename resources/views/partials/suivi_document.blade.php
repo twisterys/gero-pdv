@@ -15,7 +15,7 @@
                             </div>
                             <div class="col-8 text-end">
                                 <p class="text-muted font-size-13 mb-1">Total des @lang($suivi_document['lang'].$suivi_document['type'].'s')</p>
-                                <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_document['total'],2,'.',' ')}}
+                                <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_document['total'],3,'.',' ')}}
                                     MAD</h4>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                             </div>
                             <div class="col-8 text-end">
                                 <p class="text-muted font-size-13 mb-1">Recette @lang($suivi_document['lang'].$suivi_document['type'])</p>
-                                <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_document['recette'],2,'.',' ')}}
+                                <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_document['recette'],3,'.',' ')}}
                                     MAD</h4>
                             </div>
                         </div>
@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-8 text-end">
                                 <p class="text-muted font-size-13 mb-1">Créance @lang($suivi_document['lang'].$suivi_document['type'])</p>
-                                <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_document['creance'],2,'.',' ')}}
+                                <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_document['creance'],3,'.',' ')}}
                                     MAD</h4>
                             </div>
                         </div>

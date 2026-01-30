@@ -186,10 +186,10 @@ class CommercialController extends Controller
                return '<a class="text-decoration-underline text-info" href="'.route('ventes.afficher',['type'=>$row->type_document,'id'=>$row->id]).'" target="_blank" >'.$row->reference.'</a>';
             });
             $table->editColumn('commission_par_defaut',function ($row){
-                return number_format($row->total_ttc*$row->commission_par_defaut/100,2,'.',' ').' MAD';
+                return number_format($row->total_ttc*$row->commission_par_defaut/100,3,'.',' ').' MAD';
             });
             $table->editColumn('total_ttc',function ($row){
-                return number_format($row->total_ttc ?? 0,2,'.',' ').' MAD';
+                return number_format($row->total_ttc ?? 0,3,'.',' ').' MAD';
             });
 
             $table->rawColumns(['selectable_td','reference']);

@@ -365,16 +365,16 @@ function calculate_rows() {
         let totalTTC = (ht - reducHT) * ("1." + tvaRate) * quantity;
         row.children("td")
             .eq(5)
-            .text(totalTTC.toFixed(2) + " MAD");
+            .text(totalTTC.toFixed(3) + " MAD");
         total_ht += totalHT;
         total_tva += (ht - reducHT) * ("0." + tvaRate) * quantity;
         total_reduction += reducHT * quantity;
         total_ttc += totalTTC;
     });
-    $("#total-ht-text").text(total_ht.toFixed(2) + " MAD");
-    $("#total-reduction-text").text(total_reduction.toFixed(2) + " MAD");
-    $("#total-tva-text").text(total_tva.toFixed(2) + " MAD");
-    $("#total-ttc-text").text(total_ttc.toFixed(2) + " MAD");
+    $("#total-ht-text").text(total_ht.toFixed(3) + " MAD");
+    $("#total-reduction-text").text(total_reduction.toFixed(3) + " MAD");
+    $("#total-tva-text").text(total_tva.toFixed(3) + " MAD");
+    $("#total-ttc-text").text(total_ttc.toFixed(3) + " MAD");
 }
 
 function checkDétails() {

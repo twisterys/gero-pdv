@@ -129,7 +129,7 @@
                                                        @enderror
                                                    </td>
                                                    <td>
-                                                       <input style="width: 120px" step="0.01"
+                                                       <input style="width: 120px" step="0.001"
                                                               class="form-control quantite mb-1 {{$errors->has('lignes_sortant.'.$position.'.i_quantite')? 'is-invalid' : ''}}"
                                                               name="lignes_sortant[{{$position}}][i_quantite]" type="number"
                                                               value="{{old('lignes_sortant.'.$position.'.i_quantite')}}">
@@ -167,7 +167,7 @@
                                                    </div>
                                                </td>
                                                <td>
-                                                   <input style="width: 120px" step="0.01" class="form-control quantite mb-1 " name="lignes_sortant[-1][i_quantite]" type="number">
+                                                   <input style="width: 120px" step="0.001" class="form-control quantite mb-1 " name="lignes_sortant[-1][i_quantite]" type="number">
                                                    <select class="form-select row_select2 unite " style="width: 120px" name="lignes_sortant[-1][i_unite]" id="">
                                                        @foreach($o_unites as $o_unite)
                                                            <option value="{{$o_unite->id}}">{{$o_unite->nom}}</option>
@@ -228,7 +228,7 @@
                                                        @enderror
                                                    </td>
                                                    <td>
-                                                       <input style="width: 120px" step="0.01"
+                                                       <input style="width: 120px" step="0.001"
                                                               class="form-control quantite mb-1 {{$errors->has('lignes_entrant.'.$position.'.i_quantite')? 'is-invalid' : ''}}"
                                                               name="lignes_entrant[{{$position}}][i_quantite]" type="number"
                                                               value="{{old('lignes_entrant.'.$position.'.i_quantite')}}">
@@ -266,7 +266,7 @@
                                                    </div>
                                                </td>
                                                <td>
-                                                   <input style="width: 120px" step="0.01" class="form-control quantite mb-1 " name="lignes_entrant[-1][i_quantite]" type="number">
+                                                   <input style="width: 120px" step="0.001" class="form-control quantite mb-1 " name="lignes_entrant[-1][i_quantite]" type="number">
                                                    <select class="form-select row_select2 unite " style="width: 120px" name="lignes_entrant[-1][i_unite]" id="">
                                                        @foreach($o_unites as $o_unite)
                                                            <option value="{{$o_unite->id}}">{{$o_unite->nom}}</option>
@@ -327,7 +327,7 @@
     <script src="{{ asset('libs/tinymce/tinymce.min.js') }}"></script>
     <script>
         const __articles_modal_route = "{{ route('articles.article_select_modal', ['type' => 'transformation']) }}";
-        const __row = `<tr><td><input type="hidden" name="[name][-1][i_article_id]"class="article_id"><div class="input-group mb-2"><input type="text" name="[name][-1][i_article]"class="form-control"><button type="button" class="btn btn-soft-primary article_btn"><i class="fa fa-store"></i></button></div></td><td><input style="width: 120px" step="0.01" class="form-control quantite mb-1 " name="[name][-1][i_quantite]" type="number"><select class="form-select row_select2 unite " style="width: 120px" name="[name][-1][i_unite]" id="">@foreach($o_unites as $o_unite)<option value="{{$o_unite->id}}">{{$o_unite->nom}}</option>@endforeach</select></td><td></td></tr>`
+        const __row = `<tr><td><input type="hidden" name="[name][-1][i_article_id]"class="article_id"><div class="input-group mb-2"><input type="text" name="[name][-1][i_article]"class="form-control"><button type="button" class="btn btn-soft-primary article_btn"><i class="fa fa-store"></i></button></div></td><td><input style="width: 120px" step="0.001" class="form-control quantite mb-1 " name="[name][-1][i_quantite]" type="number"><select class="form-select row_select2 unite " style="width: 120px" name="[name][-1][i_unite]" id="">@foreach($o_unites as $o_unite)<option value="{{$o_unite->id}}">{{$o_unite->nom}}</option>@endforeach</select></td><td></td></tr>`
     </script>
     @vite(['resources/js/transformations/ajouter.js'])
     <script src="{{ asset('js/form-validation.init.js') }}"></script>

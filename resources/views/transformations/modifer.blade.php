@@ -128,7 +128,7 @@
                                                    @enderror
                                                </td>
                                                <td>
-                                                   <input style="width: 120px" step="0.01"
+                                                   <input style="width: 120px" step="0.001"
                                                           class="form-control quantite mb-1 {{$errors->has('lignes_sortant.'.$position.'.i_quantite')? 'is-invalid' : ''}}"
                                                           name="lignes_sortant[{{$position}}][i_quantite]" type="number"
                                                           value="{{old('lignes_sortant.'.$position.'.i_quantite', $ligne->quantite)}}">
@@ -219,7 +219,7 @@
                                                    @enderror
                                                </td>
                                                <td>
-                                                   <input style="width: 120px" step="0.01"
+                                                   <input style="width: 120px" step="0.001"
                                                           class="form-control quantite mb-1 {{$errors->has('lignes_entrant.'.$position.'.i_quantite')? 'is-invalid' : ''}}"
                                                           name="lignes_entrant[{{$position}}][i_quantite]" type="number"
                                                           value="{{old('lignes_entrant.'.$position.'.i_quantite', $ligne->quantite)}}">
@@ -316,7 +316,7 @@
     <script src="{{ asset('libs/tinymce/tinymce.min.js') }}"></script>
     <script>
         const __articles_modal_route = "{{ route('articles.article_select_modal', ['type' => 'transformation']) }}";
-        const __row = `<tr><td><div class="input-group mb-2"><input type="text" name="[name][-1][i_article]"class="form-control"><button type="button" class="btn btn-soft-primary article_btn"><i class="fa fa-store"></i></button></div><div class="text-end"><button class="btn btn-soft-success btn-sm add-description" type="button"><i class="fa fa-plus"></i>Ajouter une description</button></div><div class="description"></div><textarea name="[name][-1][i_description]" class="description-line d-none"></textarea></td><td><input style="width: 120px" step="0.01" class="form-control quantite mb-1 " name="[name][-1][i_quantite]" type="number"><select class="form-select row_select2 unite " style="width: 120px" name="[name][-1][i_unite]" id="">@foreach($o_unites as $o_unite)<option value="{{$o_unite->id}}">{{$o_unite->nom}}</option>@endforeach</select></td><td></td></tr>`
+        const __row = `<tr><td><div class="input-group mb-2"><input type="text" name="[name][-1][i_article]"class="form-control"><button type="button" class="btn btn-soft-primary article_btn"><i class="fa fa-store"></i></button></div><div class="text-end"><button class="btn btn-soft-success btn-sm add-description" type="button"><i class="fa fa-plus"></i>Ajouter une description</button></div><div class="description"></div><textarea name="[name][-1][i_description]" class="description-line d-none"></textarea></td><td><input style="width: 120px" step="0.001" class="form-control quantite mb-1 " name="[name][-1][i_quantite]" type="number"><select class="form-select row_select2 unite " style="width: 120px" name="[name][-1][i_unite]" id="">@foreach($o_unites as $o_unite)<option value="{{$o_unite->id}}">{{$o_unite->nom}}</option>@endforeach</select></td><td></td></tr>`
     </script>
     @vite(['resources/js/transformations/ajouter.js'])
     <script src="{{ asset('js/form-validation.init.js') }}"></script>

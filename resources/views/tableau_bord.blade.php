@@ -86,7 +86,7 @@
                         <i class="fa fa-dollar-sign text-success fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text ">
-                                {{number_format($chiffre_affaires['ca'],2,'.',' ')}} MAD
+                                {{number_format($chiffre_affaires['ca'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Chiffre d'affaires TTC</h6>
                         </div>
@@ -102,7 +102,7 @@
                         <i class="fa fa-wallet text-info fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($chiffre_affaires['recette'],2,'.',' ')}} MAD
+                                {{number_format($chiffre_affaires['recette'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Recette TTC</h6>
                         </div>
@@ -118,7 +118,7 @@
                         <i class="fa fa-file-invoice text-warning fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($chiffre_affaires['creance'],2,'.',' ')}} MAD
+                                {{number_format($chiffre_affaires['creance'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Créance TTC</h6>
                         </div>
@@ -134,7 +134,7 @@
                         <i class="fa fa-shopping-cart text-danger fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($chiffre_affaires['total_av'],2,'.',' ')}} MAD
+                                {{number_format($chiffre_affaires['total_av'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Total d'avoir TTC</h6>
                         </div>
@@ -168,7 +168,7 @@
 {{--                                    <h4 style="width: 100%"--}}
 {{--                                        class="mb-1 text-danger border-bottom border-2 border-success me-2"></h4>--}}
 {{--                                    <h4 class="m-0 text-end text-muted dashboard-text"--}}
-{{--                                        style="white-space: nowrap;">{{number_format($charges['total_faa'],2,'.',' ')}}--}}
+{{--                                        style="white-space: nowrap;">{{number_format($charges['total_faa'],3,'.',' ')}}--}}
 {{--                                        MAD</h4>--}}
 {{--                                </div>--}}
 {{--                            </div>--}}
@@ -189,7 +189,7 @@
 {{--                                    <h4 style="width: 100%"--}}
 {{--                                        class="mb-1 text-danger border-bottom border-2 border-info me-2"></h4>--}}
 {{--                                    <h4 class="m-0 text-end text-muted dashboard-text"--}}
-{{--                                        style="white-space: nowrap;">{{number_format($charges['dettes'],2,'.',' ')}}--}}
+{{--                                        style="white-space: nowrap;">{{number_format($charges['dettes'],3,'.',' ')}}--}}
 {{--                                        MAD</h4>--}}
 {{--                                </div>--}}
 {{--                            </div>--}}
@@ -209,7 +209,7 @@
 {{--                                    <h4 style="width: 100%"--}}
 {{--                                        class="mb-1  border-bottom border-2 border-warning me-2"></h4>--}}
 {{--                                    <h4 class="m-0 text-end text-muted dashboard-text"--}}
-{{--                                        style="white-space: nowrap;">{{number_format($charges['total_depense'],2,'.',' ')}}--}}
+{{--                                        style="white-space: nowrap;">{{number_format($charges['total_depense'],3,'.',' ')}}--}}
 {{--                                        MAD</h4>--}}
 {{--                                </div>--}}
 {{--                            </div>--}}
@@ -229,7 +229,7 @@
 {{--                                    <h4 style="width: 100%"--}}
 {{--                                        class="mb-1 text-danger border-bottom border-2 border-danger me-2"></h4>--}}
 {{--                                    <h4 class="m-0 text-end text-muted dashboard-text"--}}
-{{--                                        style="white-space: nowrap;">{{number_format($charges['total_decaissement'],2,'.',' ')}}--}}
+{{--                                        style="white-space: nowrap;">{{number_format($charges['total_decaissement'],3,'.',' ')}}--}}
 {{--                                        MAD</h4>--}}
 {{--                                </div>--}}
 {{--                            </div>--}}
@@ -257,7 +257,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">@lang('ventes.dvs')</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_dv'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_dv'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -274,7 +274,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">@lang('ventes.bcs')</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_bc'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_bc'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -291,7 +291,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">@lang('ventes.bls')</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_bl'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_bl'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -308,7 +308,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">@lang('ventes.brs')</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_br'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($suivi_vente['total_br'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -355,8 +355,8 @@
                                     <td>{{$facture->reference}}</td>
                                     <td><a class="link-underline-info text-info" href="{{route('clients.afficher',$facture->client_id)}}" target="_blank">{{$facture->client->nom}}</a></td>
                                     <td>{{$facture->jours_de_retard}}</td>
-                                    <td class="dashboard-text" >{{number_format($facture->total_ttc,2,'.',' ')}} MAD</td>
-                                    <td class="dashboard-text">{{number_format($facture->solde,2,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text" >{{number_format($facture->total_ttc,3,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text">{{number_format($facture->solde,3,'.',' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -388,7 +388,7 @@
                             @forelse($alerte_stock as $article)
                                 <tr>
                                     <td>{{$article->reference}}</td>
-                                    <td>{{number_format($article->quantite,2,'.',' ')}} MAD</td>
+                                    <td>{{number_format($article->quantite,3,'.',' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>

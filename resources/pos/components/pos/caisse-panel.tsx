@@ -41,7 +41,7 @@ const CaissePanel: React.FC = () => {
 
 
   useEffect(() => {
-      setPaiementRecu(cartTotal.toFixed(2));
+      setPaiementRecu(cartTotal.toFixed(3));
   }, [cartTotal]);
 
   useEffect(() => {

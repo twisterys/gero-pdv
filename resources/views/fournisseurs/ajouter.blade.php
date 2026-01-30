@@ -177,7 +177,7 @@
                                     <label class="form-label" for="vente_ht-input">Limite de crédit
                                     </label>
                                     <div class="input-group">
-                                        <input type="text" step="0.01" min="0"
+                                        <input type="text" step="0.001" min="0"
                                                class="form-control @error('limite_de_credit') is-invalid @enderror"
                                                id="limite_de_credit"
                                                name="limite_de_credit" value="{{ old('limite_de_credit') }}">

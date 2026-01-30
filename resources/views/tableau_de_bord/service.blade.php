@@ -89,13 +89,13 @@
                         </div>
                         <div class="ms-4 ca">
                             <h4 class="text-muted dashboard-text ">
-                                {{number_format($ca_fa['ca'],2,'.',' ')}} MAD
+                                {{number_format($ca_fa['ca'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Chiffre d'affaires TTC</h6>
                         </div>
                         <div class="ms-4 d-none ca">
                             <h4 class="text-muted dashboard-text ">
-                                {{number_format($ca_fa['ca_ht'],2,'.',' ')}} MAD
+                                {{number_format($ca_fa['ca_ht'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Chiffre d'affaires HT</h6>
                         </div>
@@ -111,7 +111,7 @@
                         <i class="fa fa-wallet text-info fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($ca_fa['recette'],2,'.',' ')}} MAD
+                                {{number_format($ca_fa['recette'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Recette TTC</h6>
                         </div>
@@ -127,7 +127,7 @@
                         <i class="fa fa-file-invoice text-warning fa-3x"></i>
                         <div class="ms-4">
                             <h4 class="text-muted dashboard-text">
-                                {{number_format($ca_fa['creance'],2,'.',' ')}} MAD
+                                {{number_format($ca_fa['creance'],3,'.',' ')}} MAD
                             </h4>
                             <h6 class="m-0 text-muted  ">Créance TTC</h6>
                         </div>
@@ -162,7 +162,7 @@
                             <div class="ms-4 ">
                                 <h4 class="text-muted dashboard-text ">
                                 <h4 class="text-muted dashboard-text ">
-                                    {{number_format($ca_fp['ca'],2,'.',' ')}} MAD
+                                    {{number_format($ca_fp['ca'],3,'.',' ')}} MAD
                                 </h4>
                                 <h6 class="m-0 text-muted  ">Chiffre d'affaires proforma TTC</h6>
                             </div>
@@ -178,7 +178,7 @@
                             <i class="fa fa-wallet text-info fa-3x"></i>
                             <div class="ms-4">
                                 <h4 class="text-muted dashboard-text">
-                                    {{number_format($ca_fp['recette'],2,'.',' ')}} MAD
+                                    {{number_format($ca_fp['recette'],3,'.',' ')}} MAD
                                 </h4>
                                 <h6 class="m-0 text-muted  ">Recette proforma TTC</h6>
                             </div>
@@ -194,7 +194,7 @@
                             <i class="fa fa-file-invoice text-warning fa-3x"></i>
                             <div class="ms-4">
                                 <h4 class="text-muted dashboard-text">
-                                    {{number_format($ca_fp['creance'],2,'.',' ')}} MAD
+                                    {{number_format($ca_fp['creance'],3,'.',' ')}} MAD
                                 </h4>
                                 <h6 class="m-0 text-muted  ">Créance proforma TTC</h6>
                             </div>
@@ -243,8 +243,8 @@
                                     <td><a href="{{route('ventes.afficher',[$facture->type_document,$facture->id])}}" class="link-underline-info text-info" >{{$facture->reference}}</a></td>
                                     <td><a class="link-underline-info text-info" href="{{route('clients.afficher',$facture->client_id)}}" target="_blank">{{$facture->client->nom}}</a></td>
                                     <td>{{$facture->jours_de_retard}}</td>
-                                    <td class="dashboard-text" >{{number_format($facture->total_ttc,2,'.',' ')}} MAD</td>
-                                    <td class="dashboard-text">{{number_format($facture->solde,2,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text" >{{number_format($facture->total_ttc,3,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text">{{number_format($facture->solde,3,'.',' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -280,8 +280,8 @@
                                     <td><a href="{{route('achats.afficher',[$facture_achat->type_document,$facture_achat->id])}}" class="link-underline-info text-info" >{{$facture_achat->reference}}</a></td>
                                     <td><a class="link-underline-info text-info" href="{{route('fournisseurs.afficher',$facture_achat->fournisseur_id)}}" target="_blank">{{$facture_achat->fournisseur->nom}}</a></td>
                                     <td>{{$facture_achat->jours_de_retard}}</td>
-                                    <td class="dashboard-text" >{{number_format($facture_achat->total_ttc,2,'.',' ')}} MAD</td>
-                                    <td class="dashboard-text">{{number_format($facture_achat->debit,2,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text" >{{number_format($facture_achat->total_ttc,3,'.',' ')}} MAD</td>
+                                    <td class="dashboard-text">{{number_format($facture_achat->debit,3,'.',' ')}} MAD</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -344,7 +344,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">Total HT des ventes</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_vente['ht'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_vente['ht'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -365,7 +365,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">Total TVA des ventes</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_vente['tva'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_vente['tva'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -386,7 +386,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">Total HT des achats</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_achat['ht'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_achat['ht'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -407,7 +407,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">Total TVA des achats</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_achat['tva'],2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($totals_achat['tva'],3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>
@@ -428,7 +428,7 @@
                                     </div>
                                     <div class="col-8 text-end">
                                         <p class="text-muted font-size-13 mb-1">Total des dépenses</p>
-                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($total_depenses,2,'.',' ')}}
+                                        <h4 class="mb-0 font-size-20 dashboard-text">{{number_format($total_depenses,3,'.',' ')}}
                                             MAD</h4>
                                     </div>
                                 </div>

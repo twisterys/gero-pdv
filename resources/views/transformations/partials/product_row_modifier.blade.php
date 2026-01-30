@@ -74,7 +74,7 @@
                class="form-control prix_revient {{$errors->has('lignes.'.$position.'.i_prix_revient')? 'is-invalid' : ''}}"
                type="number"
                name="lignes[{{$position}}][i_prix_revient]"
-               value="{{number_format($o_ligne['i_prix_revient']?? ($o_ligne['revient'] ?? null),2,'.','')}}">
+               value="{{number_format($o_ligne['i_prix_revient']?? ($o_ligne['revient'] ?? null),3,'.','')}}">
         @error('lignes.'.$position.'.i_prix_revient')
         <div class="invalid-feedback">
             {{ $message }}
@@ -86,7 +86,7 @@
                class="form-control prix_ht {{$errors->has('lignes.'.$position.'.i_prix_ht')? 'is-invalid' : ''}}"
                type="number"
                name="lignes[{{$position}}][i_prix_ht]"
-               value="{{number_format($o_ligne['i_prix_ht']?? ($o_ligne['ht'] ?? null),2,'.','')}}">
+               value="{{number_format($o_ligne['i_prix_ht']?? ($o_ligne['ht'] ?? null),3,'.','')}}">
         <button type="button" class="historique_prix_btn btn btn-soft-primary mt-2 w-100"><i class="fa fa-history"></i>
         </button>
 
@@ -100,7 +100,7 @@
         <input style="width: 120px" name="lignes[{{$position}}][i_reduction]"
                class="form-control reduction mb-1 {{$errors->has('lignes.'.$position.'.i_reduction')? 'is-invalid' : ''}}"
                type="number"
-               value="{{number_format($o_ligne['i_reduction']?? ($o_ligne['reduction'] ?? null),2,'.','')}}">
+               value="{{number_format($o_ligne['i_reduction']?? ($o_ligne['reduction'] ?? null),3,'.','')}}">
         @error('lignes.'.$position.'.i_reduction')
         <div class="invalid-feedback">
             {{ $message }}

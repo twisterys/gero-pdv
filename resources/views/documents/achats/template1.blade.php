@@ -99,10 +99,10 @@
                         </div>
                     </td>
                     <td>{{$ligne->quantite}} {{$ligne->unite->nom}}</td>
-                    <td>{{number_format($ligne->ht,2,'.',' ')}} MAD</td>
-                    <td>{{number_format($ligne->reduction,2,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? 'MAD':'%'}}</td>
+                    <td>{{number_format($ligne->ht,3,'.',' ')}} MAD</td>
+                    <td>{{number_format($ligne->reduction,3,'.',' ')}} {{$ligne->mode_reduction === 'fixe' ? 'MAD':'%'}}</td>
                     <td>{{$ligne->taxe}} %</td>
-                    <td>{{number_format(($ligne->ht-$reduction) *$ligne->quantite,2,'.',' ')}} MAD</td>
+                    <td>{{number_format(($ligne->ht-$reduction) *$ligne->quantite,3,'.',' ')}} MAD</td>
                 </tr>
             @endforeach
             <tr>
@@ -117,18 +117,18 @@
          style="page-break-inside: avoid; position: fixed; bottom: {{$o_template->image_en_bas_hauteur-100-($o_achat->note ? 0 : 40)}}px; height: {{160 + ($o_achat->note ? 70 : 0)}}px;width: 100%">
         <div class="total-container " style="page-break-inside: avoid">
             <div class="total-line">
-                                <h5>Total HT</h5> <h5>{{number_format($o_achat->total_ht,2,'.',' ')}} MAD</h5>
+                                <h5>Total HT</h5> <h5>{{number_format($o_achat->total_ht,3,'.',' ')}} MAD</h5>
 
             </div>
             <div class="total-line">
-                <h5>Total Réduction</h5> <h5>{{number_format($o_achat->total_reduction,2,'.',' ')}} MAD</h5>
+                <h5>Total Réduction</h5> <h5>{{number_format($o_achat->total_reduction,3,'.',' ')}} MAD</h5>
             </div>
             <div class="total-line">
-                <h5>Total TVA</h5> <h5>{{number_format($o_achat->total_tva,2,'.',' ')}} MAD</h5>
+                <h5>Total TVA</h5> <h5>{{number_format($o_achat->total_tva,3,'.',' ')}} MAD</h5>
             </div>
             <div class="total-line">
                 <h5>Total TTC</h5>
-                <h2>{{number_format($o_achat->total_ttc,2,'.',' ')}} MAD</h2>
+                <h2>{{number_format($o_achat->total_ttc,3,'.',' ')}} MAD</h2>
             </div>
         </div>
         @if($o_template['afficher_total_en_chiffre'])
